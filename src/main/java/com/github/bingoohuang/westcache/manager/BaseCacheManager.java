@@ -1,10 +1,10 @@
-package com.github.bingoohuang.westcache.cachemanager;
+package com.github.bingoohuang.westcache.manager;
 
-import com.github.bingoohuang.westcache.WestCache;
-import com.github.bingoohuang.westcache.WestCacheManager;
-import com.github.bingoohuang.westcache.WestCacheSnapshot;
+import com.github.bingoohuang.westcache.base.WestCache;
+import com.github.bingoohuang.westcache.WestCacheGuava;
+import com.github.bingoohuang.westcache.base.WestCacheManager;
+import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
 import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +20,11 @@ import java.util.concurrent.TimeoutException;
  */
 @Slf4j
 public class BaseCacheManager implements WestCacheManager {
-    @Getter private Cache<String, Object> cache;
+    @Getter private WestCache<String, Object> cache;
     @Getter private ExecutorService executorService;
     @Getter private WestCacheSnapshot westCacheSnapshot;
 
-    public BaseCacheManager(Cache<String, Object> cache,
+    public BaseCacheManager(WestCache<String, Object> cache,
                             ExecutorService executorService,
                             WestCacheSnapshot westCacheSnapshot) {
         this.cache = cache;
@@ -32,7 +32,7 @@ public class BaseCacheManager implements WestCacheManager {
         this.westCacheSnapshot = westCacheSnapshot;
     }
 
-    @Override @SneakyThrows
+    @Override @SneakyThrows @SuppressWarnings("unchecked")
     public <T> Optional<T> get(String cacheKey, Callable<Optional<T>> callable) {
         return (Optional<T>) cache.get(cacheKey, callable);
     }
@@ -44,7 +44,7 @@ public class BaseCacheManager implements WestCacheManager {
             @Override
             public Optional<T> call() throws Exception {
                 val optional = callable.call();
-                WestCache.put(cacheKey, optional);
+                WestCacheGuava.put(cacheKey, optional);
                 westCacheSnapshot.saveSnapshot(cacheKey, optional.orNull());
                 return optional;
             }

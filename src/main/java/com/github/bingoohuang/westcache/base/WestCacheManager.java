@@ -1,4 +1,4 @@
-package com.github.bingoohuang.westcache;
+package com.github.bingoohuang.westcache.base;
 
 import com.google.common.base.Optional;
 

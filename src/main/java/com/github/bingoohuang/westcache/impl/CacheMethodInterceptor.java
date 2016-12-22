@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.impl;
 
-import com.github.bingoohuang.westcache.WestCache;
+import com.github.bingoohuang.westcache.WestCacheGuava;
 import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -67,7 +67,7 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                                 final MethodProxy proxy) {
         val cacheKey = createCacheKey(method);
 
-        Optional<Object> o = WestCache.getSnapshot(cacheKey,
+        Optional<Object> o = WestCacheGuava.getSnapshot(cacheKey,
                 new Callable<Optional<Object>>() {
                     @SneakyThrows @Override
                     public Optional<Object> call() throws Exception {
@@ -85,7 +85,7 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                               final MethodProxy proxy) {
         val cacheKey = createCacheKey(target != null ? target : obj, method, args);
 
-        Optional<Object> o = WestCache.get(cacheKey,
+        Optional<Object> o = WestCacheGuava.get(cacheKey,
                 new Callable<Optional<Object>>() {
                     @SneakyThrows @Override
                     public Optional<Object> call() throws Exception {

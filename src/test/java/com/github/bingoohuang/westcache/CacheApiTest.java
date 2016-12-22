@@ -24,7 +24,7 @@ public class CacheApiTest {
     public void apiBasic() {
         setHomeArea(north);
         String cacheKey = "api.cache.key";
-        Optional<String> cache = WestCache.get(cacheKey, new Callable<Optional<String>>() {
+        Optional<String> cache = WestCacheGuava.get(cacheKey, new Callable<Optional<String>>() {
             @Override public Optional<String> call() throws Exception {
                 return Optional.fromNullable(getHomeAreaWithCache());
             }
@@ -32,7 +32,7 @@ public class CacheApiTest {
         assertThat(cache.orNull()).isEqualTo(north);
 
         setHomeArea(south);
-        cache = WestCache.get(cacheKey);
+        cache = WestCacheGuava.get(cacheKey);
         assertThat(cache.orNull()).isEqualTo(north);
         assertThat(getHomeArea()).isEqualTo(south);
     }

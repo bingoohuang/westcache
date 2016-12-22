@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache.snapshot;
 
 import com.alibaba.fastjson.JSON;
-import com.github.bingoohuang.westcache.WestCacheSnapshot;
+import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;

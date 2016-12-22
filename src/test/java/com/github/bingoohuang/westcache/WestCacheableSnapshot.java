@@ -1,5 +1,7 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.westcache.base.WestCacheable;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
