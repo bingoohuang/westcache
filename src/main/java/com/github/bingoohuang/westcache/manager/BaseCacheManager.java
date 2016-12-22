@@ -55,7 +55,7 @@ public class BaseCacheManager implements WestCacheManager {
             result = future.get(500, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {   // 有限时间内不返回，尝试snapshot
             log.info("get cache {} timeout in 500 millis, try to use snapshot", cacheKey);
-            result = westCacheSnapshot.readSnapShot(cacheKey);
+            result = westCacheSnapshot.readSnapshot(cacheKey);
         }
 
         return result == null ? future.get() : result;

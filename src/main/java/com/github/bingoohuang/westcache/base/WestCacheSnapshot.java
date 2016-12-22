@@ -8,5 +8,5 @@ import com.google.common.base.Optional;
 public interface WestCacheSnapshot {
     void saveSnapshot(String cacheKey, Object cacheValue);
 
-    <T> Optional<T> readSnapShot(String cacheKey);
+    <T> Optional<T> readSnapshot(String cacheKey);
 }

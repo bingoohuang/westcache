@@ -25,7 +25,7 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
     }
 
     @Override @SneakyThrows @SuppressWarnings("unchecked")
-    public <T> Optional<T> readSnapShot(String cacheKey) {
+    public <T> Optional<T> readSnapshot(String cacheKey) {
         File snapshotFile = getSnapshotFile(cacheKey);
         if (!snapshotFile.exists() || !snapshotFile.isFile()) return null;
 

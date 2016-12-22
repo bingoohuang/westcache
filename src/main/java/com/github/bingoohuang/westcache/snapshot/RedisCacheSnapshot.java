@@ -29,7 +29,7 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
         jedisCommands.set(prefix + cacheKey, json);
     }
 
-    @Override public <T> Optional<T> readSnapShot(String cacheKey) {
+    @Override public <T> Optional<T> readSnapshot(String cacheKey) {
         String json = jedisCommands.get(prefix + cacheKey);
         if (json == null) return null;
 
