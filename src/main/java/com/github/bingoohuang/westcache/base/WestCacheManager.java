@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.base;
 
+import com.github.bingoohuang.westcache.impl.WestCacheOption;
 import com.google.common.base.Optional;
 
 import java.util.concurrent.Callable;
@@ -8,11 +9,11 @@ import java.util.concurrent.Callable;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
 public interface WestCacheManager {
-    <T> Optional<T> get(String cacheKey, Callable<Optional<T>> callable);
+    <T> Optional<T> get(WestCacheOption option, String cacheKey, Callable<Optional<T>> callable);
 
-    <T> Optional<T> getSnapshot(String cacheKey, Callable<Optional<T>> callable);
+    <T> Optional<T> getSnapshot(WestCacheOption option, String cacheKey, Callable<Optional<T>> callable);
 
-    <T> Optional<T> get(String cacheKey);
+    <T> Optional<T> get(WestCacheOption option, String cacheKey);
 
-    <T> void put(String cacheKey, Optional<T> cacheValue);
+    <T> void put(WestCacheOption option, String cacheKey, Optional<T> cacheValue);
 }

@@ -1,6 +1,8 @@
 package com.github.bingoohuang.westcache.impl;
 
 import com.github.bingoohuang.westcache.WestCacheGuava;
+import com.github.bingoohuang.westcache.utils.CacheAnnotationUtils;
+import com.github.bingoohuang.westcache.utils.CacheKeyUtils;
 import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -13,8 +15,6 @@ import net.sf.cglib.proxy.MethodProxy;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
-import static com.github.bingoohuang.westcache.utils.CacheAnnotationUtils.parseWestCacheableOption;
-import static com.github.bingoohuang.westcache.utils.CacheKeyUtils.createCacheKey;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/21.
@@ -28,7 +28,7 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                             final Method method,
                             final Object[] args,
                             final MethodProxy methodProxy) throws Throwable {
-        val option = parseWestCacheableOption(method);
+        val option = CacheAnnotationUtils.parseWestCacheOption(method);
         return option == null
                 ? invokeRaw(obj, args, methodProxy)
                 : cacheGet(option, obj, method, args, methodProxy);
@@ -51,23 +51,24 @@ public class CacheMethodInterceptor implements MethodInterceptor {
         val start = System.currentTimeMillis();
         try {
             return option.isSnapshot()
-                    ? snapshotRead(obj, method, args, proxy)
-                    : normalRead(obj, method, args, proxy);
+                    ? snapshotRead(option, obj, method, args, proxy)
+                    : normalRead(option, obj, method, args, proxy);
         } finally {
             val end = System.currentTimeMillis();
-            String cacheKey = createCacheKey(method);
+            String cacheKey = CacheKeyUtils.createCacheKey(method);
             log.debug("get cache {} cost {} millis", cacheKey, (end - start));
         }
     }
 
     @SneakyThrows
-    private Object snapshotRead(final Object obj,
+    private Object snapshotRead(final WestCacheOption option,
+                                final Object obj,
                                 final Method method,
                                 final Object[] args,
                                 final MethodProxy proxy) {
-        val cacheKey = createCacheKey(method);
+        val cacheKey = CacheKeyUtils.createCacheKey(method);
 
-        Optional<Object> o = WestCacheGuava.getSnapshot(cacheKey,
+        Optional<Object> o = WestCacheGuava.getSnapshot(option, cacheKey,
                 new Callable<Optional<Object>>() {
                     @SneakyThrows @Override
                     public Optional<Object> call() throws Exception {
@@ -79,13 +80,14 @@ public class CacheMethodInterceptor implements MethodInterceptor {
     }
 
     @SneakyThrows
-    private Object normalRead(final Object obj,
+    private Object normalRead(final WestCacheOption option,
+                              final Object obj,
                               final Method method,
                               final Object[] args,
                               final MethodProxy proxy) {
-        val cacheKey = createCacheKey(target != null ? target : obj, method, args);
+        val cacheKey = CacheKeyUtils.createCacheKey(target != null ? target : obj, method, args);
 
-        Optional<Object> o = WestCacheGuava.get(cacheKey,
+        Optional<Object> o = WestCacheGuava.get(option, cacheKey,
                 new Callable<Optional<Object>>() {
                     @SneakyThrows @Override
                     public Optional<Object> call() throws Exception {

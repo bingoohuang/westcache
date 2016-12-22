@@ -60,6 +60,10 @@ public class WestCacheManagerBuilder {
             @Override public void put(String cacheKey, Object cacheValue) {
                 cache.put(cacheKey, cacheValue);
             }
+
+            @Override public void invalidate(String cacheKey) {
+                cache.invalidate(cacheKey);
+            }
         }).build();
     }
 

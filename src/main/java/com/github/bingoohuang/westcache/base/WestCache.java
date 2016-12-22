@@ -11,4 +11,6 @@ public interface WestCache<K, V> {
     V getIfPresent(K cacheKey);
 
     void put(K cacheKey, V cacheValue);
+
+    void invalidate(K cacheKey);
 }

@@ -15,4 +15,11 @@ public @interface WestCacheable {
      * @return snapshot supported or not.
      */
     boolean snapshot() default false;
+
+    /**
+     * set cache flusher's name.
+     *
+     * @return flusher's name.
+     */
+    String flusher() default "void";
 }

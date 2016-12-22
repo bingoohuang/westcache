@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.westcache.impl.WestCacheOption;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +25,8 @@ public class CacheApiTest {
     public void apiBasic() {
         setHomeArea(north);
         String cacheKey = "api.cache.key";
-        Optional<String> cache = WestCacheGuava.get(cacheKey, new Callable<Optional<String>>() {
+        WestCacheOption option = new WestCacheOption();
+        Optional<String> cache = WestCacheGuava.get(option, cacheKey, new Callable<Optional<String>>() {
             @Override public Optional<String> call() throws Exception {
                 return Optional.fromNullable(getHomeAreaWithCache());
             }
@@ -32,7 +34,7 @@ public class CacheApiTest {
         assertThat(cache.orNull()).isEqualTo(north);
 
         setHomeArea(south);
-        cache = WestCacheGuava.get(cacheKey);
+        cache = WestCacheGuava.get(option, cacheKey);
         assertThat(cache.orNull()).isEqualTo(north);
         assertThat(getHomeArea()).isEqualTo(south);
     }
