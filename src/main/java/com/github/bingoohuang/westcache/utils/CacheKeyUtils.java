@@ -1,4 +1,4 @@
-package com.github.bingoohuang.westcache.impl;
+package com.github.bingoohuang.westcache.utils;
 
 import java.lang.reflect.Method;
 
