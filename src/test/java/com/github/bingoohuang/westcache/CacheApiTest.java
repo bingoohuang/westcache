@@ -16,7 +16,6 @@ public class CacheApiTest {
     String north = "NORTH", south = "SOUTH";
     @Getter @Setter String homeArea;
 
-    @WestCacheable
     public String getHomeAreaWithCache() {
         return homeArea;
     }
@@ -36,5 +35,10 @@ public class CacheApiTest {
         cache = WestCache.get(cacheKey);
         assertThat(cache.orNull()).isEqualTo(north);
         assertThat(getHomeArea()).isEqualTo(south);
+    }
+
+    @Test
+    public void apiFull() {
+
     }
 }
