@@ -1,8 +1,9 @@
 package com.github.bingoohuang.westcache.impl;
 
 import com.github.bingoohuang.westcache.WestCache;
-import com.github.bingoohuang.westcache.WestCacheable;
 import com.google.common.base.Optional;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -12,31 +13,25 @@ import net.sf.cglib.proxy.MethodProxy;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
+import static com.github.bingoohuang.westcache.utils.CacheAnnotationUtils.parseWestCacheableOption;
 import static com.github.bingoohuang.westcache.utils.CacheKeyUtils.createCacheKey;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/21.
  */
-@Slf4j
+@Slf4j @NoArgsConstructor @AllArgsConstructor
 public class CacheMethodInterceptor implements MethodInterceptor {
     private Object target;
-
-    public CacheMethodInterceptor() {
-    }
-
-    public CacheMethodInterceptor(Object target) {
-        this.target = target;
-    }
 
     @Override
     public Object intercept(final Object obj,
                             final Method method,
                             final Object[] args,
                             final MethodProxy methodProxy) throws Throwable {
-
-        return isWestCacheable(method)
-                ? cacheGet(obj, method, args, methodProxy)
-                : invokeRaw(obj, args, methodProxy);
+        val option = parseWestCacheableOption(method);
+        return option == null
+                ? invokeRaw(obj, args, methodProxy)
+                : cacheGet(option, obj, method, args, methodProxy);
     }
 
     @SneakyThrows
@@ -48,14 +43,14 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                 : methodProxy.invokeSuper(obj, args);
     }
 
-    private Object cacheGet(final Object obj,
+    private Object cacheGet(final WestCacheOption option,
+                            final Object obj,
                             final Method method,
                             final Object[] args,
                             final MethodProxy proxy) {
         val start = System.currentTimeMillis();
         try {
-            val westCacheable = method.getAnnotation(WestCacheable.class);
-            return westCacheable.snapshot()
+            return option.isSnapshot()
                     ? snapshotRead(obj, method, args, proxy)
                     : normalRead(obj, method, args, proxy);
         } finally {
@@ -99,9 +94,5 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                     }
                 });
         return o.orNull();
-    }
-
-    private boolean isWestCacheable(Method method) {
-        return method.isAnnotationPresent(WestCacheable.class);
     }
 }
