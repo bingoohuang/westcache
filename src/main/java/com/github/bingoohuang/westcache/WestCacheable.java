@@ -8,5 +8,10 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface WestCachable {
+public @interface WestCacheable {
+    /**
+     * try to read from snapshot when read big data is slower than timeout.
+     * @return
+     */
+    boolean snapshot() default false;
 }

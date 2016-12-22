@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import org.junit.Test;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -13,21 +14,21 @@ public class FirstTest {
     String north = "NORTH", south = "SOUTH";
 
     @Test
-    public void objectWrap() {
-        FirstService firstService = new FirstService();
+    public void cacheBasic() {
+        val firstService = new FirstService();
         firstService.setHomeArea(north);
 
-        FirstService wrapService = WestCacheFactory.wrap(firstService);
+        val wrapService = WestCacheFactory.create(firstService);
         assertThat(wrapService.getHomeAreaWithCache()).isEqualTo(north);
 
-        firstService.setHomeArea(south);
+        wrapService.setHomeArea(south);
         assertThat(wrapService.getHomeAreaWithCache()).isEqualTo(north);
         assertThat(wrapService.getHomeArea()).isEqualTo(south);
     }
 
     @Test
-    public void classWrap() {
-        FirstService wrapService = WestCacheFactory.wrap(FirstService.class);
+    public void cacheNull() {
+        val wrapService = WestCacheFactory.create(FirstService.class);
         assertThat(wrapService.getHomeAreaWithCache()).isNull();
 
         wrapService.setHomeArea(south);
@@ -38,7 +39,7 @@ public class FirstTest {
     public static class FirstService {
         @Getter @Setter String homeArea;
 
-        @WestCachable
+        @WestCacheable
         public String getHomeAreaWithCache() {
             return homeArea;
         }
