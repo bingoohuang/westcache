@@ -1,21 +1,21 @@
 package com.github.bingoohuang.westcache.utils;
 
 import com.github.bingoohuang.westcache.base.WestCacheable;
-import com.github.bingoohuang.westcache.impl.WestCacheOption;
+import com.github.bingoohuang.westcache.WestCacheOptions;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import static com.github.bingoohuang.westcache.impl.WestCacheOption.newBuilder;
+import static com.github.bingoohuang.westcache.WestCacheOptions.newBuilder;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
 @UtilityClass
 public class CacheAnnotationUtils {
-    public WestCacheOption parseWestCacheOption(Method method) {
+    public WestCacheOptions parseWestCacheOption(Method method) {
         val westCacheable = method.getAnnotation(WestCacheable.class);
         if (westCacheable != null) return newBuilder().build(westCacheable);
 

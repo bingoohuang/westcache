@@ -16,7 +16,7 @@ public class SimpleCacheFlusher implements WestCacheFlusher {
 
     @Override
     public void register(String cacheKey, WestCache<String, Object> cache) {
-        log.debug("register cacheKey for flusher {}", cacheKey);
+        log.debug("register key for flusher {}", cacheKey);
         if (registry.getIfPresent(cacheKey) != null) return;
 
         registry.put(cacheKey, cache);

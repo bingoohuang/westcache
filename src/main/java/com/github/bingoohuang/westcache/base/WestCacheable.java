@@ -36,4 +36,18 @@ public @interface WestCacheable {
      * @return cache config's name.
      */
     String config() default "default";
+
+    /**
+     * set cache's key.
+     *
+     * @return cache's key.
+     */
+    String key() default "";
+
+    /**
+     * set key strategy's name.
+     *
+     * @return key strategy's name.
+     */
+    String keyStrategy() default "default";
 }

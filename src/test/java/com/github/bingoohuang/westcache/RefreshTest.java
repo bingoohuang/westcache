@@ -2,7 +2,6 @@ package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.WestCacheable;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
-import com.github.bingoohuang.westcache.impl.WestCacheOption;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,10 +11,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static com.github.bingoohuang.westcache.WestCacheConfigRegistry.deregisterConfig;
-import static com.github.bingoohuang.westcache.WestCacheConfigRegistry.registerConfig;
-import static com.github.bingoohuang.westcache.impl.WestCacheOption.newBuilder;
-import static com.github.bingoohuang.westcache.utils.CacheKeyUtils.createCacheKey;
+import static com.github.bingoohuang.westcache.WestCacheOptions.newBuilder;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -45,8 +41,8 @@ public class RefreshTest {
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(north);
 
-        WestCacheOption option1 = newBuilder().build();
-        WestCacheFlusherRegistry.flush(option1, bean, "getHomeAreaWithCache");
+        WestCacheOptions option1 = newBuilder().build();
+        WestCacheRegistry.flush(option1, bean, "getHomeAreaWithCache");
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(south);
     }
@@ -67,7 +63,7 @@ public class RefreshTest {
 
     @BeforeClass
     public static void beforeClass() {
-        registerConfig("snapshotTestConfig",
+        WestCacheRegistry.registerConfig("snapshotTestConfig",
                 new DefaultWestCacheConfig() {
                     @Override public long timeoutMillisToSnapshot() {
                         return 100L;
@@ -77,17 +73,15 @@ public class RefreshTest {
 
     @AfterClass
     public static void afterClass() {
-        deregisterConfig("snapshotTestConfig");
+        WestCacheRegistry.deregisterConfig("snapshotTestConfig");
     }
 
     @Test @SneakyThrows
     public void flushSnapshot() {
         val bigDataXXX = "SnapshotService.getBigData.XXX";
 
-        val methodName = "getHomeAreaWithCache";
-        val cacheKey = createCacheKey(FlushSnapshotBean.class, methodName);
-
         val snapshot = new FileCacheSnapshot();
+        val cacheKey = FlushSnapshotBean.class.getName() + ".getHomeAreaWithCache";
         snapshot.saveSnapshot(cacheKey, bigDataXXX);
 
         FlushSnapshotBean bean = WestCacheFactory.create(FlushSnapshotBean.class);
@@ -97,7 +91,7 @@ public class RefreshTest {
         String cached = bean.getHomeAreaWithCache();
         long cost = System.currentTimeMillis() - start;
 
-        assertThat(cost).isLessThan(200L);
+        assertThat(cost).isLessThan(500L);
         assertThat(cached).isEqualTo(bigDataXXX);
         Thread.sleep(250L - cost);
 
@@ -108,8 +102,8 @@ public class RefreshTest {
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(north);
 
-        WestCacheOption option2 = newBuilder().snapshot("file").build();
-        WestCacheFlusherRegistry.flush(option2, bean, "getHomeAreaWithCache");
+        WestCacheOptions option2 = newBuilder().snapshot("file").build();
+        WestCacheRegistry.flush(option2, bean, "getHomeAreaWithCache");
         bean.setSleepMillis(0L);
         cached = bean.getHomeAreaWithCache();
 

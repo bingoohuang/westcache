@@ -2,7 +2,7 @@ package com.github.bingoohuang.westcache.manager;
 
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheManager;
-import com.github.bingoohuang.westcache.impl.WestCacheOption;
+import com.github.bingoohuang.westcache.WestCacheOptions;
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
     public abstract WestCache<String, Object> getWestCache();
 
     @Override @SneakyThrows @SuppressWarnings("unchecked")
-    public <T> Optional<T> get(final WestCacheOption option,
+    public <T> Optional<T> get(final WestCacheOptions option,
                                final String cacheKey,
                                final Callable<Optional<T>> callable) {
         val flushCallable = new Callable<Optional<T>>() {
@@ -36,7 +36,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
     }
 
     @Override @SneakyThrows
-    public <T> Optional<T> getSnapshot(final WestCacheOption option,
+    public <T> Optional<T> getSnapshot(final WestCacheOptions option,
                                        final String cacheKey,
                                        final Callable<Optional<T>> callable) {
         return (Optional<T>) getWestCache().get(cacheKey, new Callable<Optional<T>>() {
@@ -48,7 +48,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
     }
 
     @SneakyThrows
-    private <T> Optional<T> trySnapshot(final WestCacheOption option,
+    private <T> Optional<T> trySnapshot(final WestCacheOptions option,
                                         final String cacheKey,
                                         final Callable<Optional<T>> callable) {
         val future = option.getConfig().executorService().submit(new Callable<Optional<T>>() {
@@ -68,7 +68,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
         try {
             result = future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {   // 有限时间内不返回，尝试snapshot
-            log.info("get cache {} timeout in {} millis, try to use snapshot", timeout, cacheKey);
+            log.info("getFlusher cache {} timeout in {} millis, try to use snapshot", timeout, cacheKey);
             result = option.getSnapshot().readSnapshot(cacheKey);
             log.info("got {} snapshot {}", cacheKey, result != null ? result.get() : " not exist");
         }
@@ -77,12 +77,12 @@ public abstract class BaseCacheManager implements WestCacheManager {
     }
 
     @Override
-    public <T> Optional<T> get(WestCacheOption option, String cacheKey) {
+    public <T> Optional<T> get(WestCacheOptions option, String cacheKey) {
         return (Optional<T>) getWestCache().getIfPresent(cacheKey);
     }
 
     @Override
-    public <T> void put(WestCacheOption option,
+    public <T> void put(WestCacheOptions option,
                         String cacheKey,
                         Optional<T> cacheValue) {
         option.getFlusher().register(cacheKey, getWestCache());

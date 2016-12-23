@@ -11,9 +11,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static com.github.bingoohuang.westcache.WestCacheConfigRegistry.deregisterConfig;
-import static com.github.bingoohuang.westcache.WestCacheConfigRegistry.registerConfig;
-import static com.github.bingoohuang.westcache.utils.CacheKeyUtils.createCacheKey;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -36,7 +33,7 @@ public class SnapshotTest {
 
     @BeforeClass
     public static void beforeClass() {
-        registerConfig("snapshotTestConfig",
+        WestCacheRegistry.registerConfig("snapshotTestConfig",
                 new DefaultWestCacheConfig() {
                     @Override public long timeoutMillisToSnapshot() {
                         return 100L;
@@ -46,7 +43,7 @@ public class SnapshotTest {
 
     @AfterClass
     public static void afterClass() {
-        deregisterConfig("snapshotTestConfig");
+        WestCacheRegistry.deregisterConfig("snapshotTestConfig");
     }
 
     public static class SnapshotService extends BasicSnapshotService {
@@ -78,10 +75,8 @@ public class SnapshotTest {
         val bigDataXXX = "SnapshotService.getBigData.XXX";
         val bigDataYYY = "SnapshotService.getBigData.YYY";
 
-        val methodName = "getBigDataCache";
-        val cacheKey = createCacheKey(serviceClass, methodName);
-
         val snapshot = new FileCacheSnapshot();
+        val cacheKey = serviceClass.getName() + ".getBigDataCache";
         snapshot.saveSnapshot(cacheKey, bigDataXXX);
 
         val service = WestCacheFactory.create(serviceClass);

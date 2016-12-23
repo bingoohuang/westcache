@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache.impl;
 
+import com.github.bingoohuang.westcache.WestCacheOptions;
 import com.github.bingoohuang.westcache.utils.CacheAnnotationUtils;
-import com.github.bingoohuang.westcache.utils.CacheKeyUtils;
 import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -42,31 +42,31 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                 : methodProxy.invokeSuper(obj, args);
     }
 
-    private Object cacheGet(final WestCacheOption option,
+    private Object cacheGet(final WestCacheOptions option,
                             final Object obj,
                             final Method method,
                             final Object[] args,
                             final MethodProxy proxy) {
+        val cacheKey = option.getKeyStrategy().getCacheKey(option,
+                method.getName(), target != null ? target : obj, args);
         val start = System.currentTimeMillis();
         try {
             return option.getSnapshot() != null
-                    ? snapshotRead(option, obj, method, args, proxy)
-                    : normalRead(option, obj, method, args, proxy);
+                    ? snapshotRead(option, obj, method, args, proxy, cacheKey)
+                    : normalRead(option, obj, method, args, proxy, cacheKey);
         } finally {
             val end = System.currentTimeMillis();
-            String cacheKey = CacheKeyUtils.createCacheKey(method);
-            log.debug("get cache {} cost {} millis", cacheKey, (end - start));
+            log.debug("getFlusher cache {} cost {} millis", cacheKey, (end - start));
         }
     }
 
     @SneakyThrows
-    private Object snapshotRead(final WestCacheOption option,
+    private Object snapshotRead(final WestCacheOptions option,
                                 final Object obj,
                                 final Method method,
                                 final Object[] args,
-                                final MethodProxy proxy) {
-        val cacheKey = CacheKeyUtils.createCacheKey(method);
-
+                                final MethodProxy proxy,
+                                final String cacheKey) {
         Optional<Object> o = option.getManager()
                 .getSnapshot(option, cacheKey,
                         new Callable<Optional<Object>>() {
@@ -80,13 +80,12 @@ public class CacheMethodInterceptor implements MethodInterceptor {
     }
 
     @SneakyThrows
-    private Object normalRead(final WestCacheOption option,
+    private Object normalRead(final WestCacheOptions option,
                               final Object obj,
                               final Method method,
                               final Object[] args,
-                              final MethodProxy proxy) {
-        val cacheKey = CacheKeyUtils.createCacheKey(target != null ? target : obj, method, args);
-
+                              final MethodProxy proxy,
+                              final String cacheKey) {
         Optional<Object> o = option.getManager().get(option, cacheKey,
                 new Callable<Optional<Object>>() {
                     @SneakyThrows @Override
