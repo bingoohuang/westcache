@@ -8,6 +8,8 @@ import lombok.val;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import static com.github.bingoohuang.westcache.impl.WestCacheOption.newBuilder;
+
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
@@ -15,11 +17,11 @@ import java.lang.reflect.Method;
 public class CacheAnnotationUtils {
     public WestCacheOption parseWestCacheOption(Method method) {
         val westCacheable = method.getAnnotation(WestCacheable.class);
-        if (westCacheable != null) return new WestCacheOption(westCacheable);
+        if (westCacheable != null) return newBuilder().build(westCacheable);
 
         for (val ann : method.getAnnotations()) {
             val optionAnn = parseWestCacheable(ann);
-            if (optionAnn != null) return new WestCacheOption(optionAnn);
+            if (optionAnn != null) return newBuilder().build(optionAnn);
         }
 
         return null;

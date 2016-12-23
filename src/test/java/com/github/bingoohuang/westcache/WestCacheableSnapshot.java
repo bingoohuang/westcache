@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
-@WestCacheable(snapshot = true)
+@WestCacheable(snapshot = "file", config = "snapshotTestConfig")
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WestCacheableSnapshot {

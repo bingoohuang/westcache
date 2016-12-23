@@ -1,6 +1,5 @@
 package com.github.bingoohuang.westcache.impl;
 
-import com.github.bingoohuang.westcache.WestCacheGuava;
 import com.github.bingoohuang.westcache.utils.CacheAnnotationUtils;
 import com.github.bingoohuang.westcache.utils.CacheKeyUtils;
 import com.google.common.base.Optional;
@@ -50,7 +49,7 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                             final MethodProxy proxy) {
         val start = System.currentTimeMillis();
         try {
-            return option.isSnapshot()
+            return option.getSnapshot() != null
                     ? snapshotRead(option, obj, method, args, proxy)
                     : normalRead(option, obj, method, args, proxy);
         } finally {
@@ -68,14 +67,15 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                                 final MethodProxy proxy) {
         val cacheKey = CacheKeyUtils.createCacheKey(method);
 
-        Optional<Object> o = WestCacheGuava.getSnapshot(option, cacheKey,
-                new Callable<Optional<Object>>() {
-                    @SneakyThrows @Override
-                    public Optional<Object> call() throws Exception {
-                        Object raw = invokeRaw(obj, args, proxy);
-                        return Optional.fromNullable(raw);
-                    }
-                });
+        Optional<Object> o = option.getManager()
+                .getSnapshot(option, cacheKey,
+                        new Callable<Optional<Object>>() {
+                            @SneakyThrows @Override
+                            public Optional<Object> call() throws Exception {
+                                Object raw = invokeRaw(obj, args, proxy);
+                                return Optional.fromNullable(raw);
+                            }
+                        });
         return o.orNull();
     }
 
@@ -87,7 +87,7 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                               final MethodProxy proxy) {
         val cacheKey = CacheKeyUtils.createCacheKey(target != null ? target : obj, method, args);
 
-        Optional<Object> o = WestCacheGuava.get(option, cacheKey,
+        Optional<Object> o = option.getManager().get(option, cacheKey,
                 new Callable<Optional<Object>>() {
                     @SneakyThrows @Override
                     public Optional<Object> call() throws Exception {

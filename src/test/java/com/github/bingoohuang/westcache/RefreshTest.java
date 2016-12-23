@@ -1,16 +1,20 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.WestCacheable;
-import com.github.bingoohuang.westcache.flusher.SimpleCacheFlusher;
+import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.impl.WestCacheOption;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static com.github.bingoohuang.westcache.WestCacheConfigRegistry.deregisterConfig;
+import static com.github.bingoohuang.westcache.WestCacheConfigRegistry.registerConfig;
+import static com.github.bingoohuang.westcache.impl.WestCacheOption.newBuilder;
 import static com.github.bingoohuang.westcache.utils.CacheKeyUtils.createCacheKey;
 import static com.google.common.truth.Truth.assertThat;
 
@@ -29,15 +33,6 @@ public class RefreshTest {
         }
     }
 
-    static SimpleCacheFlusher flusher = new SimpleCacheFlusher();
-    static WestCacheOption option1 = new WestCacheOption(false, flusher);
-    static WestCacheOption option2 = new WestCacheOption(true, flusher);
-
-    @BeforeClass
-    public static void beforeClass() {
-        WestCacheFlusherManager.registerFlusher("simple", flusher);
-    }
-
     @Test
     public void flush() {
         FlushBean bean = WestCacheFactory.create(FlushBean.class);
@@ -50,21 +45,39 @@ public class RefreshTest {
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(north);
 
-        WestCacheFlusherManager.flush(option1, bean, "getHomeAreaWithCache");
+        WestCacheOption option1 = newBuilder().build();
+        WestCacheFlusherRegistry.flush(option1, bean, "getHomeAreaWithCache");
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(south);
     }
 
     public static class FlushSnapshotBean {
         @Getter @Setter String homeArea;
+        @Setter long sleepMillis = 150L;
 
-        @WestCacheable(snapshot = true, flusher = "simple") @SneakyThrows
+        @WestCacheable(snapshot = "file", flusher = "simple",
+                config = "snapshotTestConfig") @SneakyThrows
         public String getHomeAreaWithCache() {
             // 700 milliseconds to simulate slow of reading big data
-            Thread.sleep(700L);
+            Thread.sleep(sleepMillis);
             System.out.println("FlushSnapshotBean executed");
             return homeArea;
         }
+    }
+
+    @BeforeClass
+    public static void beforeClass() {
+        registerConfig("snapshotTestConfig",
+                new DefaultWestCacheConfig() {
+                    @Override public long timeoutMillisToSnapshot() {
+                        return 100L;
+                    }
+                });
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        deregisterConfig("snapshotTestConfig");
     }
 
     @Test @SneakyThrows
@@ -84,9 +97,9 @@ public class RefreshTest {
         String cached = bean.getHomeAreaWithCache();
         long cost = System.currentTimeMillis() - start;
 
-        assertThat(cost).isLessThan(700L);
+        assertThat(cost).isLessThan(200L);
         assertThat(cached).isEqualTo(bigDataXXX);
-        Thread.sleep(700L - cost + 100);
+        Thread.sleep(250L - cost);
 
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(north);
@@ -95,11 +108,11 @@ public class RefreshTest {
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(north);
 
-        WestCacheFlusherManager.flush(option2, bean, "getHomeAreaWithCache");
-        bean.getHomeAreaWithCache();
-        Thread.sleep(700L);
-
+        WestCacheOption option2 = newBuilder().snapshot("file").build();
+        WestCacheFlusherRegistry.flush(option2, bean, "getHomeAreaWithCache");
+        bean.setSleepMillis(0L);
         cached = bean.getHomeAreaWithCache();
+
         assertThat(cached).isEqualTo(south);
     }
 }

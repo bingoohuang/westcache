@@ -1,13 +1,18 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.WestCacheable;
+import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static com.github.bingoohuang.westcache.WestCacheConfigRegistry.deregisterConfig;
+import static com.github.bingoohuang.westcache.WestCacheConfigRegistry.registerConfig;
 import static com.github.bingoohuang.westcache.utils.CacheKeyUtils.createCacheKey;
 import static com.google.common.truth.Truth.assertThat;
 
@@ -17,19 +22,35 @@ import static com.google.common.truth.Truth.assertThat;
 public class SnapshotTest {
     public static abstract class BasicSnapshotService {
         @Getter @Setter String bigData;
+        @Setter long sleepMillis = 150L;
 
         abstract String getBigDataCache();
 
         @SneakyThrows
         public String getBigDataSlow() {
-            // 700 milliseconds to simulate slow of reading big data
-            Thread.sleep(700L);
+            // some milliseconds to simulate slow of reading big data
+            Thread.sleep(sleepMillis);
             return bigData;
         }
     }
 
+    @BeforeClass
+    public static void beforeClass() {
+        registerConfig("snapshotTestConfig",
+                new DefaultWestCacheConfig() {
+                    @Override public long timeoutMillisToSnapshot() {
+                        return 100L;
+                    }
+                });
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        deregisterConfig("snapshotTestConfig");
+    }
+
     public static class SnapshotService extends BasicSnapshotService {
-        @WestCacheable(snapshot = true)
+        @WestCacheable(snapshot = "file", config = "snapshotTestConfig")
         public String getBigDataCache() {
             return getBigDataSlow();
         }
@@ -63,17 +84,17 @@ public class SnapshotTest {
         val snapshot = new FileCacheSnapshot();
         snapshot.saveSnapshot(cacheKey, bigDataXXX);
 
-        BasicSnapshotService service = WestCacheFactory.create(serviceClass);
+        val service = WestCacheFactory.create(serviceClass);
         service.setBigData(bigDataYYY);
 
         long start = System.currentTimeMillis();
         val dataCache1 = service.getBigDataCache();
         long cost = System.currentTimeMillis() - start;
 
-        assertThat(cost).isLessThan(700L);
+        assertThat(cost).isLessThan(200L);
         assertThat(dataCache1).isEqualTo(bigDataXXX);
 
-        Thread.sleep(700L - cost + 100);
+        Thread.sleep(250L - cost);
 
         val dataCache2 = service.getBigDataCache();
         assertThat(dataCache2).isEqualTo(bigDataYYY);

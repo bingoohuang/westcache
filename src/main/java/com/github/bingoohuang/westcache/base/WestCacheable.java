@@ -14,12 +14,26 @@ public @interface WestCacheable {
      *
      * @return snapshot supported or not.
      */
-    boolean snapshot() default false;
+    String snapshot() default "none";
 
     /**
      * set cache flusher's name.
      *
      * @return flusher's name.
      */
-    String flusher() default "void";
+    String flusher() default "none";
+
+    /**
+     * set cache manager's name.
+     *
+     * @return manager's name.
+     */
+    String manager() default "guava";
+
+    /**
+     * set cache config's name.
+     *
+     * @return cache config's name.
+     */
+    String config() default "default";
 }

@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.concurrent.Callable;
 
+import static com.github.bingoohuang.westcache.impl.WestCacheOption.newBuilder;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -25,8 +26,8 @@ public class CacheApiTest {
     public void apiBasic() {
         setHomeArea(north);
         String cacheKey = "api.cache.key";
-        WestCacheOption option = new WestCacheOption();
-        Optional<String> cache = WestCacheGuava.get(option, cacheKey, new Callable<Optional<String>>() {
+        WestCacheOption option = newBuilder().build();
+        Optional<String> cache = option.getManager().get(option, cacheKey, new Callable<Optional<String>>() {
             @Override public Optional<String> call() throws Exception {
                 return Optional.fromNullable(getHomeAreaWithCache());
             }
@@ -34,7 +35,7 @@ public class CacheApiTest {
         assertThat(cache.orNull()).isEqualTo(north);
 
         setHomeArea(south);
-        cache = WestCacheGuava.get(option, cacheKey);
+        cache = option.getManager().get(option, cacheKey);
         assertThat(cache.orNull()).isEqualTo(north);
         assertThat(getHomeArea()).isEqualTo(south);
     }
