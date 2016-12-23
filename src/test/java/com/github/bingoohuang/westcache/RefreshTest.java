@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import static com.github.bingoohuang.westcache.WestCacheConfigRegistry.deregisterConfig;
 import static com.github.bingoohuang.westcache.WestCacheConfigRegistry.registerConfig;
+import static com.github.bingoohuang.westcache.WestCacheFlusherRegistry.invalidateCache;
 import static com.github.bingoohuang.westcache.impl.WestCacheOption.newBuilder;
 import static com.github.bingoohuang.westcache.utils.CacheKeyUtils.createCacheKey;
 import static com.google.common.truth.Truth.assertThat;
@@ -46,7 +47,7 @@ public class RefreshTest {
         assertThat(cached).isEqualTo(north);
 
         WestCacheOption option1 = newBuilder().build();
-        WestCacheFlusherRegistry.flush(option1, bean, "getHomeAreaWithCache");
+        invalidateCache(option1, bean, "getHomeAreaWithCache");
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(south);
     }
@@ -90,14 +91,14 @@ public class RefreshTest {
         val snapshot = new FileCacheSnapshot();
         snapshot.saveSnapshot(cacheKey, bigDataXXX);
 
-        FlushSnapshotBean bean = WestCacheFactory.create(FlushSnapshotBean.class);
+        val bean = WestCacheFactory.create(FlushSnapshotBean.class);
 
         bean.setHomeArea(north);
         long start = System.currentTimeMillis();
         String cached = bean.getHomeAreaWithCache();
         long cost = System.currentTimeMillis() - start;
 
-        assertThat(cost).isLessThan(200L);
+        assertThat(cost).isLessThan(500L);
         assertThat(cached).isEqualTo(bigDataXXX);
         Thread.sleep(250L - cost);
 
@@ -108,8 +109,8 @@ public class RefreshTest {
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(north);
 
-        WestCacheOption option2 = newBuilder().snapshot("file").build();
-        WestCacheFlusherRegistry.flush(option2, bean, "getHomeAreaWithCache");
+        val option2 = newBuilder().snapshot("file").build();
+        invalidateCache(option2, bean, "getHomeAreaWithCache");
         bean.setSleepMillis(0L);
         cached = bean.getHomeAreaWithCache();
 

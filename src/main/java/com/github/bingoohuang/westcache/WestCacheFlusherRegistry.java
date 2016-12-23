@@ -24,7 +24,7 @@ public class WestCacheFlusherRegistry {
     public void registerFlusher(String flusherName, WestCacheFlusher flusher) {
         WestCacheFlusher cacheFlusher = registry.getIfPresent(flusherName);
         if (cacheFlusher != null) throw new RuntimeException(
-                "flush name " + flusherName + " already exists");
+                "invalidateCache name " + flusherName + " already exists");
 
         registry.put(flusherName, flusher);
     }
@@ -37,7 +37,7 @@ public class WestCacheFlusherRegistry {
         return registry.getIfPresent(flusherName);
     }
 
-    public void flush(WestCacheOption option, Object bean, String methodName) {
+    public void invalidateCache(WestCacheOption option, Object bean, String methodName) {
         String cacheKey = option.getSnapshot() != null
                 ? CacheKeyUtils.createSnapshotCacheKey(bean, methodName)
                 : CacheKeyUtils.createCacheKey(bean, methodName);
