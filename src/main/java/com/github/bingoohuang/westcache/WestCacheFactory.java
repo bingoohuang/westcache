@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.impl.CacheMethodInterceptor;
+import com.github.bingoohuang.westcache.cglib.CacheMethodInterceptor;
 import lombok.val;
 import net.sf.cglib.proxy.Enhancer;
 

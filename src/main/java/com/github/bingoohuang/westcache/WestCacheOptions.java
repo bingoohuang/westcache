@@ -72,6 +72,8 @@ public class WestCacheOptions {
         }
 
         public WestCacheOptions build(WestCacheable westCacheable) {
+            if (westCacheable == null) return null;
+
             this.flusher = WestCacheRegistry.getFlusher(westCacheable.flusher());
             this.manager = WestCacheRegistry.getManager(westCacheable.manager());
             this.snapshot = WestCacheRegistry.getSnapshot(westCacheable.snapshot());
