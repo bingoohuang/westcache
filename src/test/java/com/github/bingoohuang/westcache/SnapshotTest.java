@@ -103,7 +103,7 @@ public class SnapshotTest {
         assertThat(dataCache1).isEqualTo(bigDataXXX);
 
         do {
-            Thread.sleep(100L);
+            Thread.sleep(50L);
         } while (!service.isCacheMethodExecuted());
 
         val dataCache2 = service.getBigDataCache();

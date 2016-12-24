@@ -93,7 +93,7 @@ public class RefreshTest {
         assertThat(cached).isEqualTo(bigDataXXX);
 
         do {
-            Thread.sleep(100L);
+            Thread.sleep(50L);
         } while (!bean.isCacheMethodExecuted());
 
         cached = bean.getHomeAreaWithCache();

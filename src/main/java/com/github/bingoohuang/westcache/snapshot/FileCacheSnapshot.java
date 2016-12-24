@@ -34,20 +34,22 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
         return (Optional<T>) Optional.of(object);
     }
 
-    public static File getSnapshotFile(String cacheKey) {
-        val userHome = System.getProperty("user.home");
-        val westCacheHome = new File(userHome, ".westcache");
-        westCacheHome.mkdir();
+    static String USER_HOME = System.getProperty("user.home");
 
+    public static File getSnapshotFile(String cacheKey) {
+        File westCacheHome = tryCreateWestCacheHome();
         return new File(westCacheHome, cacheKey + ".westcache");
     }
 
     public static void deleteSnapshotFile(String cacheKey) {
-        val userHome = System.getProperty("user.home");
-        val westCacheHome = new File(userHome, ".westcache");
-        westCacheHome.mkdir();
-
+        File westCacheHome = tryCreateWestCacheHome();
         val file = new File(westCacheHome, cacheKey + ".westcache");
         file.delete();
+    }
+
+    private static File tryCreateWestCacheHome() {
+        val westCacheHome = new File(USER_HOME, ".westcache");
+        westCacheHome.mkdir();
+        return westCacheHome;
     }
 }

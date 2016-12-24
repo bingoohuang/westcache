@@ -12,7 +12,6 @@ import java.io.Closeable;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
-
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/21.
  */
@@ -26,10 +25,10 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                             final Object[] args,
                             final MethodProxy methodProxy) {
         val ann = WestCacheAnns.parseWestCacheable(method);
+        if (ann == null) return invokeRaw(obj, args, methodProxy);
+
         val option = WestCacheOptions.newBuilder().build(ann);
-        return option == null
-                ? invokeRaw(obj, args, methodProxy)
-                : cacheGet(option, obj, method, args, methodProxy);
+        return cacheGet(option, obj, method, args, methodProxy);
     }
 
     @SneakyThrows

@@ -75,10 +75,12 @@ public class SpecsTest {
     public static class MyService {
         @Getter @Setter private List<String> provinces;
         @Setter long sleepMillis;
+        @Getter @Setter private volatile boolean cacheMethodExecuted = false;
 
         @DemoCacheMe @CustomizedCacheKey("provinces") @SneakyThrows
         public List<String> getProvincesCache() {
             Thread.sleep(sleepMillis);
+            setCacheMethodExecuted(true);
             return provinces;
         }
     }
@@ -99,7 +101,10 @@ public class SpecsTest {
         List<String> cachedProvinces = myService.getProvincesCache();
         assertThat(cachedProvinces).isEqualTo(provinces);
 
-        Thread.sleep(200L);
+        do {
+            Thread.sleep(50L);
+        } while (!myService.isCacheMethodExecuted());
+
         cachedProvinces = myService.getProvincesCache();
         assertThat(cachedProvinces).isEqualTo(otherProvinces);
     }
