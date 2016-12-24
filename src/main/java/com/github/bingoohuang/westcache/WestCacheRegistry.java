@@ -49,7 +49,7 @@ public class WestCacheRegistry {
     public void registerFlusher(String flusherName, WestCacheFlusher flusher) {
         WestCacheFlusher cacheFlusher = flusherRegistry.getIfPresent(flusherName);
         if (cacheFlusher != null) throw new RuntimeException(
-                "flush name " + flusherName + " already exists");
+                "invalidateCache name " + flusherName + " already exists");
 
         flusherRegistry.put(flusherName, flusher);
     }
@@ -62,7 +62,7 @@ public class WestCacheRegistry {
         return flusherRegistry.getIfPresent(flusherName);
     }
 
-    public void flush(WestCacheOptions option, Object bean, String methodName, Object... args) {
+    public void invalidateCache(WestCacheOptions option, Object bean, String methodName, Object... args) {
         String cacheKey = option.getKeyStrategy().getCacheKey(option, methodName, bean, args);
         option.getFlusher().flush(cacheKey);
     }

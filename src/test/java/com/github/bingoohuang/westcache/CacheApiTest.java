@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import org.junit.Test;
 
 import java.util.concurrent.Callable;
@@ -25,7 +26,7 @@ public class CacheApiTest {
     public void apiBasic() {
         setHomeArea(north);
         String cacheKey = "api.cache.key";
-        WestCacheOptions option = newBuilder().build();
+        val option = newBuilder().build();
         Optional<String> cache = option.getManager().get(option, cacheKey, new Callable<Optional<String>>() {
             @Override public Optional<String> call() throws Exception {
                 return Optional.fromNullable(getHomeAreaWithCache());

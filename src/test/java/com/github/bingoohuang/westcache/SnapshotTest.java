@@ -11,6 +11,11 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -35,7 +40,8 @@ public class SnapshotTest {
     public static void beforeClass() {
         WestCacheRegistry.registerConfig("snapshotTestConfig",
                 new DefaultWestCacheConfig() {
-                    @Override public long timeoutMillisToSnapshot() {
+                    @Override
+                    public long timeoutMillisToSnapshot() {
                         return 100L;
                     }
                 });
@@ -53,8 +59,16 @@ public class SnapshotTest {
         }
     }
 
+
+    @Target(ElementType.METHOD)
+    @Retention(RetentionPolicy.RUNTIME)
+    @WestCacheable(snapshot = "file", config = "snapshotTestConfig")
+    public @interface WestCacheableSnapshot {
+    }
+
     public static class SnapshotServiceCustomizedAnnotation extends BasicSnapshotService {
-        @WestCacheableSnapshot @SneakyThrows
+        @WestCacheableSnapshot
+        @SneakyThrows
         public String getBigDataCache() {
             return getBigDataSlow();
         }

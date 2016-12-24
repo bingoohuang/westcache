@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static com.github.bingoohuang.westcache.WestCacheOptions.newBuilder;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.invalidateCache;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -41,8 +42,8 @@ public class RefreshTest {
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(north);
 
-        WestCacheOptions option1 = newBuilder().build();
-        WestCacheRegistry.flush(option1, bean, "getHomeAreaWithCache");
+        val option1 = newBuilder().build();
+        invalidateCache(option1, bean, "getHomeAreaWithCache");
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(south);
     }
@@ -84,7 +85,7 @@ public class RefreshTest {
         val cacheKey = FlushSnapshotBean.class.getName() + ".getHomeAreaWithCache";
         snapshot.saveSnapshot(cacheKey, bigDataXXX);
 
-        FlushSnapshotBean bean = WestCacheFactory.create(FlushSnapshotBean.class);
+        val bean = WestCacheFactory.create(FlushSnapshotBean.class);
 
         bean.setHomeArea(north);
         long start = System.currentTimeMillis();
@@ -102,8 +103,8 @@ public class RefreshTest {
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(north);
 
-        WestCacheOptions option2 = newBuilder().snapshot("file").build();
-        WestCacheRegistry.flush(option2, bean, "getHomeAreaWithCache");
+        val option2 = newBuilder().snapshot("file").build();
+        invalidateCache(option2, bean, "getHomeAreaWithCache");
         bean.setSleepMillis(0L);
         cached = bean.getHomeAreaWithCache();
 
