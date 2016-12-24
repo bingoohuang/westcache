@@ -50,13 +50,14 @@ public class RefreshTest {
     public static class FlushSnapshotBean {
         @Getter @Setter String homeArea;
         @Setter long sleepMillis = 150L;
+        @Getter @Setter volatile boolean cacheMethodExecuted = false;
 
         @WestCacheable(snapshot = "file", flusher = "simple",
                 config = "snapshotTestConfig") @SneakyThrows
         public String getHomeAreaWithCache() {
             // 700 milliseconds to simulate slow of reading big data
             Thread.sleep(sleepMillis);
-            System.out.println("FlushSnapshotBean executed");
+            setCacheMethodExecuted(true);
             return homeArea;
         }
     }
@@ -87,13 +88,13 @@ public class RefreshTest {
         val bean = WestCacheFactory.create(FlushSnapshotBean.class);
 
         bean.setHomeArea(north);
-        long start = System.currentTimeMillis();
+        bean.setCacheMethodExecuted(false);
         String cached = bean.getHomeAreaWithCache();
-        long cost = System.currentTimeMillis() - start;
-
-        assertThat(cost).isLessThan(500L);
         assertThat(cached).isEqualTo(bigDataXXX);
-        Thread.sleep(250L - cost);
+
+        do {
+            Thread.sleep(100L);
+        } while (!bean.isCacheMethodExecuted());
 
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(north);

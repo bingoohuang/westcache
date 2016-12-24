@@ -11,6 +11,7 @@ import org.junit.Test;
 import java.io.File;
 import java.util.List;
 
+import static com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot.getSnapshotFile;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -40,7 +41,7 @@ public class CacheKeyTest {
         cachedProvinces = myService.getProvincesCache();
         assertThat(cachedProvinces).isEqualTo(provinces);
 
-        File provincesSnapshotFile = FileCacheSnapshot.getSnapshotFile("provinces");
-        assertThat(provincesSnapshotFile.exists()).isTrue();
+        val snapshotFile = getSnapshotFile("provinces");
+        assertThat(snapshotFile.exists()).isTrue();
     }
 }

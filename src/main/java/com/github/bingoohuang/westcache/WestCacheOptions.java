@@ -17,6 +17,7 @@ public class WestCacheOptions {
     @Getter @Setter private final WestCacheConfig config;
     @Getter @Setter private final WestCacheKeyStrategy keyStrategy;
     @Getter @Setter private final String key;
+    @Getter @Setter private final String specs;
 
     public static Builder newBuilder() {
         return new Builder();
@@ -29,6 +30,7 @@ public class WestCacheOptions {
         WestCacheConfig config = WestCacheRegistry.getConfig("default");
         WestCacheKeyStrategy keyStrategy = WestCacheRegistry.getKeyStrategy("default");
         String key = "";
+        String specs = "";
 
         public Builder flusher(String flusherName) {
             this.flusher = WestCacheRegistry.getFlusher(flusherName);
@@ -60,8 +62,13 @@ public class WestCacheOptions {
             return this;
         }
 
+        public Builder specs(String specs) {
+            this.specs = specs;
+            return this;
+        }
+
         public WestCacheOptions build() {
-            return new WestCacheOptions(flusher, manager, snapshot, config, keyStrategy, key);
+            return new WestCacheOptions(flusher, manager, snapshot, config, keyStrategy, key, specs);
         }
 
         public WestCacheOptions build(WestCacheable westCacheable) {
@@ -71,6 +78,7 @@ public class WestCacheOptions {
             this.config = WestCacheRegistry.getConfig(westCacheable.config());
             this.keyStrategy = WestCacheRegistry.getKeyStrategy(westCacheable.keyStrategy());
             this.key = westCacheable.key();
+            this.specs = westCacheable.specs();
             return build();
         }
     }

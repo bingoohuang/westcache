@@ -6,7 +6,7 @@ import lombok.experimental.UtilityClass;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
 @UtilityClass
-public class CglibUtils {
+public class Cglibs {
     /**
      * proxied object class will be like
      * com.github.bingoohuang.westcache.RefreshTest$FlushBean$$EnhancerByCGLIB$$8b0b1c89

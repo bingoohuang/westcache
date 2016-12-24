@@ -50,4 +50,11 @@ public @interface WestCacheable {
      * @return key strategy's name.
      */
     String keyStrategy() default "default";
+
+    /**
+     * some specification for customized process.
+     *
+     * @return custom specification.
+     */
+    String specs() default "";
 }

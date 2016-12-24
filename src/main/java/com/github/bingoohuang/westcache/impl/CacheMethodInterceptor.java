@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache.impl;
 
 import com.github.bingoohuang.westcache.WestCacheOptions;
-import com.github.bingoohuang.westcache.utils.CacheAnnotationUtils;
+import com.github.bingoohuang.westcache.utils.WestCacheAnns;
 import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                             final Method method,
                             final Object[] args,
                             final MethodProxy methodProxy) throws Throwable {
-        val option = CacheAnnotationUtils.parseWestCacheOption(method);
+        val option = WestCacheAnns.parseWestCacheOption(method);
         return option == null
                 ? invokeRaw(obj, args, methodProxy)
                 : cacheGet(option, obj, method, args, methodProxy);

@@ -14,7 +14,7 @@ import static com.github.bingoohuang.westcache.WestCacheOptions.newBuilder;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
 @UtilityClass
-public class CacheAnnotationUtils {
+public class WestCacheAnns {
     public WestCacheOptions parseWestCacheOption(Method method) {
         val westCacheable = method.getAnnotation(WestCacheable.class);
         if (westCacheable != null) return newBuilder().build(westCacheable);
@@ -39,7 +39,6 @@ public class CacheAnnotationUtils {
             val option = parseWestCacheable(annotation);
             if (option != null) return (WestCacheable) annotation;
         }
-
 
         return null;
     }

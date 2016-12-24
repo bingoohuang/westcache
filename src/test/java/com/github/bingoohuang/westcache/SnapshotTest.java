@@ -25,6 +25,7 @@ public class SnapshotTest {
     public static abstract class BasicSnapshotService {
         @Getter @Setter String bigData;
         @Setter long sleepMillis = 150L;
+        @Getter @Setter private volatile boolean cacheMethodExecuted = false;
 
         abstract String getBigDataCache();
 
@@ -32,6 +33,7 @@ public class SnapshotTest {
         public String getBigDataSlow() {
             // some milliseconds to simulate slow of reading big data
             Thread.sleep(sleepMillis);
+            setCacheMethodExecuted(true);
             return bigData;
         }
     }
@@ -59,7 +61,6 @@ public class SnapshotTest {
         }
     }
 
-
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     @WestCacheable(snapshot = "file", config = "snapshotTestConfig")
@@ -67,6 +68,7 @@ public class SnapshotTest {
     }
 
     public static class SnapshotServiceCustomizedAnnotation extends BasicSnapshotService {
+
         @WestCacheableSnapshot
         @SneakyThrows
         public String getBigDataCache() {
@@ -96,14 +98,13 @@ public class SnapshotTest {
         val service = WestCacheFactory.create(serviceClass);
         service.setBigData(bigDataYYY);
 
-        long start = System.currentTimeMillis();
+        service.setCacheMethodExecuted(false);
         val dataCache1 = service.getBigDataCache();
-        long cost = System.currentTimeMillis() - start;
-
-        assertThat(cost).isLessThan(200L);
         assertThat(dataCache1).isEqualTo(bigDataXXX);
 
-        Thread.sleep(250L - cost);
+        do {
+            Thread.sleep(100L);
+        } while (!service.isCacheMethodExecuted());
 
         val dataCache2 = service.getBigDataCache();
         assertThat(dataCache2).isEqualTo(bigDataYYY);
