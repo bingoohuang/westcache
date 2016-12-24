@@ -1,14 +1,12 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.WestCacheable;
-import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 import org.junit.Test;
 
-import java.io.File;
 import java.util.List;
 
 import static com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot.getSnapshotFile;

@@ -1,20 +1,28 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.cglib.CacheMethodInterceptor;
-import lombok.val;
-import net.sf.cglib.proxy.Enhancer;
+import com.github.bingoohuang.westcache.cglib.Cglibs;
+import com.github.bingoohuang.westcache.cglib.WestCacheCglib;
+import lombok.SneakyThrows;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/21.
  */
 public class WestCacheFactory {
+    @SneakyThrows
     public static <T> T create(Class<T> targetClass) {
-        val interceptor = new CacheMethodInterceptor();
-        return (T) Enhancer.create(targetClass, interceptor);
+        if (WestCacheCglib.class.isAssignableFrom(targetClass)) {
+            return targetClass.newInstance();
+        }
+
+        return (T) Cglibs.proxy(targetClass,
+                new CacheMethodInterceptor(), WestCacheCglib.class);
     }
 
     public static <T> T create(T target) {
-        val interceptor = new CacheMethodInterceptor(target);
-        return (T) Enhancer.create(target.getClass(), interceptor);
+        if (target instanceof WestCacheCglib) return target;
+
+        return (T) Cglibs.proxy(target.getClass(),
+                new CacheMethodInterceptor(target), WestCacheCglib.class);
     }
 }

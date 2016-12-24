@@ -2,7 +2,7 @@ package com.github.bingoohuang.westcache.cachekey;
 
 import com.github.bingoohuang.westcache.WestCacheOptions;
 import com.github.bingoohuang.westcache.base.WestCacheKeyStrategy;
-import com.github.bingoohuang.westcache.utils.Cglibs;
+import com.github.bingoohuang.westcache.cglib.Cglibs;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.

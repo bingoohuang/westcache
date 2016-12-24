@@ -1,6 +1,8 @@
-package com.github.bingoohuang.westcache.utils;
+package com.github.bingoohuang.westcache.cglib;
 
 import lombok.experimental.UtilityClass;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
@@ -19,5 +21,11 @@ public class Cglibs {
         int pos = name.indexOf("$$EnhancerByCGLIB$$");
 
         return pos < 0 ? name : name.substring(0, pos);
+    }
+
+    public Object proxy(Class<?> targetClass,
+                        MethodInterceptor interceptor,
+                        Class<?>... interfaces) {
+        return Enhancer.create(targetClass, interfaces, interceptor);
     }
 }

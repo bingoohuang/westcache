@@ -20,6 +20,11 @@ public class FirstTest {
         firstService.setHomeArea(north);
 
         val wrapService = WestCacheFactory.create(firstService);
+        val wrapService2 = WestCacheFactory.create(wrapService);
+        val wrapService3 = WestCacheFactory.create(firstService);
+        assertThat(wrapService2).isSameAs(wrapService);
+        assertThat(wrapService.getClass()).isSameAs(wrapService3.getClass());
+
         assertThat(wrapService.getHomeAreaWithCache()).isEqualTo(north);
 
         wrapService.setHomeArea(south);
