@@ -48,7 +48,7 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                             final Object[] args,
                             final MethodProxy proxy) {
         val cacheKey = option.getKeyStrategy().getCacheKey(option,
-                method.getName(), target != null ? target : obj, args);
+                method, target != null ? target : obj, args);
         val start = System.currentTimeMillis();
         try {
             return option.getSnapshot() != null
@@ -56,7 +56,7 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                     : normalRead(option, obj, method, args, proxy, cacheKey);
         } finally {
             val end = System.currentTimeMillis();
-            log.debug("getFlusher cache {} cost {} millis", cacheKey, (end - start));
+            log.debug("get cache {} cost {} millis", cacheKey, (end - start));
         }
     }
 

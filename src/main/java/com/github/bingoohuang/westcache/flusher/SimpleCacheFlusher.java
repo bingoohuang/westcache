@@ -23,7 +23,7 @@ public class SimpleCacheFlusher implements WestCacheFlusher {
     }
 
     @Override public void flush(String cacheKey) {
-        log.debug("invalidateCache {}", cacheKey);
+        log.debug("flush {}", cacheKey);
         val westCache = registry.getIfPresent(cacheKey);
         if (westCache == null) return;
 

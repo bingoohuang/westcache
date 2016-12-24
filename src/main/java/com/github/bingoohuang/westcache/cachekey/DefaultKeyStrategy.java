@@ -8,9 +8,12 @@ import static com.github.bingoohuang.westcache.utils.CglibUtils.getSuperClassNam
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
  */
-public class DefaultKeyStrategy implements WestCacheKeyStrategy {
+public class DefaultKeyStrategy extends WestCacheKeyStrategy {
     @Override
-    public String getCacheKey(WestCacheOptions option, String methodName, Object bean, Object... args) {
+    public String getCacheKey(WestCacheOptions option,
+                              String methodName,
+                              Object bean,
+                              Object... args) {
         if (option.getKey().length() > 0) return option.getKey();
 
         String baseCacheKey = getSuperClassName(bean) + "." + methodName;

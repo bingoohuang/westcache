@@ -68,7 +68,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
         try {
             result = future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {   // 有限时间内不返回，尝试snapshot
-            log.info("getFlusher cache {} timeout in {} millis, try to use snapshot", timeout, cacheKey);
+            log.info("get cache {} timeout in {} millis, try to use snapshot", timeout, cacheKey);
             result = option.getSnapshot().readSnapshot(cacheKey);
             log.info("got {} snapshot {}", cacheKey, result != null ? result.get() : " not exist");
         }

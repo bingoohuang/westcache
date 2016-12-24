@@ -6,9 +6,8 @@ import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.NoneCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.SimpleCacheFlusher;
 import com.github.bingoohuang.westcache.manager.GuavaCacheManager;
+import com.github.bingoohuang.westcache.registry.RegistryTemplate;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 
@@ -17,29 +16,25 @@ import lombok.val;
  */
 @UtilityClass
 public class WestCacheRegistry {
-    Cache<String, WestCacheConfig> configRegistry = CacheBuilder.newBuilder().build();
+    RegistryTemplate<WestCacheConfig> configRegistry = new RegistryTemplate<WestCacheConfig>();
 
     static {
         registerConfig("default", new DefaultWestCacheConfig());
     }
 
     public void registerConfig(String configName, WestCacheConfig config) {
-        WestCacheConfig cachedConfig = configRegistry.getIfPresent(configName);
-        if (cachedConfig != null) throw new RuntimeException(
-                "cache config name " + cachedConfig + " already exists");
-
-        configRegistry.put(configName, config);
+        configRegistry.register(configName, config);
     }
 
     public void deregisterConfig(String configName) {
-        configRegistry.invalidate(configName);
+        configRegistry.deregister(configName);
     }
 
     public WestCacheConfig getConfig(String configName) {
-        return configRegistry.getIfPresent(configName);
+        return configRegistry.get(configName);
     }
 
-    Cache<String, WestCacheFlusher> flusherRegistry = CacheBuilder.newBuilder().build();
+    RegistryTemplate<WestCacheFlusher> flusherRegistry = new RegistryTemplate<WestCacheFlusher>();
 
     static {
         registerFlusher("none", new NoneCacheFlusher());
@@ -47,90 +42,77 @@ public class WestCacheRegistry {
     }
 
     public void registerFlusher(String flusherName, WestCacheFlusher flusher) {
-        WestCacheFlusher cacheFlusher = flusherRegistry.getIfPresent(flusherName);
-        if (cacheFlusher != null) throw new RuntimeException(
-                "invalidateCache name " + flusherName + " already exists");
-
-        flusherRegistry.put(flusherName, flusher);
+        flusherRegistry.register(flusherName, flusher);
     }
 
     public void deregisterFlusher(String flusherName) {
-        flusherRegistry.invalidate(flusherName);
+        flusherRegistry.deregister(flusherName);
     }
 
     public WestCacheFlusher getFlusher(String flusherName) {
-        return flusherRegistry.getIfPresent(flusherName);
+        return flusherRegistry.get(flusherName);
     }
 
-    public void invalidateCache(WestCacheOptions option, Object bean, String methodName, Object... args) {
-        String cacheKey = option.getKeyStrategy().getCacheKey(option, methodName, bean, args);
+    public void flush(WestCacheOptions option,
+                      Object bean,
+                      String methodName,
+                      Object... args) {
+        val keyStrategy = option.getKeyStrategy();
+        String cacheKey = keyStrategy.getCacheKey(option, methodName, bean, args);
         option.getFlusher().flush(cacheKey);
     }
 
-
-    Cache<String, WestCacheManager> managerRegistry = CacheBuilder.newBuilder().build();
+    RegistryTemplate<WestCacheManager> managerRegistry = new RegistryTemplate<WestCacheManager>();
 
     static {
         registerManger("guava", new GuavaCacheManager());
     }
 
     public void registerManger(String managerName, WestCacheManager manager) {
-        WestCacheManager cachedManager = managerRegistry.getIfPresent(managerName);
-        if (cachedManager != null) throw new RuntimeException(
-                "cache manager name " + cachedManager + " already exists");
-
-        managerRegistry.put(managerName, manager);
+        managerRegistry.register(managerName, manager);
     }
 
     public void deregisterManger(String managerName) {
-        managerRegistry.invalidate(managerName);
+        managerRegistry.deregister(managerName);
     }
 
     public WestCacheManager getManager(String managerName) {
-        return managerRegistry.getIfPresent(managerName);
+        return managerRegistry.get(managerName);
     }
 
-    Cache<String, WestCacheSnapshot> snapshotRegistry = CacheBuilder.newBuilder().build();
+    RegistryTemplate<WestCacheSnapshot> snapshotRegistry = new RegistryTemplate<WestCacheSnapshot>();
 
     static {
         registerSnapshot("file", new FileCacheSnapshot());
     }
 
     public void registerSnapshot(String snapshotName, WestCacheSnapshot snapshot) {
-        WestCacheSnapshot cacheSnapshot = snapshotRegistry.getIfPresent(snapshotName);
-        if (cacheSnapshot != null) throw new RuntimeException(
-                "snapshot name " + snapshotName + " already exists");
-
-        snapshotRegistry.put(snapshotName, snapshot);
+        snapshotRegistry.register(snapshotName, snapshot);
     }
 
     public void deregisterSnapshot(String snapshotName) {
-        snapshotRegistry.invalidate(snapshotName);
+        snapshotRegistry.deregister(snapshotName);
     }
 
     public WestCacheSnapshot getSnapshot(String snapshotName) {
-        return snapshotRegistry.getIfPresent(snapshotName);
+        return snapshotRegistry.get(snapshotName);
     }
 
-    Cache<String, WestCacheKeyStrategy> keyStrategyRegistry = CacheBuilder.newBuilder().build();
+    RegistryTemplate<WestCacheKeyStrategy> keyStrategyRegistry = new RegistryTemplate<WestCacheKeyStrategy>();
 
     static {
         registerKeyStrategy("default", new DefaultKeyStrategy());
     }
 
     public void registerKeyStrategy(String keyStrategyName, WestCacheKeyStrategy keyStrategy) {
-        val cacheKeyStrategy = keyStrategyRegistry.getIfPresent(keyStrategyName);
-        if (cacheKeyStrategy != null) throw new RuntimeException(
-                "key-strategy name " + keyStrategyName + " already exists");
-
-        keyStrategyRegistry.put(keyStrategyName, keyStrategy);
+        keyStrategyRegistry.register(keyStrategyName, keyStrategy);
     }
 
     public void deregisterKeyStrategy(String keyStrategyName) {
-        keyStrategyRegistry.invalidate(keyStrategyName);
+        keyStrategyRegistry.deregister(keyStrategyName);
     }
 
     public WestCacheKeyStrategy getKeyStrategy(String keyStrategyName) {
-        return keyStrategyRegistry.getIfPresent(keyStrategyName);
+        return keyStrategyRegistry.get(keyStrategyName);
     }
 }

@@ -12,7 +12,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static com.github.bingoohuang.westcache.WestCacheOptions.newBuilder;
-import static com.github.bingoohuang.westcache.WestCacheRegistry.invalidateCache;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -43,7 +42,7 @@ public class RefreshTest {
         assertThat(cached).isEqualTo(north);
 
         val option1 = newBuilder().build();
-        invalidateCache(option1, bean, "getHomeAreaWithCache");
+        WestCacheRegistry.flush(option1, bean, "getHomeAreaWithCache");
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(south);
     }
@@ -104,7 +103,7 @@ public class RefreshTest {
         assertThat(cached).isEqualTo(north);
 
         val option2 = newBuilder().snapshot("file").build();
-        invalidateCache(option2, bean, "getHomeAreaWithCache");
+        WestCacheRegistry.flush(option2, bean, "getHomeAreaWithCache");
         bean.setSleepMillis(0L);
         cached = bean.getHomeAreaWithCache();
 
