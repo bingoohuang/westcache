@@ -11,7 +11,7 @@ import lombok.Value;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
 @Value @AllArgsConstructor
-public class WestCacheOptions {
+public class WestCacheOption {
     @Getter private final WestCacheFlusher flusher;
     @Getter private final WestCacheManager manager;
     @Getter private final WestCacheSnapshot snapshot;
@@ -68,11 +68,11 @@ public class WestCacheOptions {
             return this;
         }
 
-        public WestCacheOptions build() {
-            return new WestCacheOptions(flusher, manager, snapshot, config, keyStrategy, key, specs);
+        public WestCacheOption build() {
+            return new WestCacheOption(flusher, manager, snapshot, config, keyStrategy, key, specs);
         }
 
-        public WestCacheOptions build(WestCacheable westCacheable) {
+        public WestCacheOption build(WestCacheable westCacheable) {
             this.flusher = WestCacheRegistry.getFlusher(westCacheable.flusher());
             this.manager = WestCacheRegistry.getManager(westCacheable.manager());
             this.snapshot = WestCacheRegistry.getSnapshot(westCacheable.snapshot());

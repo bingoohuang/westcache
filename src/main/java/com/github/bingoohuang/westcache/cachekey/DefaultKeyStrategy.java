@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.cachekey;
 
-import com.github.bingoohuang.westcache.utils.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.github.bingoohuang.westcache.base.WestCacheKeyStrategy;
 import com.github.bingoohuang.westcache.cglib.Cglibs;
 import com.google.common.base.Splitter;
@@ -11,7 +11,7 @@ import lombok.val;
  */
 public class DefaultKeyStrategy extends WestCacheKeyStrategy {
     @Override
-    public String getCacheKey(WestCacheOptions option,
+    public String getCacheKey(WestCacheOption option,
                               String methodName,
                               Object bean,
                               Object... args) {
@@ -32,7 +32,7 @@ public class DefaultKeyStrategy extends WestCacheKeyStrategy {
         return mainPart + joinArgs(args);
     }
 
-    private String parseStaticKey(WestCacheOptions option) {
+    private String parseStaticKey(WestCacheOption option) {
         val mapSplitter = Splitter.on(';').withKeyValueSeparator('=');
         if (option.getSpecs().isEmpty()) return null;
 

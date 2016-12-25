@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache.snapshot;
 
 import com.alibaba.fastjson.JSON;
 import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import lombok.val;
 import redis.clients.jedis.JedisCommands;
@@ -24,12 +25,12 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
         this(jedisCommands, "westcache:");
     }
 
-    @Override public void saveSnapshot(String cacheKey, Object cacheValue) {
+    @Override public void saveSnapshot(WestCacheOption option, String cacheKey, Object cacheValue) {
         val json = JSON.toJSONString(cacheValue, WriteClassName);
         jedisCommands.set(prefix + cacheKey, json);
     }
 
-    @Override public <T> Optional<T> readSnapshot(String cacheKey) {
+    @Override public <T> Optional<T> readSnapshot(WestCacheOption option, String cacheKey) {
         String json = jedisCommands.get(prefix + cacheKey);
         if (json == null) return null;
 

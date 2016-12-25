@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.cglib;
 
-import com.github.bingoohuang.westcache.utils.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -37,7 +37,7 @@ public class CglibCacheMethodInterceptor
     }
 
     @Override
-    protected String getCacheKey(WestCacheOptions option,
+    protected String getCacheKey(WestCacheOption option,
                                  Object obj,
                                  Method method,
                                  Object[] args,

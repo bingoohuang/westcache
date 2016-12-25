@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.utils.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -32,7 +32,7 @@ public class DiamondFlusherTest {
         assertThat(service.getCachedContent()).isSameAs("XXXyyy");
 
         val keyStrategy = WestCacheRegistry.getKeyStrategy("default");
-        val option = WestCacheOptions.newBuilder()
+        val option = WestCacheOption.newBuilder()
                 .flusher("diamondflusher").specs("static.key=yes")
                 .build();
         val cacheKey = keyStrategy.getCacheKey(option, "getCachedContent", service);

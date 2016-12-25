@@ -10,7 +10,7 @@ import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
 import com.github.bingoohuang.westcache.manager.GuavaCacheManager;
 import com.github.bingoohuang.westcache.registry.RegistryTemplate;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
-import com.github.bingoohuang.westcache.utils.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 
@@ -65,7 +65,7 @@ public class WestCacheRegistry {
         return flusherRegistry.get(flusherName);
     }
 
-    public void flush(WestCacheOptions option,
+    public void flush(WestCacheOption option,
                       Object bean,
                       String methodName,
                       Object... args) {

@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache.cglib;
 
 import com.github.bingoohuang.westcache.utils.WestCacheAnns;
-import com.github.bingoohuang.westcache.utils.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
@@ -21,7 +21,7 @@ public abstract class CacheMethodInterceptor<T> {
                                         Object[] args,
                                         T methodProxy);
 
-    protected abstract String getCacheKey(WestCacheOptions option,
+    protected abstract String getCacheKey(WestCacheOption option,
                                           Object obj,
                                           Method method,
                                           Object[] args,
@@ -34,13 +34,13 @@ public abstract class CacheMethodInterceptor<T> {
         val ann = WestCacheAnns.parseWestCacheable(method);
         if (ann == null) return invokeRaw(obj, args, methodProxy);
 
-        val option = WestCacheOptions.newBuilder().build(ann);
+        val option = WestCacheOption.newBuilder().build(ann);
         return cacheGet(option, obj, method, args, methodProxy);
     }
 
 
     @SneakyThrows
-    private Object cacheGet(final WestCacheOptions option,
+    private Object cacheGet(final WestCacheOption option,
                             final Object obj,
                             final Method method,
                             final Object[] args,

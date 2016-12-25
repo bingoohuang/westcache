@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.base;
 
-import com.github.bingoohuang.westcache.utils.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 
 import java.lang.reflect.Method;
 
@@ -8,12 +8,12 @@ import java.lang.reflect.Method;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
  */
 public abstract class WestCacheKeyStrategy {
-    public abstract String getCacheKey(WestCacheOptions option,
+    public abstract String getCacheKey(WestCacheOption option,
                                        String methodName,
                                        Object bean,
                                        Object... args);
 
-    public String getCacheKey(WestCacheOptions option,
+    public String getCacheKey(WestCacheOption option,
                               Method method,
                               Object bean,
                               Object... args) {

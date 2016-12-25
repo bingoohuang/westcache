@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.flusher;
 
 import com.github.bingoohuang.westcache.base.WestCache;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.n3r.diamond.client.DiamondListenerAdapter;
@@ -16,8 +17,10 @@ public class DiamondCacheFlusher extends SimpleCacheFlusher {
     public static String GROUP = "west.cache.flushers";
 
     @Override
-    public boolean register(final String cacheKey, WestCache<String, Object> cache) {
-        boolean firstRegistered = super.register(cacheKey, cache);
+    public boolean register(WestCacheOption option,
+                            final String cacheKey,
+                            WestCache<String, Object> cache) {
+        boolean firstRegistered = super.register(option, cacheKey, cache);
         if (!firstRegistered) return false;
 
 

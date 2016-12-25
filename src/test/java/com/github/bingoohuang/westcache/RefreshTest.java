@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
-import com.github.bingoohuang.westcache.utils.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -10,7 +10,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static com.github.bingoohuang.westcache.utils.WestCacheOptions.newBuilder;
+import static com.github.bingoohuang.westcache.utils.WestCacheOption.newBuilder;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -84,11 +84,11 @@ public class RefreshTest {
 
         val snapshot = WestCacheRegistry.getSnapshot("file");
         val keyStrategy = WestCacheRegistry.getKeyStrategy("default");
-        val option = WestCacheOptions.newBuilder()
+        val option = WestCacheOption.newBuilder()
                 .snapshot("file").flusher("simple").config("snapshotTestConfig")
                 .build();
         val cacheKey = keyStrategy.getCacheKey(option, "getHomeAreaWithCache", bean);
-        snapshot.saveSnapshot(cacheKey, bigDataXXX);
+        snapshot.saveSnapshot(option, cacheKey, bigDataXXX);
 
 
         bean.setHomeArea(north);

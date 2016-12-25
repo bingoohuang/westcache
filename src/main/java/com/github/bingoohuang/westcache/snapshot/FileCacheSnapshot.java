@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache.snapshot;
 
 import com.alibaba.fastjson.JSON;
 import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
@@ -17,7 +18,7 @@ import static com.alibaba.fastjson.serializer.SerializerFeature.WriteClassName;
  */
 public class FileCacheSnapshot implements WestCacheSnapshot {
     @Override @SneakyThrows
-    public void saveSnapshot(String cacheKey, Object cacheValue) {
+    public void saveSnapshot(WestCacheOption option, String cacheKey, Object cacheValue) {
         val json = JSON.toJSONString(cacheValue, WriteClassName);
 
         File snapshotFile = getSnapshotFile(cacheKey);
@@ -25,7 +26,7 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
     }
 
     @Override @SneakyThrows @SuppressWarnings("unchecked")
-    public <T> Optional<T> readSnapshot(String cacheKey) {
+    public <T> Optional<T> readSnapshot(WestCacheOption option, String cacheKey) {
         File snapshotFile = getSnapshotFile(cacheKey);
         if (!snapshotFile.exists() || !snapshotFile.isFile()) return null;
 

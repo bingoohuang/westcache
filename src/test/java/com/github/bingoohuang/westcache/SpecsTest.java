@@ -2,7 +2,7 @@ package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.cachekey.DefaultKeyStrategy;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
-import com.github.bingoohuang.westcache.utils.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -44,7 +44,7 @@ public class SpecsTest {
     public static void beforeClass() {
         registerKeyStrategy("prefix", new DefaultKeyStrategy() {
             @Override
-            public String getCacheKey(WestCacheOptions option,
+            public String getCacheKey(WestCacheOption option,
                                       Method method,
                                       Object bean,
                                       Object... args) {
@@ -92,7 +92,8 @@ public class SpecsTest {
         String cacheKey = "demo.provinces";
         List<String> provinces = Lists.newArrayList("江苏省", "浙江省");
         val fileSnapshot = getSnapshot("file");
-        fileSnapshot.saveSnapshot(cacheKey, provinces);
+
+        fileSnapshot.saveSnapshot(null, cacheKey, provinces);
 
         List<String> otherProvinces = Lists.newArrayList("广东省", "广西省");
         myService.setProvinces(otherProvinces);

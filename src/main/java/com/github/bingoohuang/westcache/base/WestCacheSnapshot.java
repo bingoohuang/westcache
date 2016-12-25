@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.base;
 
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 
 /**
@@ -8,18 +9,19 @@ import com.google.common.base.Optional;
 public interface WestCacheSnapshot {
     /**
      * save the cached value to snapshot place.
+     * @param option
      * @param cacheKey cache key.
      * @param cacheValue cache value.
      */
-    void saveSnapshot(String cacheKey, Object cacheValue);
+    void saveSnapshot(WestCacheOption option, String cacheKey, Object cacheValue);
 
     /**
      * read the cached value from snapshot place.
-     * @param cacheKey cache key.
      * @param <T> cache value type
-     * @return optional of cache value
+     * @param option
+     *@param cacheKey cache key.  @return optional of cache value
      */
-    <T> Optional<T> readSnapshot(String cacheKey);
+    <T> Optional<T> readSnapshot(WestCacheOption option, String cacheKey);
 
     /**
      * clear the cached value from snapshot place.

@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.snapshot.RedisCacheSnapshot;
-import com.github.bingoohuang.westcache.utils.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -58,7 +58,7 @@ public class RedisSnapshotTest {
         val snapshot = getSnapshot("redisSnapshot");
 
         val keyStrategy = WestCacheRegistry.getKeyStrategy("default");
-        val option = WestCacheOptions.newBuilder()
+        val option = WestCacheOption.newBuilder()
                 .snapshot("redisSnapshot").build();
         val cacheKey1 = keyStrategy.getCacheKey(option, "getXyzBean", service, "1");
         val cacheKey2 = keyStrategy.getCacheKey(option, "getXyzBean", service, "2");
@@ -82,7 +82,7 @@ public class RedisSnapshotTest {
 
 
 
-        val cached = snapshot.readSnapshot(cacheKey1);
+        val cached = snapshot.readSnapshot(option, cacheKey1);
         assertThat(cached.isPresent()).isTrue();
         assertThat(cached.get()).isEqualTo(new XyzBean(1, "bingoo", "南京 "));
     }

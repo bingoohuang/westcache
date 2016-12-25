@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache.flusher;
 
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheFlusher;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
@@ -20,7 +21,7 @@ public class SimpleCacheFlusher implements WestCacheFlusher {
     }
 
     @Override
-    public boolean register(String cacheKey, WestCache<String, Object> cache) {
+    public boolean register(WestCacheOption option, String cacheKey, WestCache<String, Object> cache) {
         val westCache = registry.getIfPresent(cacheKey);
         log.debug("register flush key {} for westcache {}", cacheKey, westCache);
 
