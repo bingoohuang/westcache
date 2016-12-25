@@ -1,29 +1,36 @@
 package com.github.bingoohuang.westcache.cglib;
 
-import com.github.bingoohuang.westcache.utils.WestCacheOptions;
 import com.github.bingoohuang.westcache.utils.WestCacheAnns;
+import com.github.bingoohuang.westcache.utils.WestCacheOptions;
 import com.google.common.base.Optional;
-import lombok.*;
+import lombok.Cleanup;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+import lombok.val;
 
 import java.io.Closeable;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
 /**
- * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/21.
+ * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/25.
  */
-@Slf4j @NoArgsConstructor @AllArgsConstructor
-public class CacheMethodInterceptor implements MethodInterceptor {
-    private Object target;
+@Slf4j
+public abstract class CacheMethodInterceptor<T> {
+    protected abstract Object invokeRaw(Object obj,
+                                        Object[] args,
+                                        T methodProxy);
 
-    @Override
-    public Object intercept(final Object obj,
-                            final Method method,
-                            final Object[] args,
-                            final MethodProxy methodProxy) {
+    protected abstract String getCacheKey(WestCacheOptions option,
+                                          Object obj,
+                                          Method method,
+                                          Object[] args,
+                                          T proxy);
+
+    public Object intercept(Object obj,
+                            Method method,
+                            Object[] args,
+                            T methodProxy) {
         val ann = WestCacheAnns.parseWestCacheable(method);
         if (ann == null) return invokeRaw(obj, args, methodProxy);
 
@@ -31,23 +38,14 @@ public class CacheMethodInterceptor implements MethodInterceptor {
         return cacheGet(option, obj, method, args, methodProxy);
     }
 
-    @SneakyThrows
-    private Object invokeRaw(final Object obj,
-                             final Object[] args,
-                             final MethodProxy methodProxy) {
-        return target != null
-                ? methodProxy.invoke(target, args)
-                : methodProxy.invokeSuper(obj, args);
-    }
 
     @SneakyThrows
     private Object cacheGet(final WestCacheOptions option,
                             final Object obj,
                             final Method method,
                             final Object[] args,
-                            final MethodProxy proxy) {
-        val cacheKey = option.getKeyStrategy().getCacheKey(option,
-                method, target != null ? target : obj, args);
+                            final T proxy) {
+        val cacheKey = getCacheKey(option, obj, method, args, proxy);
 
         val start = System.currentTimeMillis();
         @Cleanup val i = new Closeable() {

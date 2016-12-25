@@ -5,7 +5,6 @@ import com.github.bingoohuang.westcache.WestCacheable;
 import com.github.bingoohuang.westcache.base.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.Value;
 
 /**
@@ -13,13 +12,13 @@ import lombok.Value;
  */
 @Value @AllArgsConstructor
 public class WestCacheOptions {
-    @Getter @Setter private final WestCacheFlusher flusher;
-    @Getter @Setter private final WestCacheManager manager;
-    @Getter @Setter private final WestCacheSnapshot snapshot;
-    @Getter @Setter private final WestCacheConfig config;
-    @Getter @Setter private final WestCacheKeyStrategy keyStrategy;
-    @Getter @Setter private final String key;
-    @Getter @Setter private final String specs;
+    @Getter private final WestCacheFlusher flusher;
+    @Getter private final WestCacheManager manager;
+    @Getter private final WestCacheSnapshot snapshot;
+    @Getter private final WestCacheConfig config;
+    @Getter private final WestCacheKeyStrategy keyStrategy;
+    @Getter private final String key;
+    @Getter private final String specs;
 
     public static Builder newBuilder() {
         return new Builder();

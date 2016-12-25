@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.cglib.CacheMethodInterceptor;
+import com.github.bingoohuang.westcache.cglib.CglibCacheMethodInterceptor;
 import com.github.bingoohuang.westcache.cglib.Cglibs;
 import com.github.bingoohuang.westcache.cglib.WestCacheCglib;
 import lombok.SneakyThrows;
@@ -14,7 +14,7 @@ import lombok.val;
 @UtilityClass
 public class WestCacheFactory {
     public Class<WestCacheCglib> WCC_CLZ = WestCacheCglib.class;
-    CacheMethodInterceptor interceptor = new CacheMethodInterceptor();
+    CglibCacheMethodInterceptor interceptor = new CglibCacheMethodInterceptor();
 
     /**
      * Create a proxied object of target class.
@@ -50,7 +50,7 @@ public class WestCacheFactory {
     public <T> T create(T target) {
         if (target instanceof WestCacheCglib) return target;
 
-        val interceptor = new CacheMethodInterceptor(target);
+        val interceptor = new CglibCacheMethodInterceptor(target);
         return (T) Cglibs.proxy(target.getClass(), interceptor, WCC_CLZ);
     }
 }
