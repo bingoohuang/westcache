@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.manager;
 
-import com.github.bingoohuang.westcache.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOptions;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheManager;
 import com.google.common.base.Optional;

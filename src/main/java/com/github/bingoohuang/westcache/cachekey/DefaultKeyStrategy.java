@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.cachekey;
 
-import com.github.bingoohuang.westcache.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOptions;
 import com.github.bingoohuang.westcache.base.WestCacheKeyStrategy;
 import com.github.bingoohuang.westcache.cglib.Cglibs;
 import com.google.common.base.Splitter;

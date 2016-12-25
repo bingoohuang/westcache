@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.utils;
 
-import com.github.bingoohuang.westcache.base.WestCacheable;
+import com.github.bingoohuang.westcache.WestCacheable;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 

@@ -10,6 +10,7 @@ import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
 import com.github.bingoohuang.westcache.manager.GuavaCacheManager;
 import com.github.bingoohuang.westcache.registry.RegistryTemplate;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
+import com.github.bingoohuang.westcache.utils.WestCacheOptions;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 
@@ -26,6 +27,10 @@ public class WestCacheRegistry {
 
     public void registerConfig(String configName, WestCacheConfig config) {
         configRegistry.register(configName, config);
+    }
+
+    public void registerConfigForcely(String configName, WestCacheConfig config) {
+        configRegistry.registerForcely(configName, config);
     }
 
     public void deregisterConfig(String configName) {
@@ -46,6 +51,10 @@ public class WestCacheRegistry {
 
     public void registerFlusher(String flusherName, WestCacheFlusher flusher) {
         flusherRegistry.register(flusherName, flusher);
+    }
+
+    public void registerFlusherForcely(String flusherName, WestCacheFlusher flusher) {
+        flusherRegistry.registerForcely(flusherName, flusher);
     }
 
     public void deregisterFlusher(String flusherName) {
@@ -76,6 +85,10 @@ public class WestCacheRegistry {
         managerRegistry.register(managerName, manager);
     }
 
+    public void registerMangerForcely(String managerName, WestCacheManager manager) {
+        managerRegistry.registerForcely(managerName, manager);
+    }
+
     public void deregisterManger(String managerName) {
         managerRegistry.deregister(managerName);
     }
@@ -94,6 +107,10 @@ public class WestCacheRegistry {
         snapshotRegistry.register(snapshotName, snapshot);
     }
 
+    public void registerSnapshotForcely(String snapshotName, WestCacheSnapshot snapshot) {
+        snapshotRegistry.registerForcely(snapshotName, snapshot);
+    }
+
     public void deregisterSnapshot(String snapshotName) {
         snapshotRegistry.deregister(snapshotName);
     }
@@ -110,6 +127,10 @@ public class WestCacheRegistry {
 
     public void registerKeyStrategy(String keyStrategyName, WestCacheKeyStrategy keyStrategy) {
         keyStrategyRegistry.register(keyStrategyName, keyStrategy);
+    }
+
+    public void registerKeyStrategyForcely(String keyStrategyName, WestCacheKeyStrategy keyStrategy) {
+        keyStrategyRegistry.registerForcely(keyStrategyName, keyStrategy);
     }
 
     public void deregisterKeyStrategy(String keyStrategyName) {

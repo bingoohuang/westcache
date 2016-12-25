@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.base.WestCacheable;
 import com.github.bingoohuang.westcache.cachekey.DefaultKeyStrategy;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
+import com.github.bingoohuang.westcache.utils.WestCacheOptions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import lombok.Getter;

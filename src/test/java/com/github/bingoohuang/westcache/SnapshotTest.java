@@ -1,8 +1,6 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.base.WestCacheable;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
-import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -91,7 +89,7 @@ public class SnapshotTest {
         val bigDataXXX = "SnapshotService.getBigData.XXX";
         val bigDataYYY = "SnapshotService.getBigData.YYY";
 
-        val snapshot = new FileCacheSnapshot();
+        val snapshot = WestCacheRegistry.getSnapshot("file");
         val cacheKey = serviceClass.getName().replace('$', '.') + ".getBigDataCache";
         snapshot.saveSnapshot(cacheKey, bigDataXXX);
 
@@ -109,6 +107,6 @@ public class SnapshotTest {
         val dataCache2 = service.getBigDataCache();
         assertThat(dataCache2).isEqualTo(bigDataYYY);
 
-        snapshot.deleteSnapshotFile(cacheKey);
+        snapshot.deleteSnapshot(cacheKey);
     }
 }

@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.base.WestCacheable;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
+import com.github.bingoohuang.westcache.utils.WestCacheOptions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -10,7 +10,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static com.github.bingoohuang.westcache.WestCacheOptions.newBuilder;
+import static com.github.bingoohuang.westcache.utils.WestCacheOptions.newBuilder;
 import static com.google.common.truth.Truth.assertThat;
 
 /**

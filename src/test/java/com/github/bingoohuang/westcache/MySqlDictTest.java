@@ -1,6 +1,5 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.base.WestCacheable;
 import com.google.common.collect.Lists;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;

@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.base.WestCacheable;
 import com.github.bingoohuang.westcache.snapshot.RedisCacheSnapshot;
+import com.github.bingoohuang.westcache.utils.WestCacheOptions;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

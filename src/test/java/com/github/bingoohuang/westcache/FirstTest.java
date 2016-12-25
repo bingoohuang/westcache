@@ -1,6 +1,5 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.base.WestCacheable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;

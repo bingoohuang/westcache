@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.cglib;
 
-import com.github.bingoohuang.westcache.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOptions;
 import com.github.bingoohuang.westcache.utils.WestCacheAnns;
 import com.google.common.base.Optional;
 import lombok.*;

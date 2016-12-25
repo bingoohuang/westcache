@@ -1,4 +1,4 @@
-package com.github.bingoohuang.westcache.base;
+package com.github.bingoohuang.westcache;
 
 import java.lang.annotation.*;
 

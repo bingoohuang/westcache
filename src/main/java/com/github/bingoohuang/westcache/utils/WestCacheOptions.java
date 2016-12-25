@@ -1,5 +1,7 @@
-package com.github.bingoohuang.westcache;
+package com.github.bingoohuang.westcache.utils;
 
+import com.github.bingoohuang.westcache.WestCacheRegistry;
+import com.github.bingoohuang.westcache.WestCacheable;
 import com.github.bingoohuang.westcache.base.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

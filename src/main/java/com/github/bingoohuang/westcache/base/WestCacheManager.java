@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.base;
 
-import com.github.bingoohuang.westcache.WestCacheOptions;
+import com.github.bingoohuang.westcache.utils.WestCacheOptions;
 import com.google.common.base.Optional;
 
 import java.util.concurrent.Callable;

@@ -2,7 +2,6 @@ package com.github.bingoohuang.westcache;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.github.bingoohuang.westcache.base.WestCacheable;
 import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -12,7 +11,7 @@ import org.junit.Test;
 
 import java.io.File;
 
-import static com.github.bingoohuang.westcache.WestCacheOptions.newBuilder;
+import static com.github.bingoohuang.westcache.utils.WestCacheOptions.newBuilder;
 import static com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot.USER_HOME;
 import static com.google.common.truth.Truth.assertThat;
 
