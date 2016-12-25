@@ -49,15 +49,9 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
         return new File(westCacheHome, cacheKey + EXTENSION);
     }
 
-    public static void deleteSnapshotFile(String cacheKey) {
-        File westCacheHome = tryCreateWestCacheHome();
-        val file = new File(westCacheHome, cacheKey + EXTENSION);
-        file.delete();
-    }
-
     private static File tryCreateWestCacheHome() {
         val westCacheHome = new File(USER_HOME, EXTENSION);
-        westCacheHome.mkdir();
+        westCacheHome.mkdirs();
         return westCacheHome;
     }
 }
