@@ -50,7 +50,7 @@ public class CacheMethodInterceptor implements MethodInterceptor {
                 method, target != null ? target : obj, args);
 
         val start = System.currentTimeMillis();
-        @Cleanup val _ = new Closeable() {
+        @Cleanup val i = new Closeable() {
             @Override public void close() {
                 val end = System.currentTimeMillis();
                 log.debug("get cache {} cost {} millis", cacheKey, (end - start));

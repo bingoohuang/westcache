@@ -31,7 +31,7 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
 
         String json = Files.toString(snapshotFile, Charsets.UTF_8);
         Object object = JSON.parse(json);
-        return (Optional<T>) Optional.of(object);
+        return (Optional<T>) Optional.fromNullable(object);
     }
 
     @Override public void deleteSnapshot(String cacheKey) {
@@ -42,20 +42,21 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
     }
 
     public static String USER_HOME = System.getProperty("user.home");
+    public static String EXTENSION = ".westcache";
 
     public static File getSnapshotFile(String cacheKey) {
         File westCacheHome = tryCreateWestCacheHome();
-        return new File(westCacheHome, cacheKey + ".westcache");
+        return new File(westCacheHome, cacheKey + EXTENSION);
     }
 
     public static void deleteSnapshotFile(String cacheKey) {
         File westCacheHome = tryCreateWestCacheHome();
-        val file = new File(westCacheHome, cacheKey + ".westcache");
+        val file = new File(westCacheHome, cacheKey + EXTENSION);
         file.delete();
     }
 
     private static File tryCreateWestCacheHome() {
-        val westCacheHome = new File(USER_HOME, ".westcache");
+        val westCacheHome = new File(USER_HOME, EXTENSION);
         westCacheHome.mkdir();
         return westCacheHome;
     }

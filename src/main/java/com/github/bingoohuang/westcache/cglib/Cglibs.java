@@ -23,6 +23,14 @@ public class Cglibs {
         return pos < 0 ? name : name.substring(0, pos);
     }
 
+    /**
+     * create a proxied object by cglib.
+     *
+     * @param targetClass target class.
+     * @param interceptor interceptor.
+     * @param interfaces  interfaces.
+     * @return proxied object.
+     */
     public Object proxy(Class<?> targetClass,
                         MethodInterceptor interceptor,
                         Class<?>... interfaces) {

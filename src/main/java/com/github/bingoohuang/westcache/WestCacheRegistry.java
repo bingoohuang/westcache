@@ -6,6 +6,7 @@ import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.DiamondCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.NoneCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.SimpleCacheFlusher;
+import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
 import com.github.bingoohuang.westcache.manager.GuavaCacheManager;
 import com.github.bingoohuang.westcache.registry.RegistryTemplate;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
@@ -68,6 +69,7 @@ public class WestCacheRegistry {
 
     static {
         registerManger("guava", new GuavaCacheManager());
+        registerManger("diamond", new DiamondCacheManager());
     }
 
     public void registerManger(String managerName, WestCacheManager manager) {

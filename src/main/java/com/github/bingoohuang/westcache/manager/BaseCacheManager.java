@@ -63,7 +63,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
         } catch (TimeoutException e) {   // 有限时间内不返回，尝试snapshot
             log.info("get cache {} timeout in {} millis, try to use snapshot", timeout, cacheKey);
             result = option.getSnapshot().readSnapshot(cacheKey);
-            log.info("got {} snapshot {}", cacheKey, result != null ? result.get() : " not exist");
+            log.info("got {} snapshot {}", cacheKey, result != null ? result.orNull() : " not exist");
         }
 
         return result == null ? future.get() : result;
