@@ -4,6 +4,7 @@ import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheFlusher;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -12,22 +13,25 @@ import lombok.val;
  */
 @Slf4j
 public class SimpleCacheFlusher implements WestCacheFlusher {
-    Cache<String, WestCache<String, Object>> registry = CacheBuilder.newBuilder().build();
+    @Getter private Cache<String, WestCache<String, Object>> registry;
+
+    {
+        registry = CacheBuilder.newBuilder().build();
+    }
 
     @Override
     public void register(String cacheKey, WestCache<String, Object> cache) {
-        log.debug("register key for flusher {}", cacheKey);
-        if (registry.getIfPresent(cacheKey) != null) return;
-
-        registry.put(cacheKey, cache);
+        val westCache = registry.getIfPresent(cacheKey);
+        log.debug("register flush key {} for westcache {}", cacheKey, westCache);
+        if (westCache == null) registry.put(cacheKey, cache);
     }
 
     @Override public void flush(String cacheKey) {
-        log.debug("flush {}", cacheKey);
         val westCache = registry.getIfPresent(cacheKey);
-        if (westCache == null) return;
-
-        westCache.invalidate(cacheKey);
-        registry.invalidate(cacheKey);
+        log.debug("flush key:{}, westcache:{}", cacheKey, westCache);
+        if (westCache != null) {
+            westCache.invalidate(cacheKey);
+            registry.invalidate(cacheKey);
+        }
     }
 }
