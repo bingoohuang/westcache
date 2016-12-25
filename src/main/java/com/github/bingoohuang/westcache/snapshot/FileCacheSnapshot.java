@@ -34,7 +34,14 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
         return (Optional<T>) Optional.of(object);
     }
 
-    static String USER_HOME = System.getProperty("user.home");
+    @Override public void deleteSnapshot(String cacheKey) {
+        File snapshotFile = getSnapshotFile(cacheKey);
+        if (!snapshotFile.exists() || !snapshotFile.isFile()) return;
+
+        snapshotFile.delete();
+    }
+
+    public static String USER_HOME = System.getProperty("user.home");
 
     public static File getSnapshotFile(String cacheKey) {
         File westCacheHome = tryCreateWestCacheHome();

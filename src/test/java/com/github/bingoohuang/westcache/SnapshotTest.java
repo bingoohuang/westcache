@@ -92,7 +92,7 @@ public class SnapshotTest {
         val bigDataYYY = "SnapshotService.getBigData.YYY";
 
         val snapshot = new FileCacheSnapshot();
-        val cacheKey = serviceClass.getName() + ".getBigDataCache";
+        val cacheKey = serviceClass.getName().replace('$', '.') + ".getBigDataCache";
         snapshot.saveSnapshot(cacheKey, bigDataXXX);
 
         val service = WestCacheFactory.create(serviceClass);

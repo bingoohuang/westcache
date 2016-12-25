@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache;
 import com.github.bingoohuang.westcache.base.*;
 import com.github.bingoohuang.westcache.cachekey.DefaultKeyStrategy;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
+import com.github.bingoohuang.westcache.flusher.DiamondCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.NoneCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.SimpleCacheFlusher;
 import com.github.bingoohuang.westcache.manager.GuavaCacheManager;
@@ -39,6 +40,7 @@ public class WestCacheRegistry {
     static {
         registerFlusher("none", new NoneCacheFlusher());
         registerFlusher("simple", new SimpleCacheFlusher());
+        registerFlusher("diamond", new DiamondCacheFlusher());
     }
 
     public void registerFlusher(String flusherName, WestCacheFlusher flusher) {

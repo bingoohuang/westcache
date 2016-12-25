@@ -36,4 +36,8 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
         Object object = JSON.parse(json);
         return (Optional<T>) Optional.of(object);
     }
+
+    @Override public void deleteSnapshot(String cacheKey) {
+        jedisCommands.del(prefix + cacheKey);
+    }
 }

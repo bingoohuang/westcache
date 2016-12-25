@@ -35,17 +35,17 @@ public class MySqlDictTest {
         @Sql("drop table if exists cache_dict;" +
 
                 "create table cache_dict(" +
-                "id int, " +
-                "name varchar(100), " +
-                "addr varchar(100), " +
-                "update_time timestamp on update current_timestamp default current_timestamp" +
+                "  id int, " +
+                "  name varchar(100), " +
+                "  addr varchar(100), " +
+                "  update_time timestamp on update current_timestamp default current_timestamp" +
                 ")engine=innodb default charset=utf8;" +
 
-                "insert into cache_dict(id, name, addr) values" +
-                "(1, 'bingoo', '南京')," +
-                "(2, 'dingoo', '北京')," +
-                "(3, 'pingoo', '上海')," +
-                "(4, 'qingoo', '广州')")
+                "insert into cache_dict(id, name, addr) " +
+                "values(1, 'bingoo', '南京')," +
+                "      (2, 'dingoo', '北京')," +
+                "      (3, 'pingoo', '上海')," +
+                "      (4, 'qingoo', '广州')")
         void setup();
 
         @Sql("select id, name, addr from cache_dict")
@@ -136,13 +136,13 @@ public class MySqlDictTest {
 
         val cacheDicts3 = service.getCacheDicts();
         assertThat(cacheDicts3).isNotSameAs(cacheDicts2);
+
         val beans3 = Lists.newArrayList(
                 new CacheDictBean(1, "bingoo", "蓝鲸"),
                 new CacheDictBean(2, "dingoo", "北京"),
                 new CacheDictBean(3, "pingoo", "上海"),
                 new CacheDictBean(4, "qingoo", "广州")
         );
-
         assertThat(cacheDicts3).isEqualTo(beans3);
     }
 }

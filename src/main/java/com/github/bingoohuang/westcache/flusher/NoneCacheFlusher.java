@@ -8,11 +8,11 @@ import com.github.bingoohuang.westcache.base.WestCacheFlusher;
  */
 public class NoneCacheFlusher implements WestCacheFlusher {
     @Override
-    public void register(String cacheKey, WestCache<String, Object> cache) {
-
+    public boolean register(String cacheKey, WestCache<String, Object> cache) {
+        return false;
     }
 
-    @Override public void flush(String cacheKey) {
-
+    @Override public boolean flush(String cacheKey) {
+        return false;
     }
 }

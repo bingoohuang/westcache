@@ -2,7 +2,6 @@ package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.WestCacheable;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
-import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -79,13 +78,18 @@ public class RefreshTest {
 
     @Test @SneakyThrows
     public void flushSnapshot() {
+        val bean = WestCacheFactory.create(FlushSnapshotBean.class);
+
         val bigDataXXX = "SnapshotService.getBigData.XXX";
 
-        val snapshot = new FileCacheSnapshot();
-        val cacheKey = FlushSnapshotBean.class.getName() + ".getHomeAreaWithCache";
+        val snapshot = WestCacheRegistry.getSnapshot("file");
+        val keyStrategy = WestCacheRegistry.getKeyStrategy("default");
+        val option = WestCacheOptions.newBuilder()
+                .snapshot("file").flusher("simple").config("snapshotTestConfig")
+                .build();
+        val cacheKey = keyStrategy.getCacheKey(option, "getHomeAreaWithCache", bean);
         snapshot.saveSnapshot(cacheKey, bigDataXXX);
 
-        val bean = WestCacheFactory.create(FlushSnapshotBean.class);
 
         bean.setHomeArea(north);
         bean.setCacheMethodExecuted(false);
