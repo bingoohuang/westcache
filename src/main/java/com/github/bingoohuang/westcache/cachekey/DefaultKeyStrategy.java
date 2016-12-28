@@ -40,7 +40,7 @@ public class DefaultKeyStrategy extends WestCacheKeyStrategy {
         return map.get("static.key");
     }
 
-    private String joinArgs(Object[] args) {
+    public static String joinArgs(Object[] args) {
         val argsPart = new StringBuilder();
 
         for (val arg : args) {

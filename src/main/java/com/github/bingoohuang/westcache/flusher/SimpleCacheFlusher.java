@@ -21,7 +21,14 @@ public class SimpleCacheFlusher implements WestCacheFlusher {
     }
 
     @Override
-    public boolean register(WestCacheOption option, String cacheKey, WestCache<String, Object> cache) {
+    public boolean isKeyEnabled(WestCacheOption option, String cacheKey) {
+        return true;
+    }
+
+    @Override
+    public boolean register(WestCacheOption option,
+                            String cacheKey,
+                            WestCache<String, Object> cache) {
         val westCache = registry.getIfPresent(cacheKey);
         log.debug("register flush key {} for westcache {}", cacheKey, westCache);
 
@@ -39,4 +46,5 @@ public class SimpleCacheFlusher implements WestCacheFlusher {
 
         return flushSent;
     }
+
 }

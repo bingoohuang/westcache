@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache.manager;
 
-import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheManager;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,26 +19,25 @@ import java.util.concurrent.TimeoutException;
 public abstract class BaseCacheManager implements WestCacheManager {
     public abstract WestCache<String, Object> getWestCache();
 
-    @Override @SuppressWarnings("unchecked")
+    @Override @SuppressWarnings("unchecked") @SneakyThrows
     public <T> Optional<T> get(final WestCacheOption option,
                                final String cacheKey,
                                final Callable<Optional<T>> callable) {
-        if (option.getSnapshot() == null) {
-            return (Optional<T>) getWestCache().get(cacheKey, new Callable<Optional<T>>() {
-                @Override public Optional<T> call() throws Exception {
-                    option.getFlusher().register(option, cacheKey, getWestCache());
-                    Optional<T> call = callable.call();
-                    return call;
-                }
-            });
-        } else {
-            return (Optional<T>) getWestCache().get(cacheKey, new Callable<Optional<T>>() {
-                @Override
-                public Optional<T> call() throws Exception {
-                    return trySnapshot(option, cacheKey, callable);
-                }
-            });
+        val flusher = option.getFlusher();
+        if (!flusher.isKeyEnabled(option, cacheKey)) {
+            log.info("cache key {} is not enabled", cacheKey);
+            return callable.call();
         }
+
+        flusher.register(option, cacheKey, getWestCache());
+
+        val wrapCallable = new Callable<Optional<T>>() {
+            @Override public Optional<T> call() throws Exception {
+                return option.getSnapshot() == null ? callable.call()
+                        : trySnapshot(option, cacheKey, callable);
+            }
+        };
+        return (Optional<T>) getWestCache().get(cacheKey, wrapCallable);
     }
 
     @SneakyThrows
@@ -46,39 +45,27 @@ public abstract class BaseCacheManager implements WestCacheManager {
                                         final String cacheKey,
                                         final Callable<Optional<T>> callable) {
         val future = option.getConfig().executorService().submit(new Callable<Optional<T>>() {
-            @Override
-            public Optional<T> call() throws Exception {
-                option.getFlusher().register(option, cacheKey, getWestCache());
+            @Override public Optional<T> call() throws Exception {
                 val optional = callable.call();
-                put(option, cacheKey, optional);
+                getWestCache().put(cacheKey, optional);
                 option.getSnapshot().saveSnapshot(option, cacheKey, optional.orNull());
                 return optional;
             }
         });
 
-        Optional<T> result;
         long timeout = option.getConfig().timeoutMillisToSnapshot();
         try {
-            result = future.get(timeout, TimeUnit.MILLISECONDS);
+            return future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {   // 有限时间内不返回，尝试snapshot
             log.info("get cache {} timeout in {} millis, try to use snapshot", timeout, cacheKey);
-            result = option.getSnapshot().readSnapshot(option, cacheKey);
+            Optional<T> result = option.getSnapshot().readSnapshot(option, cacheKey);
             log.info("got {} snapshot {}", cacheKey, result != null ? result.orNull() : " not exist");
+            return result == null ? future.get() : result;
         }
-
-        return result == null ? future.get() : result;
     }
 
     @Override
     public <T> Optional<T> get(WestCacheOption option, String cacheKey) {
         return (Optional<T>) getWestCache().getIfPresent(cacheKey);
-    }
-
-    @Override
-    public <T> void put(WestCacheOption option,
-                        String cacheKey,
-                        Optional<T> cacheValue) {
-        option.getFlusher().register(option, cacheKey, getWestCache());
-        getWestCache().put(cacheKey, cacheValue);
     }
 }

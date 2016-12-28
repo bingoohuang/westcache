@@ -16,4 +16,9 @@ public class NoneCacheFlusher implements WestCacheFlusher {
     @Override public boolean flush(String cacheKey) {
         return false;
     }
+
+    @Override
+    public boolean isKeyEnabled(WestCacheOption option, String cacheKey) {
+        return true;
+    }
 }

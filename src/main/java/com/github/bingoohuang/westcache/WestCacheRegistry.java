@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.*;
 import com.github.bingoohuang.westcache.cachekey.DefaultKeyStrategy;
+import com.github.bingoohuang.westcache.cachekey.SimpleKeyStrategy;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.DiamondCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.NoneCacheFlusher;
@@ -77,19 +78,19 @@ public class WestCacheRegistry {
     RegistryTemplate<WestCacheManager> managerRegistry = new RegistryTemplate<WestCacheManager>();
 
     static {
-        registerManger("guava", new GuavaCacheManager());
-        registerManger("diamond", new DiamondCacheManager());
+        registerManager("guava", new GuavaCacheManager());
+        registerManager("diamond", new DiamondCacheManager());
     }
 
-    public void registerManger(String managerName, WestCacheManager manager) {
+    public void registerManager(String managerName, WestCacheManager manager) {
         managerRegistry.register(managerName, manager);
     }
 
-    public void registerMangerForcely(String managerName, WestCacheManager manager) {
+    public void registerManagerForcely(String managerName, WestCacheManager manager) {
         managerRegistry.registerForcely(managerName, manager);
     }
 
-    public void deregisterManger(String managerName) {
+    public void deregisterManager(String managerName) {
         managerRegistry.deregister(managerName);
     }
 
@@ -123,6 +124,7 @@ public class WestCacheRegistry {
 
     static {
         registerKeyStrategy("default", new DefaultKeyStrategy());
+        registerKeyStrategy("simple", new SimpleKeyStrategy());
     }
 
     public void registerKeyStrategy(String keyStrategyName, WestCacheKeyStrategy keyStrategy) {

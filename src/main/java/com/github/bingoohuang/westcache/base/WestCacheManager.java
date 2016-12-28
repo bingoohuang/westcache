@@ -12,6 +12,4 @@ public interface WestCacheManager {
     <T> Optional<T> get(WestCacheOption option, String cacheKey, Callable<Optional<T>> callable);
 
     <T> Optional<T> get(WestCacheOption option, String cacheKey);
-
-    <T> void put(WestCacheOption option, String cacheKey, Optional<T> cacheValue);
 }

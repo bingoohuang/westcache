@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.base;
 
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
@@ -8,5 +8,5 @@ import java.util.concurrent.ExecutorService;
 public interface WestCacheConfig {
     long timeoutMillisToSnapshot();
 
-    ExecutorService executorService();
+    ScheduledExecutorService executorService();
 }
