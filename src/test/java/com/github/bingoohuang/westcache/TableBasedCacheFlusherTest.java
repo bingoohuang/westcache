@@ -1,21 +1,21 @@
 package com.github.bingoohuang.westcache;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
+import com.github.bingoohuang.westcache.dao.WestCacheFlusherDao;
 import com.github.bingoohuang.westcache.flusher.TableBasedCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
+import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.n3r.eql.eqler.EqlerFactory;
-import org.n3r.eql.eqler.OnErr;
-import org.n3r.eql.eqler.annotations.EqlerConfig;
-import org.n3r.eql.eqler.annotations.Sql;
-import org.n3r.eql.eqler.annotations.SqlOptions;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -37,19 +37,17 @@ public class TableBasedCacheFlusherTest {
                 return dao.queryAllBeans();
             }
 
-            @Override
-            protected Object readDirectValue(String cacheKey, String subKey) {
+            @Override @SneakyThrows
+            protected Object readDirectValue(final WestCacheFlusherBean bean) {
                 lastReadDirectValue = System.currentTimeMillis();
 
-                String directJson = dao.getDirectValue(cacheKey);
+                String directJson = dao.getDirectValue(bean.getCacheKey());
                 if (isBlank(directJson)) return null;
-
-                if (subKey == null) return JSON.parse(directJson);
-
-                return JSON.parseObject(directJson).get(subKey);
+                return JSON.parse(directJson);
             }
+
         };
-        WestCacheRegistry.register("oracle", flusher);
+        WestCacheRegistry.register("table", flusher);
         WestCacheRegistry.register("test", new DefaultWestCacheConfig() {
             @Override public long rotateCheckIntervalMillis() {
                 return 1000;
@@ -59,25 +57,27 @@ public class TableBasedCacheFlusherTest {
 
     @AfterClass
     public static void afterClass() {
-        WestCacheRegistry.deregisterFlusher("oracle");
+        WestCacheRegistry.deregisterFlusher("table");
         WestCacheRegistry.deregisterConfig("test");
     }
 
     public static abstract class TitaService {
-        @WestCacheable(flusher = "oracle", keyer = "simple", config = "test")
+        @WestCacheable(flusher = "table", keyer = "simple", config = "test")
         public String tita() {
             return "" + System.currentTimeMillis();
         }
 
-        @WestCacheable(flusher = "oracle", keyer = "simple", config = "test")
+        @WestCacheable(flusher = "table", keyer = "simple", config = "test")
         public abstract String directValue();
 
-        @WestCacheable(flusher = "oracle", keyer = "simple", config = "test",
-                snapshot = "file")
+        @WestCacheable(flusher = "table", keyer = "simple", config = "test")
         public String getCities(String provinceCode) {
             ++getCitiesCalledTimes;
             return provinceCode + System.currentTimeMillis();
         }
+
+        @WestCacheable(flusher = "table", keyer = "simple", config = "test")
+        public abstract String getCities2(String provinceCode);
     }
 
     @Test @SneakyThrows
@@ -141,18 +141,20 @@ public class TableBasedCacheFlusherTest {
 
         long lastExecuted = flusher.getLastExecuted();
         dao.addWestCacheFlusherBean(bean);
+        service.getCities("JiangSu");
+
         do {
             Thread.sleep(100L);
         } while (flusher.getLastExecuted() == lastExecuted);
 
         String jiangSuCities1 = service.getCities("JiangSu");
         String jiangXiCities1 = service.getCities("JiangXi");
-        assertThat(getCitiesCalledTimes).isEqualTo(2);
+        assertThat(getCitiesCalledTimes).isEqualTo(3);
         assertThat(jiangSuCities1).isNotEqualTo(jiangXiCities1);
 
         String jiangSuCities11 = service.getCities("JiangSu");
         String jiangXiCities11 = service.getCities("JiangXi");
-        assertThat(getCitiesCalledTimes).isEqualTo(2);
+        assertThat(getCitiesCalledTimes).isEqualTo(3);
         assertThat(jiangSuCities11).isSameAs(jiangSuCities1);
         assertThat(jiangXiCities11).isSameAs(jiangXiCities1);
 
@@ -164,46 +166,76 @@ public class TableBasedCacheFlusherTest {
 
         String jiangSuCities2 = service.getCities("JiangSu");
         String jiangXiCities2 = service.getCities("JiangXi");
-        assertThat(getCitiesCalledTimes).isEqualTo(4);
+        assertThat(getCitiesCalledTimes).isEqualTo(5);
         assertThat(jiangSuCities2).isNotEqualTo(jiangSuCities1);
         assertThat(jiangXiCities2).isNotEqualTo(jiangXiCities1);
     }
 
+    @Test @SneakyThrows
+    public void getCitiesWithDirectValue() {
+        val service = WestCacheFactory.create(TitaService.class);
 
-    @EqlerConfig("mysql")
-    public interface WestCacheFlusherDao {
-        @Sql("   DROP TABLE IF EXISTS WESTCACHE_FLUSHER;" +
-                "CREATE TABLE WESTCACHE_FLUSHER(" +
-                "   CACHE_KEY VARCHAR(2000) NOT NULL PRIMARY KEY COMMENT 'cache key'," +
-                "   KEY_MATCH VARCHAR(20) DEFAULT 'full' NOT NULL COMMENT 'full:full match,filename:file name match, regex:regex match ant:ant path match'," +
-                "   VALUE_VERSION TINYINT DEFAULT 0 NOT NULL COMMENT 'version of cache, increment it to update cache'," +
-                "   CACHE_STATE TINYINT DEFAULT 1 NOT NULL COMMENT 'direct json value for the cache'," +
-                "   VALUE_TYPE VARCHAR(20) DEFAULT 'none' NOT NULL COMMENT 'value access type, direct: use direct json in DIRECT_VALUE field'," +
-                "   DIRECT_VALUE TEXT" +
-                ") ;")
-        @SqlOptions(onErr = OnErr.Resume)
-        void setup();
+        val prefix = "TableBasedCacheFlusherTest.TitaService.getCities2";
+        val bean = new WestCacheFlusherBean(prefix, "prefix", 0,
+                "direct");
 
-        @Sql("SELECT CACHE_KEY, KEY_MATCH, VALUE_VERSION, VALUE_TYPE " +
-                "FROM WESTCACHE_FLUSHER WHERE CACHE_STATE = 1")
-        List<WestCacheFlusherBean> queryAllBeans();
+        Map<String, String> directValue = Maps.newHashMap();
+        directValue.put("JiangSu", "XXX");
+        directValue.put("JiangXi", "YYY");
+        String json = JSON.toJSONString(directValue, SerializerFeature.WriteClassName);
 
-        @Sql("SELECT DIRECT_VALUE FROM WESTCACHE_FLUSHER " +
-                "WHERE CACHE_KEY = ## AND CACHE_STATE = 1")
-        String getDirectValue(String key);
 
-        @Sql("INSERT INTO WESTCACHE_FLUSHER(CACHE_KEY, KEY_MATCH, VALUE_VERSION, VALUE_TYPE) " +
-                "VALUES(#?#, #?#, #?#, #?#)")
-        void addWestCacheFlusherBean(WestCacheFlusherBean bean);
+        long lastExecuted = flusher.getLastExecuted();
+        dao.addWestCacheFlusherBean(bean);
+        dao.updateDirectValue(prefix, json);
+        service.tita(); // just to make sure that the rotating check thread running
+        do {
+            Thread.sleep(100L);
+        } while (flusher.getLastExecuted() == lastExecuted);
 
-        @Sql("UPDATE WESTCACHE_FLUSHER SET VALUE_VERSION = VALUE_VERSION + 1," +
-                "DIRECT_VALUE = #2# " +
-                "WHERE CACHE_KEY = #1#")
-        int updateDirectValue(String cacheKye, String directValue);
+        String jiangSuCities1 = service.getCities2("JiangSu");
+        String jiangXiCities1 = service.getCities2("JiangXi");
+        assertThat(jiangSuCities1).isEqualTo("XXX");
+        assertThat(jiangXiCities1).isEqualTo("YYY");
 
-        @Sql("UPDATE WESTCACHE_FLUSHER SET VALUE_VERSION = VALUE_VERSION + 1 " +
-                "WHERE CACHE_KEY = ##")
-        void updateWestCacheFlusherBean(String key);
+        String jiangSuCities11 = service.getCities2("JiangSu");
+        String jiangXiCities11 = service.getCities2("JiangXi");
+        assertThat(jiangSuCities11).isSameAs(jiangSuCities1);
+        assertThat(jiangXiCities11).isSameAs(jiangXiCities1);
+
+        lastExecuted = flusher.getLastExecuted();
+        dao.updateWestCacheFlusherBean(prefix);
+        do {
+            Thread.sleep(100L);
+        } while (flusher.getLastExecuted() == lastExecuted);
+
+        String jiangSuCities2 = service.getCities2("JiangSu");
+        String jiangXiCities2 = service.getCities2("JiangXi");
+        assertThat(jiangSuCities2).isNotSameAs(jiangSuCities1);
+        assertThat(jiangXiCities2).isNotSameAs(jiangXiCities1);
+
+        Map<String, String> directValue2 = Maps.newHashMap();
+        directValue2.put("JiangSu", "XXX111");
+        directValue2.put("JiangXi", "YYY222");
+        String json2 = JSON.toJSONString(directValue2, SerializerFeature.WriteClassName);
+
+        lastExecuted = flusher.getLastExecuted();
+        dao.updateDirectValue(prefix, json2);
+        dao.updateWestCacheFlusherBean(prefix);
+        do {
+            Thread.sleep(100L);
+        } while (flusher.getLastExecuted() == lastExecuted);
+
+
+        String jiangSuCitiesA = service.getCities2("JiangSu");
+        String jiangXiCitiesA = service.getCities2("JiangXi");
+        assertThat(jiangSuCitiesA).isEqualTo("XXX111");
+        assertThat(jiangXiCitiesA).isEqualTo("YYY222");
+
+        String jiangSuCitiesA1 = service.getCities2("JiangSu");
+        String jiangXiCitiesA1 = service.getCities2("JiangXi");
+        assertThat(jiangSuCitiesA1).isSameAs(jiangSuCitiesA);
+        assertThat(jiangXiCitiesA1).isSameAs(jiangXiCitiesA);
     }
 
 }

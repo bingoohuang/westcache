@@ -1,8 +1,12 @@
 package com.github.bingoohuang.westcache.flusher;
 
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -12,6 +16,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -42,7 +48,7 @@ MySql SQL:
    DROP TABLE IF EXISTS WESTCACHE_FLUSHER;
    CREATE TABLE WESTCACHE_FLUSHER(
     CACHE_KEY VARCHAR(2000) NOT NULL PRIMARY KEY COMMENT 'cache key',
-	KEY_MATCH VARCHAR(20) DEFAULT 'full' NOT NULL COMMENT 'full:full match,filename:file name match, regex:regex match ant:ant path match',
+	KEY_MATCH VARCHAR(20) DEFAULT 'full' NOT NULL COMMENT 'full:full match,prefix:prefix match',
 	VALUE_VERSION TINYINT DEFAULT 0 NOT NULL COMMENT 'version of cache, increment it to update cache',
 	CACHE_STATE TINYINT DEFAULT 1 NOT NULL COMMENT 'direct json value for the cache',
 	VALUE_TYPE VARCHAR(20) DEFAULT 'none' NOT NULL COMMENT 'value access type, direct: use direct json in DIRECT_VALUE field',
@@ -60,6 +66,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     Lock writeLock = readWriteLock.writeLock();
     List<WestCacheFlusherBean> tableRows = Lists.newArrayList();
     @Getter volatile long lastExecuted = -1;
+    Cache<String, Optional<Map<String, Object>>> prefixDirectCache = CacheBuilder.newBuilder().build();
 
     @Override @SneakyThrows
     public boolean isKeyEnabled(WestCacheOption option, String cacheKey) {
@@ -84,27 +91,50 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         if (!"direct".equals(bean.getValueType())) return null;
 
         if ("full".equals(bean.getKeyMatch())) {
-            return (T) readDirectValue(bean.getCacheKey(), null);
+            return (T) readDirectValue(bean);
         } else if ("prefix".equals(bean.getKeyMatch())) {
             val subKey = cacheKey.substring(bean.getCacheKey().length() + 1);
-            return (T) readDirectValue(bean.getCacheKey(), subKey);
+            return (T) readSubDirectValue(bean, subKey);
         }
 
         return null;
     }
 
-    private WestCacheFlusherBean findBean(String cacheKey) {
+
+    protected abstract List<WestCacheFlusherBean> queryAllBeans();
+
+    protected abstract Object readDirectValue(WestCacheFlusherBean bean);
+
+    protected void flushPrefix(String prefixKey) {
+        prefixDirectCache.invalidate(prefixKey);
+    }
+
+    @SneakyThrows
+    private <T> T readSubDirectValue(final WestCacheFlusherBean bean, String subKey) {
+        val optional = prefixDirectCache.get(bean.getCacheKey(), new Callable<Optional<Map<String, Object>>>() {
+            @Override
+            public Optional<Map<String, Object>> call() throws Exception {
+                val map = (Map<String, Object>) readDirectValue(bean);
+
+                return Optional.fromNullable(map);
+            }
+        });
+
+        return optional.isPresent() ? (T) optional.get().get(subKey) : null;
+    }
+
+    protected WestCacheFlusherBean findBean(String cacheKey) {
         for (val bean : tableRows) {
             if ("full".equals(bean.getKeyMatch())) {
                 if (bean.getCacheKey().equals(cacheKey)) return bean;
             } else if ("prefix".equals(bean.getKeyMatch())) {
-                if (cacheKey.startsWith(bean.getCacheKey())) return bean;
+                if (isPrefix(cacheKey, bean.getCacheKey())) return bean;
             }
         }
         return null;
     }
 
-    private void startupRotateChecker(WestCacheOption option) {
+    protected void startupRotateChecker(WestCacheOption option) {
         lastExecuted = 0;
         val config = option.getConfig();
 
@@ -119,7 +149,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
 
     @SneakyThrows
-    private void checkBeans() {
+    protected void checkBeans() {
         val beans = queryAllBeans();
         if (beans.equals(tableRows)) return;
 
@@ -136,12 +166,8 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         lastExecuted = System.currentTimeMillis();
     }
 
-    protected abstract List<WestCacheFlusherBean> queryAllBeans();
-
-    protected abstract Object readDirectValue(String cacheKey, String subKey);
-
-    private void diff(List<WestCacheFlusherBean> table,
-                      List<WestCacheFlusherBean> beans) {
+    protected void diff(List<WestCacheFlusherBean> table,
+                        List<WestCacheFlusherBean> beans) {
         Map<String, WestCacheFlusherBean> flushKeys = Maps.newHashMap();
         for (val bean : table) {
             val found = find(bean, beans);
@@ -151,19 +177,35 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
             }
         }
 
+        if (flushKeys.isEmpty()) return;
+
+        Set<String> prefixKeys = Sets.newHashSet();
+        Set<String> fullKeys = Sets.newHashSet();
         for (val key : getRegistry().asMap().keySet()) {
             if (flushKeys.containsKey(key)) {
-                flush(key);
+                fullKeys.add(key);
             } else {
                 for (val bean : flushKeys.values()) {
                     if (!"prefix".equals(bean.getKeyMatch())) continue;
-                    if (key.startsWith(bean.getCacheKey())) flush(key);
+                    if (isPrefix(key, bean.getCacheKey())) {
+                        fullKeys.add(key);
+                        prefixKeys.add(bean.getCacheKey());
+                    }
                 }
             }
         }
+
+        for (String fullKey : fullKeys) {
+            flush(fullKey);
+        }
+
+        for (String prefixKey : prefixKeys) {
+            flushPrefix(prefixKey);
+        }
     }
 
-    private WestCacheFlusherBean find(
+
+    protected WestCacheFlusherBean find(
             WestCacheFlusherBean bean,
             List<WestCacheFlusherBean> beans) {
         for (val newbean : beans) {
@@ -171,5 +213,13 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
                 return newbean;
         }
         return null;
+    }
+
+    protected boolean isPrefix(String str, String prefix) {
+        if (!str.startsWith(prefix)) return false;
+        if (str.length() == prefix.length()) return true;
+
+        char nextChar = str.charAt(prefix.length());
+        return nextChar == '.' || nextChar == '_';
     }
 }
