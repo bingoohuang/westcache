@@ -39,9 +39,4 @@ public class CacheApiTest {
         assertThat(cache.orNull()).isEqualTo(north);
         assertThat(getHomeArea()).isEqualTo(south);
     }
-
-    @Test
-    public void apiFull() {
-
-    }
 }

@@ -31,10 +31,19 @@ public abstract class BaseCacheManager implements WestCacheManager {
 
         flusher.register(option, cacheKey, getWestCache());
 
+        val flushCallable = new Callable<Optional<T>>() {
+            @Override public Optional<T> call() throws Exception {
+                T raw =  flusher.getDirectValue(option, cacheKey);
+                if (raw != null) return Optional.fromNullable(raw);
+
+                return callable.call();
+            }
+        };
+
         val wrapCallable = new Callable<Optional<T>>() {
             @Override public Optional<T> call() throws Exception {
-                return option.getSnapshot() == null ? callable.call()
-                        : trySnapshot(option, cacheKey, callable);
+                return option.getSnapshot() == null ? flushCallable.call()
+                        : trySnapshot(option, cacheKey, flushCallable);
             }
         };
         return (Optional<T>) getWestCache().get(cacheKey, wrapCallable);
@@ -56,11 +65,11 @@ public abstract class BaseCacheManager implements WestCacheManager {
         long timeout = option.getConfig().timeoutMillisToSnapshot();
         try {
             return future.get(timeout, TimeUnit.MILLISECONDS);
-        } catch (TimeoutException e) {   // 有限时间内不返回，尝试snapshot
-            log.info("get cache {} timeout in {} millis, try to use snapshot", timeout, cacheKey);
+        } catch (TimeoutException e) {
+            log.info("get cache {} timeout in {} millis, try snapshot", timeout, cacheKey);
             Optional<T> result = option.getSnapshot().readSnapshot(option, cacheKey);
-            log.info("got {} snapshot {}", cacheKey, result != null ? result.orNull() : " not exist");
-            return result == null ? future.get() : result;
+            log.info("got {} snapshot {}", cacheKey, result != null ? result.orNull() : " non-exist");
+            return result != null ? result : future.get();
         }
     }
 

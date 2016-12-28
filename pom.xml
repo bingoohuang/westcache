@@ -167,12 +167,6 @@
             <version>4.1.5.RELEASE</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc14</artifactId>
-            <version>10.2.0.4.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>

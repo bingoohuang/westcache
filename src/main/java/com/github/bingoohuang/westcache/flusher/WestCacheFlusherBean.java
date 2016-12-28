@@ -1,15 +1,13 @@
 package com.github.bingoohuang.westcache.flusher;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/28.
  */
 @Data @AllArgsConstructor @NoArgsConstructor public class WestCacheFlusherBean {
-    private String cacheKey, keyMatch;
-    private int valueVersion;
-    private String valueType;
-    private String directValue;
+    @Getter @Setter private String cacheKey, keyMatch;
+    @Getter @Setter private int valueVersion;
+    @Getter @Setter private String valueType;
 }

@@ -13,4 +13,6 @@ public interface WestCacheFlusher {
                      WestCache<String, Object> cache);
 
     boolean flush(String cacheKey);
+
+    <T> T getDirectValue(WestCacheOption option, String cacheKey);
 }

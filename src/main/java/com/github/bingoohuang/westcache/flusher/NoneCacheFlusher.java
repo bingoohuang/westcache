@@ -17,6 +17,10 @@ public class NoneCacheFlusher implements WestCacheFlusher {
         return false;
     }
 
+    @Override public <T> T getDirectValue(WestCacheOption option, String cacheKey) {
+        return null;
+    }
+
     @Override
     public boolean isKeyEnabled(WestCacheOption option, String cacheKey) {
         return true;

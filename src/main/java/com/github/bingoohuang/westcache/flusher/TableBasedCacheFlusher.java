@@ -2,7 +2,7 @@ package com.github.bingoohuang.westcache.flusher;
 
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -11,7 +11,7 @@ import lombok.val;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -19,23 +19,36 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /*
+ORACLE SQL:
+
  DROP TABLE WESTCACHE_FLUSHER;
  CREATE TABLE WESTCACHE_FLUSHER(
-    CACHE_KEY VARCHAR2(2000 BYTE) NOT NULL,
+    CACHE_KEY VARCHAR2(2000 BYTE) NOT NULL PRIMARY KEY,
 	KEY_MATCH VARCHAR2(20 BYTE) DEFAULT 'full' NOT NULL,
 	VALUE_VERSION NUMBER DEFAULT 0 NOT NULL,
 	CACHE_STATE NUMBER DEFAULT 1 NOT NULL,
 	VALUE_TYPE VARCHAR2(20 BYTE) DEFAULT 'none' NOT NULL,
-	DIRECT_VALUE LONG,
-	CONSTRAINT WESTCACHE_FLUSHER_PK PRIMARY KEY (CACHE_KEY)
+	DIRECT_VALUE LONG
    ) ;
 
    COMMENT ON COLUMN WESTCACHE_FLUSHER.CACHE_KEY IS 'cache key';
-   COMMENT ON COLUMN WESTCACHE_FLUSHER.KEY_MATCH IS 'full:full match,filename:file name match, regex:regex match ant:ant path match';
+   COMMENT ON COLUMN WESTCACHE_FLUSHER.KEY_MATCH IS 'full:full match,prefix:prefix match';
    COMMENT ON COLUMN WESTCACHE_FLUSHER.VALUE_VERSION IS 'version of cache, increment it to update cache';
    COMMENT ON COLUMN WESTCACHE_FLUSHER.DIRECT_VALUE IS 'direct json value for the cache';
    COMMENT ON COLUMN WESTCACHE_FLUSHER.CACHE_STATE IS '0 disabled 1 enabled';
    COMMENT ON COLUMN WESTCACHE_FLUSHER.VALUE_TYPE IS 'value access type, direct: use direct json in DIRECT_VALUE field';
+
+MySql SQL:
+   DROP TABLE IF EXISTS WESTCACHE_FLUSHER;
+   CREATE TABLE WESTCACHE_FLUSHER(
+    CACHE_KEY VARCHAR(2000) NOT NULL PRIMARY KEY COMMENT 'cache key',
+	KEY_MATCH VARCHAR(20) DEFAULT 'full' NOT NULL COMMENT 'full:full match,filename:file name match, regex:regex match ant:ant path match',
+	VALUE_VERSION TINYINT DEFAULT 0 NOT NULL COMMENT 'version of cache, increment it to update cache',
+	CACHE_STATE TINYINT DEFAULT 1 NOT NULL COMMENT 'direct json value for the cache',
+	VALUE_TYPE VARCHAR(20) DEFAULT 'none' NOT NULL COMMENT 'value access type, direct: use direct json in DIRECT_VALUE field',
+	DIRECT_VALUE TEXT
+   ) ;
+
  */
 
 /**
@@ -63,9 +76,30 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         return bean != null;
     }
 
+    @Override
+    public <T> T getDirectValue(WestCacheOption option, String cacheKey) {
+        val bean = findBean(cacheKey);
+        if (bean == null) return null;
+
+        if (!"direct".equals(bean.getValueType())) return null;
+
+        if ("full".equals(bean.getKeyMatch())) {
+            return (T) readDirectValue(bean.getCacheKey(), null);
+        } else if ("prefix".equals(bean.getKeyMatch())) {
+            val subKey = cacheKey.substring(bean.getCacheKey().length() + 1);
+            return (T) readDirectValue(bean.getCacheKey(), subKey);
+        }
+
+        return null;
+    }
+
     private WestCacheFlusherBean findBean(String cacheKey) {
         for (val bean : tableRows) {
-            if (bean.getCacheKey().equals(cacheKey)) return bean;
+            if ("full".equals(bean.getKeyMatch())) {
+                if (bean.getCacheKey().equals(cacheKey)) return bean;
+            } else if ("prefix".equals(bean.getKeyMatch())) {
+                if (cacheKey.startsWith(bean.getCacheKey())) return bean;
+            }
         }
         return null;
     }
@@ -73,12 +107,16 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     private void startupRotateChecker(WestCacheOption option) {
         lastExecuted = 0;
         val config = option.getConfig();
+
+        checkBeans();
+        long intervalMillis = config.rotateCheckIntervalMillis();
         config.executorService().scheduleAtFixedRate(new Runnable() {
             @Override public void run() {
                 checkBeans();
             }
-        }, 0, config.rotateCheckIntervalMillis(), MILLISECONDS);
+        }, intervalMillis, intervalMillis, MILLISECONDS);
     }
+
 
     @SneakyThrows
     private void checkBeans() {
@@ -100,20 +138,27 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
     protected abstract List<WestCacheFlusherBean> queryAllBeans();
 
+    protected abstract Object readDirectValue(String cacheKey, String subKey);
+
     private void diff(List<WestCacheFlusherBean> table,
                       List<WestCacheFlusherBean> beans) {
-        Set<String> flushKeys = Sets.newHashSet();
+        Map<String, WestCacheFlusherBean> flushKeys = Maps.newHashMap();
         for (val bean : table) {
             val found = find(bean, beans);
             if (found == null ||
                     found.getValueVersion() != bean.getValueVersion()) {
-                flushKeys.add(bean.getCacheKey());
+                flushKeys.put(bean.getCacheKey(), bean);
             }
         }
 
         for (val key : getRegistry().asMap().keySet()) {
-            if (flushKeys.contains(key)) {
+            if (flushKeys.containsKey(key)) {
                 flush(key);
+            } else {
+                for (val bean : flushKeys.values()) {
+                    if (!"prefix".equals(bean.getKeyMatch())) continue;
+                    if (key.startsWith(bean.getCacheKey())) flush(key);
+                }
             }
         }
     }
