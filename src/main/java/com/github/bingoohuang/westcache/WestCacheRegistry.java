@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.*;
-import com.github.bingoohuang.westcache.cachekey.DefaultKeyStrategy;
-import com.github.bingoohuang.westcache.cachekey.SimpleKeyStrategy;
+import com.github.bingoohuang.westcache.cachekey.DefaultKeyer;
+import com.github.bingoohuang.westcache.cachekey.SimpleKeyer;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.DiamondCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.NoneCacheFlusher;
@@ -23,14 +23,14 @@ public class WestCacheRegistry {
     RegistryTemplate<WestCacheConfig> configRegistry = new RegistryTemplate<WestCacheConfig>();
 
     static {
-        registerConfig("default", new DefaultWestCacheConfig());
+        register("default", new DefaultWestCacheConfig());
     }
 
-    public void registerConfig(String configName, WestCacheConfig config) {
+    public void register(String configName, WestCacheConfig config) {
         configRegistry.register(configName, config);
     }
 
-    public void registerConfigForcely(String configName, WestCacheConfig config) {
+    public void registerForcely(String configName, WestCacheConfig config) {
         configRegistry.registerForcely(configName, config);
     }
 
@@ -45,16 +45,16 @@ public class WestCacheRegistry {
     RegistryTemplate<WestCacheFlusher> flusherRegistry = new RegistryTemplate<WestCacheFlusher>();
 
     static {
-        registerFlusher("none", new NoneCacheFlusher());
-        registerFlusher("simple", new SimpleCacheFlusher());
-        registerFlusher("diamond", new DiamondCacheFlusher());
+        register("none", new NoneCacheFlusher());
+        register("simple", new SimpleCacheFlusher());
+        register("diamond", new DiamondCacheFlusher());
     }
 
-    public void registerFlusher(String flusherName, WestCacheFlusher flusher) {
+    public void register(String flusherName, WestCacheFlusher flusher) {
         flusherRegistry.register(flusherName, flusher);
     }
 
-    public void registerFlusherForcely(String flusherName, WestCacheFlusher flusher) {
+    public void registerForcely(String flusherName, WestCacheFlusher flusher) {
         flusherRegistry.registerForcely(flusherName, flusher);
     }
 
@@ -78,15 +78,15 @@ public class WestCacheRegistry {
     RegistryTemplate<WestCacheManager> managerRegistry = new RegistryTemplate<WestCacheManager>();
 
     static {
-        registerManager("guava", new GuavaCacheManager());
-        registerManager("diamond", new DiamondCacheManager());
+        register("guava", new GuavaCacheManager());
+        register("diamond", new DiamondCacheManager());
     }
 
-    public void registerManager(String managerName, WestCacheManager manager) {
+    public void register(String managerName, WestCacheManager manager) {
         managerRegistry.register(managerName, manager);
     }
 
-    public void registerManagerForcely(String managerName, WestCacheManager manager) {
+    public void registerForcely(String managerName, WestCacheManager manager) {
         managerRegistry.registerForcely(managerName, manager);
     }
 
@@ -101,14 +101,14 @@ public class WestCacheRegistry {
     RegistryTemplate<WestCacheSnapshot> snapshotRegistry = new RegistryTemplate<WestCacheSnapshot>();
 
     static {
-        registerSnapshot("file", new FileCacheSnapshot());
+        register("file", new FileCacheSnapshot());
     }
 
-    public void registerSnapshot(String snapshotName, WestCacheSnapshot snapshot) {
+    public void register(String snapshotName, WestCacheSnapshot snapshot) {
         snapshotRegistry.register(snapshotName, snapshot);
     }
 
-    public void registerSnapshotForcely(String snapshotName, WestCacheSnapshot snapshot) {
+    public void registerForcely(String snapshotName, WestCacheSnapshot snapshot) {
         snapshotRegistry.registerForcely(snapshotName, snapshot);
     }
 
@@ -120,18 +120,18 @@ public class WestCacheRegistry {
         return snapshotRegistry.get(snapshotName);
     }
 
-    RegistryTemplate<WestCacheKeyStrategy> keyStrategyRegistry = new RegistryTemplate<WestCacheKeyStrategy>();
+    RegistryTemplate<WestCacheKeyer> keyStrategyRegistry = new RegistryTemplate<WestCacheKeyer>();
 
     static {
-        registerKeyStrategy("default", new DefaultKeyStrategy());
-        registerKeyStrategy("simple", new SimpleKeyStrategy());
+        register("default", new DefaultKeyer());
+        register("simple", new SimpleKeyer());
     }
 
-    public void registerKeyStrategy(String keyStrategyName, WestCacheKeyStrategy keyStrategy) {
+    public void register(String keyStrategyName, WestCacheKeyer keyStrategy) {
         keyStrategyRegistry.register(keyStrategyName, keyStrategy);
     }
 
-    public void registerKeyStrategyForcely(String keyStrategyName, WestCacheKeyStrategy keyStrategy) {
+    public void registerForcely(String keyStrategyName, WestCacheKeyer keyStrategy) {
         keyStrategyRegistry.registerForcely(keyStrategyName, keyStrategy);
     }
 
@@ -139,7 +139,7 @@ public class WestCacheRegistry {
         keyStrategyRegistry.deregister(keyStrategyName);
     }
 
-    public WestCacheKeyStrategy getKeyStrategy(String keyStrategyName) {
+    public WestCacheKeyer getKeyStrategy(String keyStrategyName) {
         return keyStrategyRegistry.get(keyStrategyName);
     }
 }

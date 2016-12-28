@@ -63,7 +63,7 @@ public class RefreshTest {
 
     @BeforeClass
     public static void beforeClass() {
-        WestCacheRegistry.registerConfig("snapshotTestConfig",
+        WestCacheRegistry.register("snapshotTestConfig",
                 new DefaultWestCacheConfig() {
                     @Override public long timeoutMillisToSnapshot() {
                         return 100L;

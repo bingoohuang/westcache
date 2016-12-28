@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
  */
-public abstract class WestCacheKeyStrategy {
+public abstract class WestCacheKeyer {
     public abstract String getCacheKey(WestCacheOption option,
                                        String methodName,
                                        Object bean,

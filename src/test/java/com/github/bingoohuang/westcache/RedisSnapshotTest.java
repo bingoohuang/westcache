@@ -23,7 +23,7 @@ public class RedisSnapshotTest {
     @BeforeClass
     public static void beforeClass() {
         jedis = new Jedis("127.0.0.1", 7379);
-        registerSnapshot("redisSnapshot",
+        WestCacheRegistry.register("redisSnapshot",
                 new RedisCacheSnapshot(jedis));
     }
 

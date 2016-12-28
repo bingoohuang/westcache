@@ -14,7 +14,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.registerConfig;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.register;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -39,7 +39,7 @@ public class SnapshotTest {
 
     @BeforeClass
     public static void beforeClass() {
-        registerConfig("snapshotTestConfig", new DefaultWestCacheConfig() {
+        register("snapshotTestConfig", new DefaultWestCacheConfig() {
             @Override
             public long timeoutMillisToSnapshot() {
                 return 100L;

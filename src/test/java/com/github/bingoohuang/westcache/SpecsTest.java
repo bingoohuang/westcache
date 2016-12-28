@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.cachekey.DefaultKeyStrategy;
+import com.github.bingoohuang.westcache.cachekey.DefaultKeyer;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Splitter;
@@ -30,7 +30,7 @@ public class SpecsTest {
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     @WestCacheable(snapshot = "file", config = "specsTestConfig",
-            keyStrategy = "prefix", specs = "key.prefix=demo.")
+            keyer = "prefix", specs = "key.prefix=demo.")
     public @interface DemoCacheMe {
     }
 
@@ -42,7 +42,7 @@ public class SpecsTest {
 
     @BeforeClass
     public static void beforeClass() {
-        registerKeyStrategy("prefix", new DefaultKeyStrategy() {
+        WestCacheRegistry.register("prefix", new DefaultKeyer() {
             @Override
             public String getCacheKey(WestCacheOption option,
                                       Method method,
@@ -57,7 +57,7 @@ public class SpecsTest {
                 return cacheKey;
             }
         });
-        registerConfig("specsTestConfig",
+        WestCacheRegistry.register("specsTestConfig",
                 new DefaultWestCacheConfig() {
                     @Override
                     public long timeoutMillisToSnapshot() {

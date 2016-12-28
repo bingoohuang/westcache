@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache.cachekey;
 
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
-import com.github.bingoohuang.westcache.base.WestCacheKeyStrategy;
+import com.github.bingoohuang.westcache.base.WestCacheKeyer;
 import com.github.bingoohuang.westcache.cglib.Cglibs;
 import com.google.common.base.Splitter;
 import lombok.val;
@@ -9,7 +9,7 @@ import lombok.val;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
  */
-public class DefaultKeyStrategy extends WestCacheKeyStrategy {
+public class DefaultKeyer extends WestCacheKeyer {
     @Override
     public String getCacheKey(WestCacheOption option,
                               String methodName,

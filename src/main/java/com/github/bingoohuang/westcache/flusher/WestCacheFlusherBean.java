@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
     private String cacheKey, keyMatch;
     private int valueVersion;
     private String valueType;
+    private String directValue;
 }

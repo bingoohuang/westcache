@@ -16,7 +16,7 @@ public class WestCacheOption {
     @Getter private final WestCacheManager manager;
     @Getter private final WestCacheSnapshot snapshot;
     @Getter private final WestCacheConfig config;
-    @Getter private final WestCacheKeyStrategy keyStrategy;
+    @Getter private final WestCacheKeyer keyStrategy;
     @Getter private final String key;
     @Getter private final String specs;
 
@@ -29,7 +29,7 @@ public class WestCacheOption {
         WestCacheManager manager = WestCacheRegistry.getManager("guava");
         WestCacheSnapshot snapshot = WestCacheRegistry.getSnapshot("none");
         WestCacheConfig config = WestCacheRegistry.getConfig("default");
-        WestCacheKeyStrategy keyStrategy = WestCacheRegistry.getKeyStrategy("default");
+        WestCacheKeyer keyStrategy = WestCacheRegistry.getKeyStrategy("default");
         String key = "";
         String specs = "";
 
@@ -77,7 +77,7 @@ public class WestCacheOption {
             this.manager = WestCacheRegistry.getManager(westCacheable.manager());
             this.snapshot = WestCacheRegistry.getSnapshot(westCacheable.snapshot());
             this.config = WestCacheRegistry.getConfig(westCacheable.config());
-            this.keyStrategy = WestCacheRegistry.getKeyStrategy(westCacheable.keyStrategy());
+            this.keyStrategy = WestCacheRegistry.getKeyStrategy(westCacheable.keyer());
             this.key = westCacheable.key();
             this.specs = westCacheable.specs();
             return build();

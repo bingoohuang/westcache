@@ -12,10 +12,11 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /*
  DROP TABLE WESTCACHE_FLUSHER;
@@ -44,7 +45,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     Lock readLock = readWriteLock.readLock();
     Lock writeLock = readWriteLock.writeLock();
-    List<WestCacheFlusherBean> table = Lists.newArrayList();
+    List<WestCacheFlusherBean> tableRows = Lists.newArrayList();
     @Getter volatile long lastExecuted = -1;
 
     @Override @SneakyThrows
@@ -58,28 +59,33 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
             }
         };
 
-        for (val bean : table) {
-            if (bean.getCacheKey().equals(cacheKey)) return true;
-        }
+        val bean = findBean(cacheKey);
+        return bean != null;
+    }
 
-        return false;
+    private WestCacheFlusherBean findBean(String cacheKey) {
+        for (val bean : tableRows) {
+            if (bean.getCacheKey().equals(cacheKey)) return bean;
+        }
+        return null;
     }
 
     private void startupRotateChecker(WestCacheOption option) {
         lastExecuted = 0;
-        option.getConfig().executorService().scheduleAtFixedRate(new Runnable() {
+        val config = option.getConfig();
+        config.executorService().scheduleAtFixedRate(new Runnable() {
             @Override public void run() {
                 checkBeans();
             }
-        }, 0, 5000, TimeUnit.MILLISECONDS);
+        }, 0, config.rotateCheckIntervalMillis(), MILLISECONDS);
     }
 
     @SneakyThrows
     private void checkBeans() {
         val beans = queryAllBeans();
-        if (beans.equals(table)) return;
+        if (beans.equals(tableRows)) return;
 
-        diff(table, beans);
+        diff(tableRows, beans);
 
         writeLock.lock();
         @Cleanup val i = new Closeable() {
@@ -88,7 +94,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
             }
         };
 
-        table = beans;
+        tableRows = beans;
         lastExecuted = System.currentTimeMillis();
     }
 

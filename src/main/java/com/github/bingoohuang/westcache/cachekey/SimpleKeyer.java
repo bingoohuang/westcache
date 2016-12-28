@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.cachekey;
 
-import com.github.bingoohuang.westcache.base.WestCacheKeyStrategy;
+import com.github.bingoohuang.westcache.base.WestCacheKeyer;
 import com.github.bingoohuang.westcache.cglib.Cglibs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.val;
@@ -8,7 +8,7 @@ import lombok.val;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/28.
  */
-public class SimpleKeyStrategy extends WestCacheKeyStrategy {
+public class SimpleKeyer extends WestCacheKeyer {
     @Override
     public String getCacheKey(WestCacheOption option,
                               String methodName,
@@ -22,7 +22,7 @@ public class SimpleKeyStrategy extends WestCacheKeyStrategy {
 
         if (args.length == 0) return mainPart;
 
-        return mainPart + DefaultKeyStrategy.joinArgs(args);
+        return mainPart + DefaultKeyer.joinArgs(args);
     }
 
     private String removePackage(String className) {

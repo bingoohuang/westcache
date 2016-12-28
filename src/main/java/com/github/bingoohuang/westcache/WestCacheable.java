@@ -49,7 +49,7 @@ public @interface WestCacheable {
      *
      * @return key strategy's name.
      */
-    String keyStrategy() default "default";
+    String keyer() default "default";
 
     /**
      * some specification for customized process.

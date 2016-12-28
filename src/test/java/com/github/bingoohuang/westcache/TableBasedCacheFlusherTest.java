@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.TableBasedCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import lombok.SneakyThrows;
@@ -15,8 +16,6 @@ import org.n3r.eql.eqler.annotations.SqlOptions;
 
 import java.util.List;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.deregisterFlusher;
-import static com.github.bingoohuang.westcache.WestCacheRegistry.registerFlusher;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -34,16 +33,22 @@ public class TableBasedCacheFlusherTest {
                 return dao.queryAllBeans();
             }
         };
-        registerFlusher("oracle", flusher);
+        WestCacheRegistry.register("oracle", flusher);
+        WestCacheRegistry.register("test", new DefaultWestCacheConfig() {
+            @Override public long rotateCheckIntervalMillis() {
+                return 1000;
+            }
+        });
     }
 
     @AfterClass
     public static void afterClass() {
-        deregisterFlusher("oracle");
+        WestCacheRegistry.deregisterFlusher("oracle");
+        WestCacheRegistry.deregisterConfig("test");
     }
 
     public static class TitaService {
-        @WestCacheable(flusher = "oracle", keyStrategy = "simple")
+        @WestCacheable(flusher = "oracle", keyer = "simple", config = "test")
         public String tita() {
             return "" + System.currentTimeMillis();
         }
@@ -55,8 +60,7 @@ public class TableBasedCacheFlusherTest {
         val tita1 = service.tita();
 
         val cacheKey = "TableBasedCacheFlusherTest.TitaService.tita";
-        val bean = new WestCacheFlusherBean(
-                cacheKey, "full", 0, "none");
+        val bean = new WestCacheFlusherBean(cacheKey, "full", 0, "none", null);
         long lastExecuted = flusher.getLastExecuted();
 
         dao.addWestCacheFlusherBean(bean);
