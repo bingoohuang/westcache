@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache.spring;
 
 import com.github.bingoohuang.westcache.WestCacheFactory;
 import com.github.bingoohuang.westcache.WestCacheable;
+import com.github.bingoohuang.westcache.utils.Anns;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -44,12 +45,13 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
             public boolean match(MetadataReader metadataReader,
                                  MetadataReaderFactory metadataReaderFactory
             ) throws IOException {
-                val className = metadataReader.getClassMetadata().getClassName();
+                val classMetadata = metadataReader.getClassMetadata();
+                val className = classMetadata.getClassName();
                 Class c = Class.forName(className);
 
                 for (Method m : c.getMethods()) {
-                    if (!m.isAnnotationPresent(WestCacheable.class))
-                        return false;
+                    val westCacheable = Anns.parseAnn(m, WestCacheable.class);
+                    if (westCacheable == null) return false;
                 }
 
                 return true;

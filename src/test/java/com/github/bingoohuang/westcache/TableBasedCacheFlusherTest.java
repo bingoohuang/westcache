@@ -61,22 +61,19 @@ public class TableBasedCacheFlusherTest {
         WestCacheRegistry.deregisterConfig("test");
     }
 
+    @WestCacheable(flusher = "table", keyer = "simple", config = "test")
     public static abstract class TitaService {
-        @WestCacheable(flusher = "table", keyer = "simple", config = "test")
         public String tita() {
             return "" + System.currentTimeMillis();
         }
 
-        @WestCacheable(flusher = "table", keyer = "simple", config = "test")
         public abstract String directValue();
 
-        @WestCacheable(flusher = "table", keyer = "simple", config = "test")
         public String getCities(String provinceCode) {
             ++getCitiesCalledTimes;
             return provinceCode + System.currentTimeMillis();
         }
 
-        @WestCacheable(flusher = "table", keyer = "simple", config = "test")
         public abstract String getCities2(String provinceCode);
     }
 
