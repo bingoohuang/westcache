@@ -25,17 +25,19 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
         this(jedisCommands, "westcache:");
     }
 
-    @Override public void saveSnapshot(WestCacheOption option, String cacheKey, Object cacheValue) {
+    @Override
+    public void saveSnapshot(WestCacheOption option, String cacheKey, Object cacheValue) {
         val json = JSON.toJSONString(cacheValue, WriteClassName);
         jedisCommands.set(prefix + cacheKey, json);
     }
 
-    @Override public <T> Optional<T> readSnapshot(WestCacheOption option, String cacheKey) {
+    @Override
+    public Optional<Object> readSnapshot(WestCacheOption option, String cacheKey) {
         String json = jedisCommands.get(prefix + cacheKey);
         if (json == null) return null;
 
         Object object = JSON.parse(json);
-        return (Optional<T>) Optional.of(object);
+        return Optional.of(object);
     }
 
     @Override public void deleteSnapshot(String cacheKey) {

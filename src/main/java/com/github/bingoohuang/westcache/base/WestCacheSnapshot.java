@@ -9,22 +9,24 @@ import com.google.common.base.Optional;
 public interface WestCacheSnapshot {
     /**
      * save the cached value to snapshot place.
+     *
      * @param option
-     * @param cacheKey cache key.
+     * @param cacheKey   cache key.
      * @param cacheValue cache value.
      */
     void saveSnapshot(WestCacheOption option, String cacheKey, Object cacheValue);
 
     /**
      * read the cached value from snapshot place.
-     * @param <T> cache value type
+     *
      * @param option
-     *@param cacheKey cache key.  @return optional of cache value
+     * @param cacheKey cache key.  @return optional of cache value
      */
-    <T> Optional<T> readSnapshot(WestCacheOption option, String cacheKey);
+    Optional<Object> readSnapshot(WestCacheOption option, String cacheKey);
 
     /**
      * clear the cached value from snapshot place.
+     *
      * @param cacheKey cache key.
      */
     void deleteSnapshot(String cacheKey);

@@ -27,9 +27,9 @@ public class CacheApiTest {
         setHomeArea(north);
         String cacheKey = "api.cache.key";
         val option = newBuilder().build();
-        Optional<String> cache = option.getManager().get(option, cacheKey, new Callable<Optional<String>>() {
-            @Override public Optional<String> call() throws Exception {
-                return Optional.fromNullable(getHomeAreaWithCache());
+        Optional<Object> cache = option.getManager().get(option, cacheKey, new Callable<Optional<Object>>() {
+            @Override public Optional<Object> call() throws Exception {
+                return Optional.<Object>fromNullable(getHomeAreaWithCache());
             }
         });
         assertThat(cache.orNull()).isEqualTo(north);

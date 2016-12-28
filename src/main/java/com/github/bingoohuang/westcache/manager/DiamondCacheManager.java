@@ -12,23 +12,24 @@ import java.util.concurrent.Callable;
  */
 public class DiamondCacheManager extends BaseCacheManager {
     public static String GROUP = "west.cache.manager";
-    DiamondWestCache westCache = new DiamondWestCache();
 
-    @Override public WestCache<String, Object> getWestCache() {
-        return westCache;
+    public DiamondCacheManager() {
+        super(new DiamondWestCache());
     }
 
-    public static class DiamondWestCache implements WestCache<String, Object> {
-        @Override public Object get(String cacheKey, Callable<?> callable) {
+    public static class DiamondWestCache implements WestCache {
+        @Override
+        public Optional<Object> get(String cacheKey, Callable<Optional<Object>> callable) {
             String json = new Miner().getStone(GROUP, cacheKey);
             return Optional.fromNullable(JSON.parse(json));
         }
 
-        @Override public Object getIfPresent(String cacheKey) {
+        @Override public Optional<Object> getIfPresent(String cacheKey) {
             return get(cacheKey, null);
         }
 
-        @Override public void put(String cacheKey, Object cacheValue) {
+        @Override
+        public void put(String cacheKey, Optional<Object> cacheValue) {
             throw new UnsupportedOperationException("DiamondCacheManager put is unsupported");
         }
 

@@ -14,7 +14,7 @@ import lombok.val;
  */
 @Slf4j
 public class SimpleCacheFlusher implements WestCacheFlusher {
-    @Getter private Cache<String, WestCache<String, Object>> registry;
+    @Getter private Cache<String, WestCache> registry;
 
     {
         registry = CacheBuilder.newBuilder().build();
@@ -28,7 +28,7 @@ public class SimpleCacheFlusher implements WestCacheFlusher {
     @Override
     public boolean register(WestCacheOption option,
                             String cacheKey,
-                            WestCache<String, Object> cache) {
+                            WestCache cache) {
         val westCache = registry.getIfPresent(cacheKey);
         log.debug("register flush key {} for westcache {}", cacheKey, westCache);
 

@@ -9,7 +9,7 @@ import com.github.bingoohuang.westcache.utils.WestCacheOption;
  */
 public class NoneCacheFlusher implements WestCacheFlusher {
     @Override
-    public boolean register(WestCacheOption option, String cacheKey, WestCache<String, Object> cache) {
+    public boolean register(WestCacheOption option, String cacheKey, WestCache cache) {
         return false;
     }
 

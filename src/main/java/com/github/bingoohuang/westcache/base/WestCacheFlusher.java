@@ -10,7 +10,7 @@ public interface WestCacheFlusher {
 
     boolean register(WestCacheOption option,
                      String cacheKey,
-                     WestCache<String, Object> cache);
+                     WestCache cache);
 
     boolean flush(String cacheKey);
 

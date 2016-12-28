@@ -18,7 +18,7 @@ public class DiamondCacheFlusher extends SimpleCacheFlusher {
     @Override
     public boolean register(WestCacheOption option,
                             final String cacheKey,
-                            WestCache<String, Object> cache) {
+                            WestCache cache) {
         boolean firstRegistered = super.register(option, cacheKey, cache);
         if (!firstRegistered) return false;
 

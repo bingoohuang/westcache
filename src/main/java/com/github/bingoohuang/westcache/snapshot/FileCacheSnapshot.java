@@ -26,13 +26,13 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
     }
 
     @Override @SneakyThrows @SuppressWarnings("unchecked")
-    public <T> Optional<T> readSnapshot(WestCacheOption option, String cacheKey) {
+    public Optional<Object> readSnapshot(WestCacheOption option, String cacheKey) {
         File snapshotFile = getSnapshotFile(cacheKey);
         if (!snapshotFile.exists() || !snapshotFile.isFile()) return null;
 
         String json = Files.toString(snapshotFile, Charsets.UTF_8);
         Object object = JSON.parse(json);
-        return (Optional<T>) Optional.fromNullable(object);
+        return Optional.fromNullable(object);
     }
 
     @Override public void deleteSnapshot(String cacheKey) {

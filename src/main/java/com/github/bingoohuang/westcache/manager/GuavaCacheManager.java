@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.manager;
 
 import com.github.bingoohuang.westcache.base.WestCache;
+import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.UncheckedExecutionException;
@@ -12,9 +13,15 @@ import java.util.concurrent.Callable;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
  */
 public class GuavaCacheManager extends BaseCacheManager {
-    private class GuavaWestCache implements WestCache<String, Object> {
+    public GuavaCacheManager() {
+        super(new GuavaWestCache());
+    }
+
+    private static class GuavaWestCache implements WestCache {
+        private Cache<String, Optional<Object>> cache = CacheBuilder.newBuilder().build();
+
         @Override @SneakyThrows
-        public Object get(String cacheKey, Callable<?> callable) {
+        public Optional<Object> get(String cacheKey, Callable<Optional<Object>> callable) {
             try {
                 return cache.get(cacheKey, callable);
             } catch (UncheckedExecutionException ex) {
@@ -22,11 +29,12 @@ public class GuavaCacheManager extends BaseCacheManager {
             }
         }
 
-        @Override public Object getIfPresent(String cacheKey) {
+        @Override public Optional<Object> getIfPresent(String cacheKey) {
             return cache.getIfPresent(cacheKey);
         }
 
-        @Override public void put(String cacheKey, Object cacheValue) {
+        @Override
+        public void put(String cacheKey, Optional<Object> cacheValue) {
             cache.put(cacheKey, cacheValue);
         }
 
@@ -35,12 +43,4 @@ public class GuavaCacheManager extends BaseCacheManager {
         }
     }
 
-
-    private Cache<String, Object> cache = CacheBuilder.newBuilder().<String, Object>build();
-    private WestCache<String, Object> westCache = new GuavaWestCache();
-
-
-    @Override public WestCache<String, Object> getWestCache() {
-        return westCache;
-    }
 }
