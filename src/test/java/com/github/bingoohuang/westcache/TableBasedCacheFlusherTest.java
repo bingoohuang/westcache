@@ -6,6 +6,7 @@ import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.dao.WestCacheFlusherDao;
 import com.github.bingoohuang.westcache.flusher.TableBasedCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/28.
@@ -28,6 +30,17 @@ public class TableBasedCacheFlusherTest {
     static TableBasedCacheFlusher flusher;
     static volatile long lastReadDirectValue;
     static volatile long getCitiesCalledTimes;
+
+    public interface Loader {
+        Object load();
+    }
+
+    public static class MyLoader implements Loader {
+
+        @Override public Object load() {
+            return "HaHa, I'm a demo only";
+        }
+    }
 
     @BeforeClass
     public static void beforeClass() {
@@ -40,6 +53,18 @@ public class TableBasedCacheFlusherTest {
             @Override @SneakyThrows
             protected Object readDirectValue(final WestCacheFlusherBean bean) {
                 lastReadDirectValue = System.currentTimeMillis();
+
+                String specs = bean.getSpecs();
+                if (isNotBlank(specs)) {
+                    val splitter = Splitter.on(';').withKeyValueSeparator('=');
+                    val specsMap = splitter.split(specs);
+                    val loaderClass = specsMap.get("loaderClass");
+                    if (isNotBlank(loaderClass)) {
+                        Class<?> clazz = Class.forName(loaderClass);
+                        val loader = (Loader) clazz.newInstance();
+                        return loader.load();
+                    }
+                }
 
                 String directJson = dao.getDirectValue(bean.getCacheKey());
                 if (isBlank(directJson)) return null;
@@ -75,6 +100,8 @@ public class TableBasedCacheFlusherTest {
         }
 
         public abstract String getCities2(String provinceCode);
+
+        public abstract String specs();
     }
 
     @Test @SneakyThrows
@@ -181,7 +208,6 @@ public class TableBasedCacheFlusherTest {
         directValue.put("JiangXi", "YYY");
         String json = JSON.toJSONString(directValue, SerializerFeature.WriteClassName);
 
-
         long lastExecuted = flusher.getLastExecuted();
         dao.addWestCacheFlusherBean(bean);
         dao.updateDirectValue(prefix, json);
@@ -234,4 +260,22 @@ public class TableBasedCacheFlusherTest {
         assertThat(jiangXiCitiesA1).isSameAs(jiangXiCitiesA);
     }
 
+    @Test @SneakyThrows
+    public void specs() {
+        val service = WestCacheFactory.create(TitaService.class);
+
+        val prefix = "TableBasedCacheFlusherTest.TitaService.specs";
+        val bean = new WestCacheFlusherBean(prefix, "full", 0,
+                "direct", "loaderClass=com.github.bingoohuang.westcache.TableBasedCacheFlusherTest$MyLoader");
+
+        long lastExecuted = flusher.getLastExecuted();
+        dao.addWestCacheFlusherBean(bean);
+        service.tita(); // just to make sure that the rotating check thread running
+        do {
+            Thread.sleep(100L);
+        } while (flusher.getLastExecuted() == lastExecuted);
+
+        val r1 = service.specs();
+        assertThat(r1).isEqualTo("HaHa, I'm a demo only");
+    }
 }

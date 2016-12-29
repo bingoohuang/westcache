@@ -21,8 +21,8 @@ public interface WestCacheFlusherDao {
             "WHERE CACHE_KEY = ## AND CACHE_STATE = 1")
     String getDirectValue(String key);
 
-    @Sql("INSERT INTO WESTCACHE_FLUSHER(CACHE_KEY, KEY_MATCH, VALUE_VERSION, VALUE_TYPE) " +
-            "VALUES(#?#, #?#, #?#, #?#)")
+    @Sql("INSERT INTO WESTCACHE_FLUSHER(CACHE_KEY, KEY_MATCH, VALUE_VERSION, VALUE_TYPE, SPECS) " +
+            "VALUES(#?#, #?#, #?#, #?#, #?#)")
     void addWestCacheFlusherBean(WestCacheFlusherBean bean);
 
     @Sql("UPDATE WESTCACHE_FLUSHER SET VALUE_VERSION = VALUE_VERSION + 1," +
