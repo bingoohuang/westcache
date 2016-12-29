@@ -11,6 +11,7 @@ import lombok.val;
 
 import java.io.Closeable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.concurrent.Callable;
 
 /**
@@ -59,10 +60,18 @@ public abstract class CacheMethodInterceptor<T> {
         val item = option.getManager().get(option, cacheKey,
                 new Callable<WestCacheItem>() {
                     @Override public WestCacheItem call() {
+                        checkNoneAbstractMethod(cacheKey, method);
                         Object raw = invokeRaw(obj, args, proxy);
                         return new WestCacheItem(raw);
                     }
                 });
         return item.getObject().orNull();
+    }
+
+    private void checkNoneAbstractMethod(String cacheKey, Method method) {
+        if (!Modifier.isAbstract(method.getModifiers())) return;
+
+        String msg = "cache key " + cacheKey + " missed on " + method;
+        throw new RuntimeException(msg);
     }
 }
