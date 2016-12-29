@@ -11,4 +11,5 @@ import java.util.concurrent.Callable;
 public interface WestCacheManager {
    Optional<Object> get(WestCacheOption option, String cacheKey, Callable<Optional<Object>> callable);
    Optional<Object> get(WestCacheOption option, String cacheKey);
+   void put(WestCacheOption option, String cacheKey, Optional<Object> cacheValue);
 }

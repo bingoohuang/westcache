@@ -83,7 +83,7 @@ public class TableBasedCacheFlusherTest {
         val tita1 = service.tita();
 
         val cacheKey = "TableBasedCacheFlusherTest.TitaService.tita";
-        val bean = new WestCacheFlusherBean(cacheKey, "full", 0, "none");
+        val bean = new WestCacheFlusherBean(cacheKey, "full", 0, "none", null);
 
         long lastExecuted = flusher.getLastExecuted();
         dao.addWestCacheFlusherBean(bean);
@@ -114,7 +114,7 @@ public class TableBasedCacheFlusherTest {
 
         val cacheKey = "TableBasedCacheFlusherTest.TitaService.directValue";
         val bean = new WestCacheFlusherBean(cacheKey, "full", 0,
-                "direct");
+                "direct", null);
 
         dao.addWestCacheFlusherBean(bean);
         dao.updateDirectValue(cacheKey, "\"helllo bingoo\"");
@@ -134,7 +134,7 @@ public class TableBasedCacheFlusherTest {
 
         val prefix = "TableBasedCacheFlusherTest.TitaService.getCities";
         val bean = new WestCacheFlusherBean(prefix, "prefix", 0,
-                "none");
+                "none", null);
 
         long lastExecuted = flusher.getLastExecuted();
         dao.addWestCacheFlusherBean(bean);
@@ -174,7 +174,7 @@ public class TableBasedCacheFlusherTest {
 
         val prefix = "TableBasedCacheFlusherTest.TitaService.getCities2";
         val bean = new WestCacheFlusherBean(prefix, "prefix", 0,
-                "direct");
+                "direct", null);
 
         Map<String, String> directValue = Maps.newHashMap();
         directValue.put("JiangSu", "XXX");
@@ -218,7 +218,6 @@ public class TableBasedCacheFlusherTest {
 
         lastExecuted = flusher.getLastExecuted();
         dao.updateDirectValue(prefix, json2);
-        dao.updateWestCacheFlusherBean(prefix);
         do {
             Thread.sleep(100L);
         } while (flusher.getLastExecuted() == lastExecuted);

@@ -37,12 +37,12 @@ public class SimpleCacheFlusher implements WestCacheFlusher {
         return registered;
     }
 
-    @Override public boolean flush(String cacheKey) {
+    @Override public boolean flush(WestCacheOption option, String cacheKey) {
         val westCache = registry.getIfPresent(cacheKey);
         log.debug("flush key:{}, westcache:{}", cacheKey, westCache);
 
         boolean flushSent = westCache != null;
-        if (flushSent) westCache.invalidate(cacheKey);
+        if (flushSent) westCache.invalidate(option, cacheKey);
 
         return flushSent;
     }

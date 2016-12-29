@@ -1,4 +1,4 @@
-package com.github.bingoohuang.westcache.cachekey;
+package com.github.bingoohuang.westcache.keyer;
 
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.github.bingoohuang.westcache.base.WestCacheKeyer;

@@ -35,15 +35,20 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
         return Optional.fromNullable(object);
     }
 
-    @Override public void deleteSnapshot(String cacheKey) {
+    @SneakyThrows @Override
+    public void deleteSnapshot(WestCacheOption option, String cacheKey) {
         File snapshotFile = getSnapshotFile(cacheKey);
         if (!snapshotFile.exists() || !snapshotFile.isFile()) return;
 
-        snapshotFile.delete();
+        File tempFile = File.createTempFile(cacheKey, EXTENSION, CACHE_HOME);
+        snapshotFile.renameTo(tempFile);
+
+        tempFile.delete();
     }
 
     public static String USER_HOME = System.getProperty("user.home");
     public static String EXTENSION = ".westcache";
+    public static File CACHE_HOME = new File(USER_HOME, EXTENSION);
 
     public static File getSnapshotFile(String cacheKey) {
         File westCacheHome = tryCreateWestCacheHome();
@@ -51,8 +56,7 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
     }
 
     private static File tryCreateWestCacheHome() {
-        val westCacheHome = new File(USER_HOME, EXTENSION);
-        westCacheHome.mkdirs();
-        return westCacheHome;
+        CACHE_HOME.mkdirs();
+        return CACHE_HOME;
     }
 }

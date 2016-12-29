@@ -1,13 +1,14 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.*;
-import com.github.bingoohuang.westcache.cachekey.DefaultKeyer;
-import com.github.bingoohuang.westcache.cachekey.SimpleKeyer;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.DiamondCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.NoneCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.SimpleCacheFlusher;
+import com.github.bingoohuang.westcache.keyer.DefaultKeyer;
+import com.github.bingoohuang.westcache.keyer.SimpleKeyer;
 import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
+import com.github.bingoohuang.westcache.manager.FileCacheManager;
 import com.github.bingoohuang.westcache.manager.GuavaCacheManager;
 import com.github.bingoohuang.westcache.registry.RegistryTemplate;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
@@ -72,7 +73,7 @@ public class WestCacheRegistry {
                       Object... args) {
         val keyStrategy = option.getKeyStrategy();
         String cacheKey = keyStrategy.getCacheKey(option, methodName, bean, args);
-        option.getFlusher().flush(cacheKey);
+        option.getFlusher().flush(option, cacheKey);
     }
 
     RegistryTemplate<WestCacheManager> managerRegistry = new RegistryTemplate<WestCacheManager>();
@@ -80,6 +81,7 @@ public class WestCacheRegistry {
     static {
         register("guava", new GuavaCacheManager());
         register("diamond", new DiamondCacheManager());
+        register("file", new FileCacheManager());
     }
 
     public void register(String managerName, WestCacheManager manager) {

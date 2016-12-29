@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.manager;
 
 import com.github.bingoohuang.westcache.base.WestCache;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -21,7 +22,7 @@ public class GuavaCacheManager extends BaseCacheManager {
         private Cache<String, Optional<Object>> cache = CacheBuilder.newBuilder().build();
 
         @Override @SneakyThrows
-        public Optional<Object> get(String cacheKey, Callable<Optional<Object>> callable) {
+        public Optional<Object> get(WestCacheOption option, String cacheKey, Callable<Optional<Object>> callable) {
             try {
                 return cache.get(cacheKey, callable);
             } catch (UncheckedExecutionException ex) {
@@ -29,16 +30,16 @@ public class GuavaCacheManager extends BaseCacheManager {
             }
         }
 
-        @Override public Optional<Object> getIfPresent(String cacheKey) {
+        @Override public Optional<Object> getIfPresent(WestCacheOption option, String cacheKey) {
             return cache.getIfPresent(cacheKey);
         }
 
         @Override
-        public void put(String cacheKey, Optional<Object> cacheValue) {
+        public void put(WestCacheOption option, String cacheKey, Optional<Object> cacheValue) {
             cache.put(cacheKey, cacheValue);
         }
 
-        @Override public void invalidate(String cacheKey) {
+        @Override public void invalidate(WestCacheOption option, String cacheKey) {
             cache.invalidate(cacheKey);
         }
     }

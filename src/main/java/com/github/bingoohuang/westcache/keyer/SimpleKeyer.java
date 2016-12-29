@@ -1,4 +1,4 @@
-package com.github.bingoohuang.westcache.cachekey;
+package com.github.bingoohuang.westcache.keyer;
 
 import com.github.bingoohuang.westcache.base.WestCacheKeyer;
 import com.github.bingoohuang.westcache.cglib.Cglibs;
@@ -17,8 +17,9 @@ public class SimpleKeyer extends WestCacheKeyer {
         if (option.getKey().length() > 0) return option.getKey();
 
         val superClassName = Cglibs.getSuperClassName(bean);
-        val dottedInnerClassName = removePackage(superClassName).replace('$', '.');
-        val mainPart = dottedInnerClassName + "." + methodName;
+        val simpleClassName = removePackage(superClassName);
+        val dottedClassName = simpleClassName.replace('$', '.');
+        val mainPart = dottedClassName + "." + methodName;
 
         if (args.length == 0) return mainPart;
 

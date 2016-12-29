@@ -64,8 +64,8 @@ public class RedisSnapshotTest {
         val cacheKey2 = keyStrategy.getCacheKey(option, "getXyzBean", service, "2");
 
 
-        snapshot.deleteSnapshot(cacheKey1);
-        snapshot.deleteSnapshot(cacheKey2);
+        snapshot.deleteSnapshot(option, cacheKey1);
+        snapshot.deleteSnapshot(option, cacheKey2);
 
         val bean1 = service.getXyzBean(1);
 

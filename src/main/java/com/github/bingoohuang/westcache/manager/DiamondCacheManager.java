@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache.manager;
 
 import com.alibaba.fastjson.JSON;
 import com.github.bingoohuang.westcache.base.WestCache;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import org.n3r.diamond.client.Miner;
 
@@ -19,21 +20,21 @@ public class DiamondCacheManager extends BaseCacheManager {
 
     public static class DiamondWestCache implements WestCache {
         @Override
-        public Optional<Object> get(String cacheKey, Callable<Optional<Object>> callable) {
+        public Optional<Object> get(WestCacheOption option, String cacheKey, Callable<Optional<Object>> callable) {
             String json = new Miner().getStone(GROUP, cacheKey);
             return Optional.fromNullable(JSON.parse(json));
         }
 
-        @Override public Optional<Object> getIfPresent(String cacheKey) {
-            return get(cacheKey, null);
+        @Override public Optional<Object> getIfPresent(WestCacheOption option, String cacheKey) {
+            return get(option, cacheKey, null);
         }
 
         @Override
-        public void put(String cacheKey, Optional<Object> cacheValue) {
+        public void put(WestCacheOption option, String cacheKey, Optional<Object> cacheValue) {
             throw new UnsupportedOperationException("DiamondCacheManager put is unsupported");
         }
 
-        @Override public void invalidate(String cacheKey) {
+        @Override public void invalidate(WestCacheOption option, String cacheKey) {
             throw new UnsupportedOperationException("DiamondCacheManager put is unsupported");
         }
     }

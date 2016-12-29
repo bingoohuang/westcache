@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +9,6 @@ import org.junit.Test;
 
 import java.util.concurrent.Callable;
 
-import static com.github.bingoohuang.westcache.utils.WestCacheOption.newBuilder;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -26,16 +26,19 @@ public class CacheApiTest {
     public void apiBasic() {
         setHomeArea(north);
         String cacheKey = "api.cache.key";
-        val option = newBuilder().build();
-        Optional<Object> cache = option.getManager().get(option, cacheKey, new Callable<Optional<Object>>() {
-            @Override public Optional<Object> call() throws Exception {
-                return Optional.<Object>fromNullable(getHomeAreaWithCache());
-            }
-        });
+        val option = WestCacheOption.newBuilder().build();
+        val manager = option.getManager();
+        Optional<Object> cache = manager.get(option, cacheKey,
+                new Callable<Optional<Object>>() {
+                    @Override public Optional<Object> call() throws Exception {
+                        Object homeAreaWithCache = getHomeAreaWithCache();
+                        return Optional.fromNullable(homeAreaWithCache);
+                    }
+                });
         assertThat(cache.orNull()).isEqualTo(north);
 
         setHomeArea(south);
-        cache = option.getManager().get(option, cacheKey);
+        cache = manager.get(option, cacheKey);
         assertThat(cache.orNull()).isEqualTo(north);
         assertThat(getHomeArea()).isEqualTo(south);
     }

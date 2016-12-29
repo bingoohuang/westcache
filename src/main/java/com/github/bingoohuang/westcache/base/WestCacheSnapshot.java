@@ -27,7 +27,8 @@ public interface WestCacheSnapshot {
     /**
      * clear the cached value from snapshot place.
      *
+     * @param option
      * @param cacheKey cache key.
      */
-    void deleteSnapshot(String cacheKey);
+    void deleteSnapshot(WestCacheOption option, String cacheKey);
 }

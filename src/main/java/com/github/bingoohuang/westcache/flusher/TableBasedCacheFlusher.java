@@ -34,6 +34,7 @@ ORACLE SQL:
 	VALUE_VERSION NUMBER DEFAULT 0 NOT NULL,
 	CACHE_STATE NUMBER DEFAULT 1 NOT NULL,
 	VALUE_TYPE VARCHAR2(20 BYTE) DEFAULT 'none' NOT NULL,
+	SPECS VARCHAR2(2000 BYTE) NULL,
 	DIRECT_VALUE LONG
    ) ;
 
@@ -43,6 +44,7 @@ ORACLE SQL:
    COMMENT ON COLUMN WESTCACHE_FLUSHER.DIRECT_VALUE IS 'direct json value for the cache';
    COMMENT ON COLUMN WESTCACHE_FLUSHER.CACHE_STATE IS '0 disabled 1 enabled';
    COMMENT ON COLUMN WESTCACHE_FLUSHER.VALUE_TYPE IS 'value access type, direct: use direct json in DIRECT_VALUE field';
+   COMMENT ON COLUMN WESTCACHE_FLUSHER.SPECS IS 'specs for extension';
 
 MySql SQL:
    DROP TABLE IF EXISTS WESTCACHE_FLUSHER;
@@ -52,6 +54,7 @@ MySql SQL:
 	VALUE_VERSION TINYINT DEFAULT 0 NOT NULL COMMENT 'version of cache, increment it to update cache',
 	CACHE_STATE TINYINT DEFAULT 1 NOT NULL COMMENT 'direct json value for the cache',
 	VALUE_TYPE VARCHAR(20) DEFAULT 'none' NOT NULL COMMENT 'value access type, direct: use direct json in DIRECT_VALUE field',
+	SPECS VARCHAR(2000) NULL COMMENT 'specs for extension',
 	DIRECT_VALUE TEXT
    ) ;
 
@@ -134,26 +137,26 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         return null;
     }
 
-    protected void startupRotateChecker(WestCacheOption option) {
+    protected void startupRotateChecker(final WestCacheOption option) {
         lastExecuted = 0;
         val config = option.getConfig();
 
-        checkBeans();
+        checkBeans(option);
         long intervalMillis = config.rotateCheckIntervalMillis();
         config.executorService().scheduleAtFixedRate(new Runnable() {
             @Override public void run() {
-                checkBeans();
+                checkBeans(option);
             }
         }, intervalMillis, intervalMillis, MILLISECONDS);
     }
 
 
     @SneakyThrows
-    protected void checkBeans() {
+    protected void checkBeans(WestCacheOption option) {
         val beans = queryAllBeans();
         if (beans.equals(tableRows)) return;
 
-        diff(tableRows, beans);
+        diff(tableRows, beans, option);
 
         writeLock.lock();
         @Cleanup val i = new Closeable() {
@@ -167,7 +170,8 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     }
 
     protected void diff(List<WestCacheFlusherBean> table,
-                        List<WestCacheFlusherBean> beans) {
+                        List<WestCacheFlusherBean> beans,
+                        WestCacheOption option) {
         Map<String, WestCacheFlusherBean> flushKeys = Maps.newHashMap();
         for (val bean : table) {
             val found = find(bean, beans);
@@ -196,7 +200,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         }
 
         for (String fullKey : fullKeys) {
-            flush(fullKey);
+            flush(option, fullKey);
         }
 
         for (String prefixKey : prefixKeys) {

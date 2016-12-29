@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.bingoohuang.westcache.base.WestCache;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -38,7 +39,7 @@ public class RedisCacheManager extends BaseCacheManager {
 
 
         @Override @SneakyThrows
-        public Optional<Object> get(String cacheKey, Callable<Optional<Object>> callable) {
+        public Optional<Object> get(WestCacheOption option, String cacheKey, Callable<Optional<Object>> callable) {
             String jsonValue = jedis.get(prefix + cacheKey);
             if (StringUtils.isEmpty(jsonValue)) return Optional.absent();
 
@@ -46,12 +47,12 @@ public class RedisCacheManager extends BaseCacheManager {
             return Optional.fromNullable(object);
         }
 
-        @Override public Optional<Object> getIfPresent(String cacheKey) {
-            return get(cacheKey, null);
+        @Override public Optional<Object> getIfPresent(WestCacheOption option, String cacheKey) {
+            return get(option, cacheKey, null);
         }
 
         @Override
-        public void put(String cacheKey, Optional<Object> cacheValue) {
+        public void put(WestCacheOption option, String cacheKey, Optional<Object> cacheValue) {
             if (cacheValue.isPresent()) {
                 val json = JSON.toJSONString(cacheValue.get(), SerializerFeature.WriteClassName);
                 jedis.set(prefix + cacheKey, json);
@@ -61,7 +62,7 @@ public class RedisCacheManager extends BaseCacheManager {
 
         }
 
-        @Override public void invalidate(String cacheKey) {
+        @Override public void invalidate(WestCacheOption option, String cacheKey) {
             jedis.del(prefix + cacheKey);
         }
     }

@@ -16,7 +16,7 @@ public class DiamondCacheFlusher extends SimpleCacheFlusher {
     public static String GROUP = "west.cache.flushers";
 
     @Override
-    public boolean register(WestCacheOption option,
+    public boolean register(final WestCacheOption option,
                             final String cacheKey,
                             WestCache cache) {
         boolean firstRegistered = super.register(option, cacheKey, cache);
@@ -25,7 +25,7 @@ public class DiamondCacheFlusher extends SimpleCacheFlusher {
         val diamondManager = new DiamondManager(GROUP, cacheKey);
         val listener = new DiamondListenerAdapter() {
             @Override public void accept(DiamondStone diamondStone) {
-                flush(cacheKey);
+                flush(option, cacheKey);
             }
         };
         diamondManager.addDiamondListener(listener);

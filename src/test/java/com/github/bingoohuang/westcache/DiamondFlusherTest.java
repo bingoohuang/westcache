@@ -38,7 +38,7 @@ public class DiamondFlusherTest {
         val cacheKey = keyStrategy.getCacheKey(option, "getCachedContent", service);
         
         val flusher = WestCacheRegistry.getFlusher("diamond");
-        flusher.flush(cacheKey);
+        flusher.flush(option, cacheKey);
         assertThat(service.getCachedContent()).isSameAs("111222");
     }
 }

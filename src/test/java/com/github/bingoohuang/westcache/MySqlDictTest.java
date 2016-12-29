@@ -83,7 +83,7 @@ public class MySqlDictTest {
 
                 if (lastMax != null && lastMax > 0L) {
                     val flusher = WestCacheRegistry.getFlusher("simple");
-                    flusher.flush("mysql.cache_dicts");
+                    flusher.flush(null, "mysql.cache_dicts");
                     updateCheckTime = System.currentTimeMillis();
                     log.debug("update updateCheckTime:{}", updateCheckTime);
                 }

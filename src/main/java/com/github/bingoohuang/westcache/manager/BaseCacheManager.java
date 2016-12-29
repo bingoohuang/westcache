@@ -40,6 +40,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
                 Object raw = flusher.getDirectValue(option, cacheKey);
                 if (raw != null) return Optional.fromNullable(raw);
 
+                log.info("cache key {} misfired", cacheKey);
                 return callable.call();
             }
         };
@@ -50,7 +51,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
                         : trySnapshot(option, cacheKey, flushCallable);
             }
         };
-        return westCache.get(cacheKey, wrapCallable);
+        return westCache.get(option, cacheKey, wrapCallable);
     }
 
     @SneakyThrows
@@ -60,7 +61,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
         val future = option.getConfig().executorService().submit(new Callable<Optional<Object>>() {
             @Override public Optional<Object> call() throws Exception {
                 val optional = callable.call();
-                westCache.put(cacheKey, optional);
+                westCache.put(option, cacheKey, optional);
                 option.getSnapshot().saveSnapshot(option, cacheKey, optional.orNull());
                 return optional;
             }
@@ -79,6 +80,13 @@ public abstract class BaseCacheManager implements WestCacheManager {
 
     @Override
     public Optional<Object> get(WestCacheOption option, String cacheKey) {
-        return westCache.getIfPresent(cacheKey);
+        return westCache.getIfPresent(option, cacheKey);
+    }
+
+    @Override
+    public void put(WestCacheOption option,
+                    String cacheKey,
+                    Optional<Object> cacheValue) {
+        westCache.put(option, cacheKey, cacheValue);
     }
 }

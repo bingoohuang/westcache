@@ -40,7 +40,7 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
         return Optional.of(object);
     }
 
-    @Override public void deleteSnapshot(String cacheKey) {
+    @Override public void deleteSnapshot(WestCacheOption option, String cacheKey) {
         jedisCommands.del(prefix + cacheKey);
     }
 }

@@ -13,7 +13,7 @@ public class NoneCacheFlusher implements WestCacheFlusher {
         return false;
     }
 
-    @Override public boolean flush(String cacheKey) {
+    @Override public boolean flush(WestCacheOption option, String cacheKey) {
         return false;
     }
 

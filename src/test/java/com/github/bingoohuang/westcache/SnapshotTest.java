@@ -107,6 +107,6 @@ public class SnapshotTest {
         val dataCache2 = service.getBigDataCache();
         assertThat(dataCache2).isEqualTo(bigDataYYY);
 
-        snapshot.deleteSnapshot(cacheKey);
+        snapshot.deleteSnapshot(null, cacheKey);
     }
 }

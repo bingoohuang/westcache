@@ -13,7 +13,7 @@ import java.util.List;
 public interface WestCacheFlusherDao {
     void setup();
 
-    @Sql("SELECT CACHE_KEY, KEY_MATCH, VALUE_VERSION, VALUE_TYPE " +
+    @Sql("SELECT CACHE_KEY, KEY_MATCH, VALUE_VERSION, VALUE_TYPE, SPECS " +
             "FROM WESTCACHE_FLUSHER WHERE CACHE_STATE = 1")
     List<WestCacheFlusherBean> queryAllBeans();
 

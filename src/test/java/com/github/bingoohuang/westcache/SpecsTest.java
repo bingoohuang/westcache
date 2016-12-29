@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.cachekey.DefaultKeyer;
+import com.github.bingoohuang.westcache.keyer.DefaultKeyer;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Splitter;
