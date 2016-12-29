@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.manager.RedisCacheManager;
+import com.github.bingoohuang.westcache.util.Conf;
 import lombok.val;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -17,7 +18,7 @@ public class RedisManagerTest {
 
     @BeforeClass
     public static void beforeClass() {
-        jedis = new Jedis("127.0.0.1", 7379);
+        jedis = new Jedis(Conf.REDIS_HOST, Conf.REDIS_PORT);
         WestCacheRegistry.register("redis",
                 new RedisCacheManager(jedis));
     }

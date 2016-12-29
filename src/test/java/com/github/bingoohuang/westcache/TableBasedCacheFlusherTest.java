@@ -4,6 +4,7 @@ import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.dao.WestCacheFlusherDao;
 import com.github.bingoohuang.westcache.flusher.TableBasedCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
+import com.github.bingoohuang.westcache.util.Conf;
 import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
@@ -13,6 +14,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.n3r.eql.eqler.EqlerFactory;
+import redis.clients.jedis.Jedis;
 
 import java.util.List;
 import java.util.Map;
@@ -35,11 +37,12 @@ public class TableBasedCacheFlusherTest {
     }
 
     public static class MyLoader implements Loader {
-
         @Override public Object load() {
             return "HaHa, I'm a demo only";
         }
     }
+
+    static Jedis jedis = new Jedis(Conf.REDIS_HOST, Conf.REDIS_PORT);
 
     @BeforeClass
     public static void beforeClass() {
@@ -63,6 +66,14 @@ public class TableBasedCacheFlusherTest {
                         val loader = (Loader) clazz.newInstance();
                         return loader.load();
                     }
+
+                    val directRedis = specsMap.get("directRedis");
+                    if ("yes".equalsIgnoreCase(directRedis)) {
+                        val value = jedis.get(bean.getCacheKey());
+                        if (isNotBlank(value)) {
+                            return FastJsons.parse(value);
+                        }
+                    }
                 }
 
                 String directJson = dao.getDirectValue(bean.getCacheKey());
@@ -81,6 +92,7 @@ public class TableBasedCacheFlusherTest {
 
     @AfterClass
     public static void afterClass() {
+        jedis.close();
         WestCacheRegistry.deregisterFlusher("table");
         WestCacheRegistry.deregisterConfig("test");
     }
@@ -101,6 +113,8 @@ public class TableBasedCacheFlusherTest {
         public abstract String getCities2(String provinceCode);
 
         public abstract String specs();
+
+        public abstract String specsRedis();
     }
 
     @Test @SneakyThrows
@@ -276,5 +290,26 @@ public class TableBasedCacheFlusherTest {
 
         val r1 = service.specs();
         assertThat(r1).isEqualTo("HaHa, I'm a demo only");
+    }
+
+    @Test @SneakyThrows
+    public void specsRedis() {
+        val service = WestCacheFactory.create(TitaService.class);
+
+        val prefix = "TableBasedCacheFlusherTest.TitaService.specsRedis";
+        val bean = new WestCacheFlusherBean(prefix, "full", 0,
+                "direct", "directRedis=yes");
+
+        jedis.set(prefix, "\"I am redis body\"");
+
+        long lastExecuted = flusher.getLastExecuted();
+        dao.addWestCacheFlusherBean(bean);
+        service.tita(); // just to make sure that the rotating check thread running
+        do {
+            Thread.sleep(100L);
+        } while (flusher.getLastExecuted() == lastExecuted);
+
+        val r1 = service.specsRedis();
+        assertThat(r1).isEqualTo("I am redis body");
     }
 }

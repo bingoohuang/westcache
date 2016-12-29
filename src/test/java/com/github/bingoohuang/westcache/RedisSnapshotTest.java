@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.snapshot.RedisCacheSnapshot;
+import com.github.bingoohuang.westcache.util.Conf;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class RedisSnapshotTest {
 
     @BeforeClass
     public static void beforeClass() {
-        jedis = new Jedis("127.0.0.1", 7379);
+        jedis = new Jedis(Conf.REDIS_HOST, Conf.REDIS_PORT);
         WestCacheRegistry.register("redisSnapshot",
                 new RedisCacheSnapshot(jedis));
     }
