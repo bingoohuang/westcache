@@ -145,7 +145,7 @@
         <dependency>
             <groupId>com.github.bingoohuang</groupId>
             <artifactId>eql</artifactId>
-            <version>0.0.75-SNAPSHOT</version>
+            <version>0.0.75</version>
             <scope>test</scope>
         </dependency>
         <dependency>
