@@ -26,8 +26,7 @@ public class WestCacheFactory {
      *
      * @param targetClass target class
      * @param <T>         target class type
-     * @return proxied object
-     * @WestCacheable will be intercepted to process caching.
+     * @return proxied object.
      */
     @SneakyThrows
     public <T> T create(Class<T> targetClass) {

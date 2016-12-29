@@ -9,7 +9,7 @@ public interface WestCacheSnapshot {
     /**
      * save the cached value to snapshot place.
      *
-     * @param option
+     * @param option     WestCache settings.
      * @param cacheKey   cache key.
      * @param cacheValue cache value.
      */
@@ -18,15 +18,16 @@ public interface WestCacheSnapshot {
     /**
      * read the cached value from snapshot place.
      *
-     * @param option
-     * @param cacheKey cache key.  @return optional of cache value
+     * @param option   WestCache settings.
+     * @param cacheKey cache key.
+     * @return optional of cache value
      */
     WestCacheItem readSnapshot(WestCacheOption option, String cacheKey);
 
     /**
      * clear the cached value from snapshot place.
      *
-     * @param option
+     * @param option   WestCache settings.
      * @param cacheKey cache key.
      */
     void deleteSnapshot(WestCacheOption option, String cacheKey);
