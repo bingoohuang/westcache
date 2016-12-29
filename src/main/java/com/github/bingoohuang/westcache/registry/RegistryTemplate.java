@@ -17,10 +17,6 @@ public class RegistryTemplate<T> {
         registry.put(name, object);
     }
 
-    public void registerForcely(String name, T object) {
-        registry.put(name, object);
-    }
-
     public void deregister(String name) {
         registry.invalidate(name);
     }

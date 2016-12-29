@@ -31,10 +31,6 @@ public class WestCacheRegistry {
         configRegistry.register(configName, config);
     }
 
-    public void registerForcely(String configName, WestCacheConfig config) {
-        configRegistry.registerForcely(configName, config);
-    }
-
     public void deregisterConfig(String configName) {
         configRegistry.deregister(configName);
     }
@@ -53,10 +49,6 @@ public class WestCacheRegistry {
 
     public void register(String flusherName, WestCacheFlusher flusher) {
         flusherRegistry.register(flusherName, flusher);
-    }
-
-    public void registerForcely(String flusherName, WestCacheFlusher flusher) {
-        flusherRegistry.registerForcely(flusherName, flusher);
     }
 
     public void deregisterFlusher(String flusherName) {
@@ -88,10 +80,6 @@ public class WestCacheRegistry {
         managerRegistry.register(managerName, manager);
     }
 
-    public void registerForcely(String managerName, WestCacheManager manager) {
-        managerRegistry.registerForcely(managerName, manager);
-    }
-
     public void deregisterManager(String managerName) {
         managerRegistry.deregister(managerName);
     }
@@ -108,10 +96,6 @@ public class WestCacheRegistry {
 
     public void register(String snapshotName, WestCacheSnapshot snapshot) {
         snapshotRegistry.register(snapshotName, snapshot);
-    }
-
-    public void registerForcely(String snapshotName, WestCacheSnapshot snapshot) {
-        snapshotRegistry.registerForcely(snapshotName, snapshot);
     }
 
     public void deregisterSnapshot(String snapshotName) {
@@ -131,10 +115,6 @@ public class WestCacheRegistry {
 
     public void register(String keyStrategyName, WestCacheKeyer keyStrategy) {
         keyStrategyRegistry.register(keyStrategyName, keyStrategy);
-    }
-
-    public void registerForcely(String keyStrategyName, WestCacheKeyer keyStrategy) {
-        keyStrategyRegistry.registerForcely(keyStrategyName, keyStrategy);
     }
 
     public void deregisterKeyStrategy(String keyStrategyName) {
