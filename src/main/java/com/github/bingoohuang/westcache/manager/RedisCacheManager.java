@@ -1,9 +1,8 @@
 package com.github.bingoohuang.westcache.manager;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
+import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -39,12 +38,13 @@ public class RedisCacheManager extends BaseCacheManager {
 
 
         @Override @SneakyThrows
-        public WestCacheItem get(WestCacheOption option, String cacheKey, Callable<WestCacheItem> callable) {
+        public WestCacheItem get(WestCacheOption option, String cacheKey,
+                                 Callable<WestCacheItem> callable) {
             String jsonValue = jedis.get(prefix + cacheKey);
             if (StringUtils.isEmpty(jsonValue))
                 return new WestCacheItem(null);
 
-            Object object = JSON.parse(jsonValue);
+            Object object = FastJsons.parse(jsonValue);
             return new WestCacheItem(object);
         }
 
@@ -54,9 +54,10 @@ public class RedisCacheManager extends BaseCacheManager {
         }
 
         @Override
-        public void put(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
+        public void put(WestCacheOption option, String cacheKey,
+                        WestCacheItem cacheValue) {
             if (cacheValue != null) {
-                val json = JSON.toJSONString(cacheValue.getObject().get(), SerializerFeature.WriteClassName);
+                val json = FastJsons.json(cacheValue.getObject().get());
                 jedis.set(prefix + cacheKey, json);
             } else {
                 jedis.del(prefix + cacheKey);

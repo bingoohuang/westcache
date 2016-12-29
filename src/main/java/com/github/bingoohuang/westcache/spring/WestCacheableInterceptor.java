@@ -42,10 +42,3 @@ public class WestCacheableInterceptor
                 invocation.getMethod(), invocation.getThis());
     }
 }
-
-
-
-
-
-
-

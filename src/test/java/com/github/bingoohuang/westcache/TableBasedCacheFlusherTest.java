@@ -1,11 +1,10 @@
 package com.github.bingoohuang.westcache;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.dao.WestCacheFlusherDao;
 import com.github.bingoohuang.westcache.flusher.TableBasedCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
+import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
@@ -68,7 +67,7 @@ public class TableBasedCacheFlusherTest {
 
                 String directJson = dao.getDirectValue(bean.getCacheKey());
                 if (isBlank(directJson)) return null;
-                return JSON.parse(directJson);
+                return FastJsons.parse(directJson);
             }
 
         };
@@ -206,7 +205,7 @@ public class TableBasedCacheFlusherTest {
         Map<String, String> directValue = Maps.newHashMap();
         directValue.put("JiangSu", "XXX");
         directValue.put("JiangXi", "YYY");
-        String json = JSON.toJSONString(directValue, SerializerFeature.WriteClassName);
+        String json = FastJsons.json(directValue);
 
         long lastExecuted = flusher.getLastExecuted();
         dao.addWestCacheFlusherBean(bean);
@@ -240,7 +239,7 @@ public class TableBasedCacheFlusherTest {
         Map<String, String> directValue2 = Maps.newHashMap();
         directValue2.put("JiangSu", "XXX111");
         directValue2.put("JiangXi", "YYY222");
-        String json2 = JSON.toJSONString(directValue2, SerializerFeature.WriteClassName);
+        String json2 = FastJsons.json(directValue2);
 
         lastExecuted = flusher.getLastExecuted();
         dao.updateDirectValue(prefix, json2);

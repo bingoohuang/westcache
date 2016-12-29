@@ -13,6 +13,15 @@ import static com.google.common.truth.Truth.assertThat;
 public class FirstTest {
     String north = "NORTH", south = "SOUTH";
 
+    public static class FirstService {
+        @Getter @Setter String homeArea;
+
+        @WestCacheable
+        public String getHomeAreaWithCache() {
+            return homeArea;
+        }
+    }
+
     @Test
     public void cacheBasic() {
         val firstService = new FirstService();
@@ -39,14 +48,5 @@ public class FirstTest {
         wrapService.setHomeArea(south);
         assertThat(wrapService.getHomeAreaWithCache()).isNull();
         assertThat(wrapService.getHomeArea()).isEqualTo(south);
-    }
-
-    public static class FirstService {
-        @Getter @Setter String homeArea;
-
-        @WestCacheable
-        public String getHomeAreaWithCache() {
-            return homeArea;
-        }
     }
 }

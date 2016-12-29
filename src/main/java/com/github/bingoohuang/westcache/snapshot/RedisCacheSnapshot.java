@@ -1,13 +1,12 @@
 package com.github.bingoohuang.westcache.snapshot;
 
-import com.alibaba.fastjson.JSON;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
+import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.val;
 import redis.clients.jedis.JedisCommands;
 
-import static com.alibaba.fastjson.serializer.SerializerFeature.WriteClassName;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
@@ -27,7 +26,7 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
 
     @Override
     public void saveSnapshot(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
-        val json = JSON.toJSONString(cacheValue.getObject().orNull(), WriteClassName);
+        val json = FastJsons.json(cacheValue.getObject().orNull());
         jedisCommands.set(prefix + cacheKey, json);
     }
 
@@ -36,7 +35,7 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
         String json = jedisCommands.get(prefix + cacheKey);
         if (json == null) return null;
 
-        Object object = JSON.parse(json);
+        Object object = FastJsons.parse(json);
         return new WestCacheItem(object);
     }
 

@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache.manager;
 
-import com.alibaba.fastjson.JSON;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
+import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import org.n3r.diamond.client.Miner;
 
@@ -20,9 +20,10 @@ public class DiamondCacheManager extends BaseCacheManager {
 
     public static class DiamondWestCache implements WestCache {
         @Override
-        public WestCacheItem get(WestCacheOption option, String cacheKey, Callable<WestCacheItem> callable) {
+        public WestCacheItem get(WestCacheOption option, String cacheKey,
+                                 Callable<WestCacheItem> callable) {
             String json = new Miner().getStone(GROUP, cacheKey);
-            return new WestCacheItem(JSON.parse(json));
+            return new WestCacheItem(FastJsons.parse(json));
         }
 
         @Override

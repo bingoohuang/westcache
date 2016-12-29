@@ -1,7 +1,5 @@
 package com.github.bingoohuang.westcache.utils;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -24,7 +22,7 @@ public class DiamondFiles {
     }
 
     public static void writeDiamond(File diamondFile, Object content) throws IOException {
-        String json = JSON.toJSONString(content, SerializerFeature.WriteClassName);
+        String json = FastJsons.json(content);
         Files.write(json, diamondFile, Charsets.UTF_8);
     }
 }

@@ -22,7 +22,8 @@ public class GuavaCacheManager extends BaseCacheManager {
         private Cache<String, WestCacheItem> cache = CacheBuilder.newBuilder().build();
 
         @Override @SneakyThrows
-        public WestCacheItem get(WestCacheOption option, String cacheKey, Callable<WestCacheItem> callable) {
+        public WestCacheItem get(WestCacheOption option, String cacheKey,
+                                 Callable<WestCacheItem> callable) {
             try {
                 return cache.get(cacheKey, callable);
             } catch (UncheckedExecutionException ex) {
