@@ -1,7 +1,8 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.keyer.DefaultKeyer;
+import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
+import com.github.bingoohuang.westcache.keyer.DefaultKeyer;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -93,7 +94,7 @@ public class SpecsTest {
         List<String> provinces = Lists.newArrayList("江苏省", "浙江省");
         val fileSnapshot = getSnapshot("file");
 
-        fileSnapshot.saveSnapshot(null, cacheKey, provinces);
+        fileSnapshot.saveSnapshot(null, cacheKey, new WestCacheItem(provinces));
 
         List<String> otherProvinces = Lists.newArrayList("广东省", "广西省");
         myService.setProvinces(otherProvinces);

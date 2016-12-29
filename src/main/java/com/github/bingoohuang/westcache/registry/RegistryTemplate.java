@@ -20,7 +20,7 @@ public class RegistryTemplate<T> {
     public void registerForcely(String name, T object) {
         registry.put(name, object);
     }
-    
+
     public void deregister(String name) {
         registry.invalidate(name);
     }

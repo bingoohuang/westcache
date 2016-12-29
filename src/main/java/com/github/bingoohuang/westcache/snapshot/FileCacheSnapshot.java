@@ -1,10 +1,10 @@
 package com.github.bingoohuang.westcache.snapshot;
 
 import com.alibaba.fastjson.JSON;
+import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Charsets;
-import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -18,21 +18,21 @@ import static com.alibaba.fastjson.serializer.SerializerFeature.WriteClassName;
  */
 public class FileCacheSnapshot implements WestCacheSnapshot {
     @Override @SneakyThrows
-    public void saveSnapshot(WestCacheOption option, String cacheKey, Object cacheValue) {
-        val json = JSON.toJSONString(cacheValue, WriteClassName);
+    public void saveSnapshot(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
+        val json = JSON.toJSONString(cacheValue.getObject().orNull(), WriteClassName);
 
         File snapshotFile = getSnapshotFile(cacheKey);
         Files.write(json, snapshotFile, Charsets.UTF_8);
     }
 
     @Override @SneakyThrows @SuppressWarnings("unchecked")
-    public Optional<Object> readSnapshot(WestCacheOption option, String cacheKey) {
+    public WestCacheItem readSnapshot(WestCacheOption option, String cacheKey) {
         File snapshotFile = getSnapshotFile(cacheKey);
         if (!snapshotFile.exists() || !snapshotFile.isFile()) return null;
 
         String json = Files.toString(snapshotFile, Charsets.UTF_8);
         Object object = JSON.parse(json);
-        return Optional.fromNullable(object);
+        return new WestCacheItem(object);
     }
 
     @SneakyThrows @Override

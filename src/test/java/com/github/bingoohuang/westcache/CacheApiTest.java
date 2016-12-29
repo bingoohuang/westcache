@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
-import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -28,14 +28,14 @@ public class CacheApiTest {
         String cacheKey = "api.cache.key";
         val option = WestCacheOption.newBuilder().build();
         val manager = option.getManager();
-        Optional<Object> cache = manager.get(option, cacheKey,
-                new Callable<Optional<Object>>() {
-                    @Override public Optional<Object> call() throws Exception {
+        WestCacheItem cache = manager.get(option, cacheKey,
+                new Callable<WestCacheItem>() {
+                    @Override public WestCacheItem call() throws Exception {
                         Object homeAreaWithCache = getHomeAreaWithCache();
-                        return Optional.fromNullable(homeAreaWithCache);
+                        return new WestCacheItem(homeAreaWithCache);
                     }
                 });
-        assertThat(cache.orNull()).isEqualTo(north);
+        assertThat(cache.getObject().orNull()).isEqualTo(north);
 
         setHomeArea(south);
         cache = manager.get(option, cacheKey);

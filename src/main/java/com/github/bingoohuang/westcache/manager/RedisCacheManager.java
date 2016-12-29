@@ -3,8 +3,8 @@ package com.github.bingoohuang.westcache.manager;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.github.bingoohuang.westcache.base.WestCache;
+import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
-import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
@@ -39,22 +39,24 @@ public class RedisCacheManager extends BaseCacheManager {
 
 
         @Override @SneakyThrows
-        public Optional<Object> get(WestCacheOption option, String cacheKey, Callable<Optional<Object>> callable) {
+        public WestCacheItem get(WestCacheOption option, String cacheKey, Callable<WestCacheItem> callable) {
             String jsonValue = jedis.get(prefix + cacheKey);
-            if (StringUtils.isEmpty(jsonValue)) return Optional.absent();
+            if (StringUtils.isEmpty(jsonValue))
+                return new WestCacheItem(null);
 
             Object object = JSON.parse(jsonValue);
-            return Optional.fromNullable(object);
+            return new WestCacheItem(object);
         }
 
-        @Override public Optional<Object> getIfPresent(WestCacheOption option, String cacheKey) {
+        @Override
+        public WestCacheItem getIfPresent(WestCacheOption option, String cacheKey) {
             return get(option, cacheKey, null);
         }
 
         @Override
-        public void put(WestCacheOption option, String cacheKey, Optional<Object> cacheValue) {
-            if (cacheValue.isPresent()) {
-                val json = JSON.toJSONString(cacheValue.get(), SerializerFeature.WriteClassName);
+        public void put(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
+            if (cacheValue != null) {
+                val json = JSON.toJSONString(cacheValue.getObject().get(), SerializerFeature.WriteClassName);
                 jedis.set(prefix + cacheKey, json);
             } else {
                 jedis.del(prefix + cacheKey);
@@ -62,7 +64,8 @@ public class RedisCacheManager extends BaseCacheManager {
 
         }
 
-        @Override public void invalidate(WestCacheOption option, String cacheKey) {
+        @Override
+        public void invalidate(WestCacheOption option, String cacheKey) {
             jedis.del(prefix + cacheKey);
         }
     }

@@ -11,7 +11,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.*;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.deregisterSnapshot;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.getSnapshot;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -81,9 +82,8 @@ public class RedisSnapshotTest {
         assertThat(bean3).isEqualTo(new XyzBean(2, "dingoo", "北京"));
 
 
-
         val cached = snapshot.readSnapshot(option, cacheKey1);
         assertThat(cached.isPresent()).isTrue();
-        assertThat(cached.get()).isEqualTo(new XyzBean(1, "bingoo", "南京 "));
+        assertThat(cached.orNull()).isEqualTo(new XyzBean(1, "bingoo", "南京 "));
     }
 }

@@ -1,9 +1,9 @@
 package com.github.bingoohuang.westcache.manager;
 
 import com.github.bingoohuang.westcache.base.WestCache;
+import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
-import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 
 import java.util.concurrent.Callable;
@@ -16,25 +16,26 @@ public class FileCacheManager extends BaseCacheManager {
         FileCacheSnapshot snapshot = new FileCacheSnapshot();
 
         @Override @SneakyThrows
-        public Optional<Object> get(WestCacheOption option, String cacheKey, Callable<Optional<Object>> callable) {
-            Optional<Object> optional = snapshot.readSnapshot(option, cacheKey);
-            if (optional != null) return optional;
+        public WestCacheItem get(WestCacheOption option, String cacheKey, Callable<WestCacheItem> callable) {
+            WestCacheItem item = snapshot.readSnapshot(option, cacheKey);
+            if (item != null) return item;
 
-            Optional<Object> result = callable.call();
+            WestCacheItem result = callable.call();
             put(option, cacheKey, result);
 
             return result;
         }
 
         @Override
-        public Optional<Object> getIfPresent(WestCacheOption option, String cacheKey) {
+        public WestCacheItem getIfPresent(WestCacheOption option, String cacheKey) {
             return snapshot.readSnapshot(option, cacheKey);
         }
 
         @Override
-        public void put(WestCacheOption option, String cacheKey, Optional<Object> cacheValue) {
+        public void put(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
             if (cacheValue == null) return;
-            snapshot.saveSnapshot(option, cacheKey, cacheValue.get());
+
+            snapshot.saveSnapshot(option, cacheKey, cacheValue);
         }
 
         @Override

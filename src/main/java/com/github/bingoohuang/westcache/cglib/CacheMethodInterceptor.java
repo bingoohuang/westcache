@@ -1,9 +1,9 @@
 package com.github.bingoohuang.westcache.cglib;
 
 import com.github.bingoohuang.westcache.WestCacheable;
+import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.Anns;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
-import com.google.common.base.Optional;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -56,13 +56,13 @@ public abstract class CacheMethodInterceptor<T> {
             }
         };
 
-        val optional = option.getManager().get(option, cacheKey,
-                new Callable<Optional<Object>>() {
-                    @Override public Optional<Object> call() {
+        val item = option.getManager().get(option, cacheKey,
+                new Callable<WestCacheItem>() {
+                    @Override public WestCacheItem call() {
                         Object raw = invokeRaw(obj, args, proxy);
-                        return Optional.fromNullable(raw);
+                        return new WestCacheItem(raw);
                     }
                 });
-        return optional.orNull();
+        return item.getObject().orNull();
     }
 }

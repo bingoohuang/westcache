@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache.keyer;
 
-import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.github.bingoohuang.westcache.base.WestCacheKeyer;
 import com.github.bingoohuang.westcache.cglib.Cglibs;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Splitter;
 import lombok.val;
 

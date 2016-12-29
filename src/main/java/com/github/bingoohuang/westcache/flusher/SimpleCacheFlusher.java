@@ -47,7 +47,8 @@ public class SimpleCacheFlusher implements WestCacheFlusher {
         return flushSent;
     }
 
-    @Override public <T> T getDirectValue(WestCacheOption option, String cacheKey) {
+    @Override
+    public <T> T getDirectValue(WestCacheOption option, String cacheKey) {
         return null;
     }
 

@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache.manager;
 
 import com.github.bingoohuang.westcache.base.WestCache;
+import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
-import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.UncheckedExecutionException;
@@ -19,10 +19,10 @@ public class GuavaCacheManager extends BaseCacheManager {
     }
 
     private static class GuavaWestCache implements WestCache {
-        private Cache<String, Optional<Object>> cache = CacheBuilder.newBuilder().build();
+        private Cache<String, WestCacheItem> cache = CacheBuilder.newBuilder().build();
 
         @Override @SneakyThrows
-        public Optional<Object> get(WestCacheOption option, String cacheKey, Callable<Optional<Object>> callable) {
+        public WestCacheItem get(WestCacheOption option, String cacheKey, Callable<WestCacheItem> callable) {
             try {
                 return cache.get(cacheKey, callable);
             } catch (UncheckedExecutionException ex) {
@@ -30,16 +30,18 @@ public class GuavaCacheManager extends BaseCacheManager {
             }
         }
 
-        @Override public Optional<Object> getIfPresent(WestCacheOption option, String cacheKey) {
+        @Override
+        public WestCacheItem getIfPresent(WestCacheOption option, String cacheKey) {
             return cache.getIfPresent(cacheKey);
         }
 
         @Override
-        public void put(WestCacheOption option, String cacheKey, Optional<Object> cacheValue) {
+        public void put(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
             cache.put(cacheKey, cacheValue);
         }
 
-        @Override public void invalidate(WestCacheOption option, String cacheKey) {
+        @Override
+        public void invalidate(WestCacheOption option, String cacheKey) {
             cache.invalidate(cacheKey);
         }
     }

@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Getter;
@@ -88,7 +89,7 @@ public class RefreshTest {
                 .snapshot("file").flusher("simple").config("snapshotTestConfig")
                 .build();
         val cacheKey = keyStrategy.getCacheKey(option, "getHomeAreaWithCache", bean);
-        snapshot.saveSnapshot(option, cacheKey, bigDataXXX);
+        snapshot.saveSnapshot(option, cacheKey, new WestCacheItem(bigDataXXX));
 
 
         bean.setHomeArea(north);

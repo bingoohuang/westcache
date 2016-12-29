@@ -16,7 +16,7 @@ public class WestCacheableAdvisor extends AbstractPointcutAdvisor {
         @Override
         public boolean matches(Method method, Class<?> targetClass) {
             return targetClass.isAnnotationPresent(WestCacheable.class)
-            || method.isAnnotationPresent(WestCacheable.class);
+                    || method.isAnnotationPresent(WestCacheable.class);
         }
     };
 
