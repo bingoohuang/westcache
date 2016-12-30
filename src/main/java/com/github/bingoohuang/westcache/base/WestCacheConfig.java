@@ -11,7 +11,7 @@ public interface WestCacheConfig {
      *
      * @return interval millis.
      */
-    long rotateCheckIntervalMillis();
+    long rotateIntervalMillis();
 
     /**
      * The raw invoke timeout millis for snapshot.

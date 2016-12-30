@@ -1,7 +1,8 @@
 package com.github.bingoohuang.westcache.spring;
 
 import com.github.bingoohuang.westcache.WestCacheRegistry;
-import com.github.bingoohuang.westcache.utils.DiamondFiles;
+import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
+import com.github.bingoohuang.westcache.utils.Diamonds;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.Test;
@@ -9,8 +10,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.io.File;
 
 import static com.github.bingoohuang.westcache.utils.WestCacheOption.newBuilder;
 import static com.google.common.truth.Truth.assertThat;
@@ -25,14 +24,11 @@ public class DemoInterfaceTest {
 
     @Test @SneakyThrows
     public void test() {
-        val groupDir = DiamondFiles.getCacheGroupDir();
-
         val keyStrategy = WestCacheRegistry.getKeyStrategy("default");
         val option = newBuilder().manager("diamond").specs("static.key=yes").build();
         val cacheKey = keyStrategy.getCacheKey(option, "getBigData", service);
-        val diamondFile = new File(groupDir, cacheKey + ".diamond");
         String content = "Here is Bingoo!" + System.currentTimeMillis();
-        DiamondFiles.writeDiamond(diamondFile, content);
+        Diamonds.writeDiamondJSON(DiamondCacheManager.GROUP, cacheKey, content);
 
         assertThat(service.getBigData()).isEqualTo(content);
     }

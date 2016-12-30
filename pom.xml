@@ -69,7 +69,6 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <version>2.9.0</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.github.bingoohuang</groupId>
@@ -145,7 +144,7 @@
             <groupId>com.github.bingoohuang</groupId>
             <artifactId>eql</artifactId>
             <version>0.0.75</version>
-            <scope>test</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

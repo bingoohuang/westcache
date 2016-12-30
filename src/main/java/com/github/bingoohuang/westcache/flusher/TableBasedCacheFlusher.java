@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.flusher;
 
+import com.github.bingoohuang.westcache.utils.Keys;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
@@ -10,6 +11,7 @@ import com.google.common.collect.Sets;
 import lombok.Cleanup;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.io.Closeable;
@@ -63,17 +65,21 @@ MySql SQL:
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/28.
  */
+@Slf4j
 public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     Lock readLock = readWriteLock.readLock();
     Lock writeLock = readWriteLock.writeLock();
-    List<WestCacheFlusherBean> tableRows = Lists.newArrayList();
+    volatile List<WestCacheFlusherBean> tableRows = Lists.newArrayList();
     @Getter volatile long lastExecuted = -1;
     Cache<String, Optional<Map<String, Object>>> prefixDirectCache = CacheBuilder.newBuilder().build();
 
     @Override @SneakyThrows
     public boolean isKeyEnabled(WestCacheOption option, String cacheKey) {
-        if (lastExecuted == -1) startupRotateChecker(option);
+        if (lastExecuted == -1) {
+            lastExecuted = 0;
+            startupRotateChecker(option);
+        }
 
         readLock.lock();
         @Cleanup val i = new Closeable() {
@@ -131,30 +137,32 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
             if ("full".equals(bean.getKeyMatch())) {
                 if (bean.getCacheKey().equals(cacheKey)) return bean;
             } else if ("prefix".equals(bean.getKeyMatch())) {
-                if (isPrefix(cacheKey, bean.getCacheKey())) return bean;
+                if (Keys.isPrefix(cacheKey, bean.getCacheKey())) return bean;
             }
         }
         return null;
     }
 
     protected void startupRotateChecker(final WestCacheOption option) {
-        lastExecuted = 0;
-        val config = option.getConfig();
-
         checkBeans(option);
-        long intervalMillis = config.rotateCheckIntervalMillis();
-        config.executorService().scheduleAtFixedRate(new Runnable() {
+        val config = option.getConfig();
+        long intervalMillis = config.rotateIntervalMillis();
+        val executorService = config.executorService();
+        executorService.scheduleAtFixedRate(new Runnable() {
             @Override public void run() {
                 checkBeans(option);
             }
         }, intervalMillis, intervalMillis, MILLISECONDS);
     }
 
-
     @SneakyThrows
     protected void checkBeans(WestCacheOption option) {
+        log.debug("start rotating check");
         val beans = queryAllBeans();
-        if (beans.equals(tableRows)) return;
+        if (beans.equals(tableRows)) {
+            log.debug("no changes detected");
+            return;
+        }
 
         diff(tableRows, beans, option);
 
@@ -191,13 +199,16 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
             } else {
                 for (val bean : flushKeys.values()) {
                     if (!"prefix".equals(bean.getKeyMatch())) continue;
-                    if (isPrefix(key, bean.getCacheKey())) {
+                    if (Keys.isPrefix(key, bean.getCacheKey())) {
                         fullKeys.add(key);
                         prefixKeys.add(bean.getCacheKey());
                     }
                 }
             }
         }
+
+        log.debug("flush full keys:{}", fullKeys);
+        log.debug("flush prefix keys:{}", prefixKeys);
 
         for (String fullKey : fullKeys) {
             flush(option, fullKey);
@@ -208,7 +219,6 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         }
     }
 
-
     protected WestCacheFlusherBean find(
             WestCacheFlusherBean bean,
             List<WestCacheFlusherBean> beans) {
@@ -217,13 +227,5 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
                 return newbean;
         }
         return null;
-    }
-
-    protected boolean isPrefix(String str, String prefix) {
-        if (!str.startsWith(prefix)) return false;
-        if (str.length() == prefix.length()) return true;
-
-        char nextChar = str.charAt(prefix.length());
-        return nextChar == '.' || nextChar == '_';
     }
 }

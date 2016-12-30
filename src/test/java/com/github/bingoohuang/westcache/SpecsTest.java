@@ -4,7 +4,6 @@ import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.keyer.DefaultKeyer;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
-import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,9 +48,7 @@ public class SpecsTest {
                                       Method method,
                                       Object bean,
                                       Object... args) {
-                val mapSplitter = Splitter.on(';').withKeyValueSeparator('=');
-                val map = mapSplitter.split(option.getSpecs());
-                val keyPrefix = map.get("key.prefix");
+                val keyPrefix = option.getSpecs().get("key.prefix");
                 val ann = method.getAnnotation(CustomizedCacheKey.class);
 
                 String cacheKey = keyPrefix + (ann != null ? ann.value() : method.getName());

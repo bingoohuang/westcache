@@ -3,9 +3,12 @@ package com.github.bingoohuang.westcache.utils;
 import com.github.bingoohuang.westcache.WestCacheRegistry;
 import com.github.bingoohuang.westcache.WestCacheable;
 import com.github.bingoohuang.westcache.base.*;
+import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
+
+import java.util.Map;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
@@ -18,7 +21,7 @@ public class WestCacheOption {
     @Getter private final WestCacheConfig config;
     @Getter private final WestCacheKeyer keyStrategy;
     @Getter private final String key;
-    @Getter private final String specs;
+    @Getter private final Map<String, String> specs;
 
     public static Builder newBuilder() {
         return new Builder();
@@ -31,7 +34,7 @@ public class WestCacheOption {
         WestCacheConfig config = WestCacheRegistry.getConfig("default");
         WestCacheKeyer keyStrategy = WestCacheRegistry.getKeyStrategy("default");
         String key = "";
-        String specs = "";
+        Map<String, String> specs = Maps.newHashMap();
 
         public Builder flusher(String flusherName) {
             this.flusher = WestCacheRegistry.getFlusher(flusherName);
@@ -64,6 +67,11 @@ public class WestCacheOption {
         }
 
         public Builder specs(String specs) {
+            this.specs = Specs.parseSpecs(specs);
+            return this;
+        }
+
+        public Builder specs(Map<String, String> specs) {
             this.specs = specs;
             return this;
         }
@@ -79,7 +87,7 @@ public class WestCacheOption {
             this.config = WestCacheRegistry.getConfig(westCacheable.config());
             this.keyStrategy = WestCacheRegistry.getKeyStrategy(westCacheable.keyer());
             this.key = westCacheable.key();
-            this.specs = westCacheable.specs();
+            this.specs = Specs.parseSpecs(westCacheable.specs());
             return build();
         }
     }

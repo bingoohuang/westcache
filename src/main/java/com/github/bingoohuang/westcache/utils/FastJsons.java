@@ -16,4 +16,11 @@ public class FastJsons {
     public Object parse(String json) {
         return JSON.parse(json);
     }
+
+    public Object parse(String json, Class<?> returnType) {
+        Object object = JSON.parse(json);
+        if (returnType.isInstance(object)) return object;
+
+        return JSON.parseObject(json, returnType);
+    }
 }

@@ -10,6 +10,8 @@ import com.github.bingoohuang.westcache.keyer.SimpleKeyer;
 import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
 import com.github.bingoohuang.westcache.manager.FileCacheManager;
 import com.github.bingoohuang.westcache.manager.GuavaCacheManager;
+import com.github.bingoohuang.westcache.outofbox.PackageLimitedKeyer;
+import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import com.github.bingoohuang.westcache.registry.RegistryTemplate;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
@@ -45,6 +47,7 @@ public class WestCacheRegistry {
         register("none", new NoneCacheFlusher());
         register("simple", new SimpleCacheFlusher());
         register("diamond", new DiamondCacheFlusher());
+        register("table", new TableCacheFlusher());
     }
 
     public void register(String flusherName, WestCacheFlusher flusher) {
@@ -111,6 +114,7 @@ public class WestCacheRegistry {
     static {
         register("default", new DefaultKeyer());
         register("simple", new SimpleKeyer());
+        register("packagelimit", new PackageLimitedKeyer());
     }
 
     public void register(String keyStrategyName, WestCacheKeyer keyStrategy) {
