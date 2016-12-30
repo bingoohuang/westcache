@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import com.github.bingoohuang.westcache.util.Conf;
@@ -35,6 +36,12 @@ public class TableCacheFlusherTest {
 
     @BeforeClass
     public static void beforeClass() {
+        WestCacheRegistry.deregisterConfig("default");
+        WestCacheRegistry.register("default", new DefaultWestCacheConfig(){
+            @Override public long rotateIntervalMillis() {
+                return 500;
+            }
+        });
         flusher = (TableCacheFlusher) WestCacheRegistry.getFlusher("table");
         flusher.getDao().setup();
 

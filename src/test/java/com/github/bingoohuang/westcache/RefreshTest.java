@@ -48,8 +48,8 @@ public class RefreshTest {
     }
 
     public static class FlushSnapshotBean {
-        @Getter @Setter String homeArea;
-        @Setter long sleepMillis = 150L;
+        @Getter @Setter volatile String homeArea;
+        @Setter volatile long sleepMillis = 150L;
         @Getter @Setter volatile boolean cacheMethodExecuted = false;
 
         @WestCacheable(snapshot = "file", flusher = "simple",
