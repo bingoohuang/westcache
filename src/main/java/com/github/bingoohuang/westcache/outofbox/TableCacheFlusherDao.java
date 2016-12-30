@@ -13,13 +13,13 @@ import java.util.List;
 public interface TableCacheFlusherDao {
     @Sql("DROP TABLE IF EXISTS WESTCACHE_FLUSHER;" +
             "CREATE TABLE WESTCACHE_FLUSHER (" +
-            "  CACHE_KEY     VARCHAR(2000)              NOT NULL PRIMARY KEY," +
+            "  CACHE_KEY     VARCHAR(1000)              NOT NULL PRIMARY KEY," +
             "  KEY_MATCH     VARCHAR(20) DEFAULT 'full' NOT NULL COMMENT 'full:full match,prefix:prefix match'," +
             "  VALUE_VERSION TINYINT DEFAULT 0          NOT NULL COMMENT 'version of cache, increment it to update cache'," +
             "  CACHE_STATE   TINYINT DEFAULT 1          NOT NULL COMMENT 'direct json value for the cache'," +
             "  VALUE_TYPE    VARCHAR(20) DEFAULT 'none' NOT NULL COMMENT 'value access type, direct: use direct json in DIRECT_VALUE field'," +
-            "  SPECS         VARCHAR(2000)              NULL     COMMENT 'specs for extension'," +
-            "  DIRECT_VALUE  TEXT)")
+            "  SPECS         VARCHAR(1000)              NULL     COMMENT 'specs for extension'," +
+            "  DIRECT_VALUE  TEXT)ENGINE=InnoDB DEFAULT CHARSET=utf8")
     void setup();
 
     @Sql("SELECT CACHE_KEY, KEY_MATCH, VALUE_VERSION, VALUE_TYPE, SPECS " +
@@ -42,7 +42,7 @@ public interface TableCacheFlusherDao {
     @Sql("UPDATE WESTCACHE_FLUSHER SET VALUE_VERSION = VALUE_VERSION + 1," +
             "DIRECT_VALUE = #2# " +
             "WHERE CACHE_KEY = #1#")
-    int updateDirectValue(String cacheKye, String directValue);
+    int updateDirectValue(String cacheKey, String directValue);
 
     @Sql("UPDATE WESTCACHE_FLUSHER SET VALUE_VERSION = VALUE_VERSION + 1 " +
             "WHERE CACHE_KEY = ##")

@@ -4,6 +4,7 @@ import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.MallCacheable;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
+import com.github.bingoohuang.westcache.utils.FastJsons;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,8 @@ public class MallCacheableTest {
         MallBean getMallBean();
 
         MallBean getMallBean2();
+
+        MallBean getMallBean3();
     }
 
     static MallCache mallCache = WestCacheFactory.create(MallCache.class);
@@ -41,7 +44,7 @@ public class MallCacheableTest {
     @BeforeClass
     public static void beforeClass() {
         WestCacheRegistry.deregisterConfig("default");
-        WestCacheRegistry.register("default", new DefaultWestCacheConfig(){
+        WestCacheRegistry.register("default", new DefaultWestCacheConfig() {
             @Override public long rotateIntervalMillis() {
                 return 500;
             }
@@ -88,14 +91,45 @@ public class MallCacheableTest {
     public void workConfig() {
         MallBean demo = new MallBean("新几次哇一次抹黑头次", 123);
 
-        MockDiamondServer.setConfigInfo(GROUP, DATAID, "com.github.bingoohuang.westcache");
+        MockDiamondServer.setConfigInfo(GROUP, DATAID,
+                "com.github.bingoohuang.westcache;com.github.bingoohuang.eastcache");
 
         val cacheKey = "MallCacheableTest.MallCache.getMallBean";
         val bean = new WestCacheFlusherBean(cacheKey, "full", 0, "direct", "readBy=redis");
 
         long lastExecuted = flusher.getLastExecuted();
-        flusher.getJedis().set(cacheKey, "{\"@type\":\"com.github.bingoohuang.westcache.MallCacheableTest$MallBean\",\"age\":123,\"name\":\"新几次哇一次抹黑头次\"}");
+        String json = FastJsons.json(demo);
+        flusher.getJedis().set(cacheKey, json);
         flusher.getDao().addBean(bean);
+
+        try {
+            mallCache.getMallBean();
+        } catch (Exception ex) {
+            // ignore
+        }
+
+        // at most 15 seconds
+        TableCacheFlusherTest.waitFlushRun(flusher, lastExecuted);
+
+        MallBean mallBean2 = mallCache.getMallBean();
+
+        assertThat(mallBean2).isEqualTo(demo);
+    }
+
+    @Test
+    public void direct() {
+        MallBean demo = new MallBean("新几次哇一次抹黑头次", 123);
+
+        MockDiamondServer.setConfigInfo(GROUP, DATAID,
+                "com.github.bingoohuang.westcache;com.github.bingoohuang.eastcache");
+
+        val cacheKey = "MallCacheableTest.MallCache.getMallBean3";
+        val bean = new WestCacheFlusherBean(cacheKey, "full", 0, "direct", null);
+
+        long lastExecuted = flusher.getLastExecuted();
+        String json = FastJsons.json(demo);
+        flusher.getDao().addBean(bean);
+        flusher.getDao().updateDirectValue(cacheKey, json);
 
         try {
             mallCache.getMallBean();

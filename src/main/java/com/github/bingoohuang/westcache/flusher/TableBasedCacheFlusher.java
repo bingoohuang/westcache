@@ -58,7 +58,7 @@ MySql SQL:
 	VALUE_TYPE VARCHAR(20) DEFAULT 'none' NOT NULL COMMENT 'value access type, direct: use direct json in DIRECT_VALUE field',
 	SPECS VARCHAR(2000) NULL COMMENT 'specs for extension',
 	DIRECT_VALUE TEXT
-   ) ;
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
  */
 
