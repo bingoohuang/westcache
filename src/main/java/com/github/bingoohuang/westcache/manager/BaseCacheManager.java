@@ -4,6 +4,7 @@ import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheManager;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -39,8 +40,8 @@ public abstract class BaseCacheManager implements WestCacheManager {
         val shot = new AtomicBoolean(true);
         val flushCallable = new Callable<WestCacheItem>() {
             @Override public WestCacheItem call() throws Exception {
-                Object raw = flusher.getDirectValue(option, cacheKey);
-                if (raw != null) return new WestCacheItem(raw);
+                Optional<Object> raw = flusher.getDirectValue(option, cacheKey);
+                if (raw.isPresent()) return new WestCacheItem(raw);
 
                 shot.set(false);
                 return callable.call();

@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache.flusher;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheFlusher;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
@@ -48,8 +49,8 @@ public class SimpleCacheFlusher implements WestCacheFlusher {
     }
 
     @Override
-    public <T> T getDirectValue(WestCacheOption option, String cacheKey) {
-        return null;
+    public Optional<Object> getDirectValue(WestCacheOption option, String cacheKey) {
+        return Optional.absent();
     }
 
 }

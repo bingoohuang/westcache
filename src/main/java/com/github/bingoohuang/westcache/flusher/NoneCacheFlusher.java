@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache.flusher;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheFlusher;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
@@ -18,8 +19,8 @@ public class NoneCacheFlusher implements WestCacheFlusher {
     }
 
     @Override
-    public <T> T getDirectValue(WestCacheOption option, String cacheKey) {
-        return null;
+    public Optional<Object> getDirectValue(WestCacheOption option, String cacheKey) {
+        return Optional.absent();
     }
 
     @Override
