@@ -5,7 +5,6 @@ import com.github.bingoohuang.westcache.utils.Keys;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.val;
 
-import static com.github.bingoohuang.westcache.utils.Keys.createKeyMainPart;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
@@ -18,7 +17,7 @@ public class DefaultKeyer extends WestCacheKeyer {
                               Object... args) {
         if (option.getKey().length() > 0) return option.getKey();
 
-        val mainPart = createKeyMainPart(methodName, bean, false);
+        val mainPart = Keys.createKeyMainPart(methodName, bean, false);
 
         val staticKey = option.getSpecs().get("static.key");
         val hashCode = option.getSnapshot() != null || "yes".equals(staticKey)
