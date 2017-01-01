@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/30.
  */
-@EqlerConfig("westcache")
+@EqlerConfig
 public interface TableCacheFlusherDao {
     @Sql("DROP TABLE IF EXISTS WESTCACHE_FLUSHER;" +
             "CREATE TABLE WESTCACHE_FLUSHER (" +

@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.flusher;
 
+import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.Keys;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
@@ -17,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -68,21 +71,20 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
     @Override @SneakyThrows
     public boolean isKeyEnabled(WestCacheOption option, String cacheKey) {
-        tryStartup(option);
+        tryStartup(option, cacheKey);
 
 
         val bean = findBean(cacheKey);
         return bean != null;
     }
 
-    private void tryStartup(WestCacheOption option) {
+    private void tryStartup(WestCacheOption option, String cacheKey) {
         if (lastExecuted != -1) return;
 
         synchronized (this) {
             if (lastExecuted != -1) return;
 
-            lastExecuted = 0;
-            startupRotateChecker(option);
+            startupRotateChecker(option, cacheKey);
         }
     }
 
@@ -141,29 +143,77 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         return null;
     }
 
-    protected void startupRotateChecker(final WestCacheOption option) {
-        checkBeans(option);
+    protected void startupRotateChecker(final WestCacheOption option,
+                                        final String cacheKey) {
+        firstCheckBeans(option, cacheKey);
+
         long intervalMillis = option.getConfig().rotateIntervalMillis();
         option.getConfig().executorService().scheduleAtFixedRate(new Runnable() {
             @Override public void run() {
-                checkBeans(option);
+                checkBeans(option, cacheKey);
             }
         }, intervalMillis, intervalMillis, MILLISECONDS);
     }
 
     @SneakyThrows
-    protected void checkBeans(WestCacheOption option) {
-        log.debug("start rotating check");
-        val beans = queryAllBeans();
-        if (beans.equals(tableRows)) {
-            log.debug("no changes detected");
-            return;
+    protected int firstCheckBeans(final WestCacheOption option, String cacheKey) {
+        val snapshot = option.getSnapshot();
+        if (snapshot == null) return checkBeans(option, cacheKey);
+
+        return futureGet(option, cacheKey);
+    }
+
+    @SneakyThrows
+    private int futureGet(final WestCacheOption option,
+                          final String cacheKey) {
+        Future<Object> future = option.getConfig().executorService()
+                .submit(new Callable<Object>() {
+                    @Override public Object call() throws Exception {
+                        return checkBeans(option, cacheKey);
+                    }
+                });
+
+        long timeout = option.getConfig().timeoutMillisToSnapshot();
+        try {
+            future.get(timeout, MILLISECONDS);
+        } catch (TimeoutException ex) {
+            log.info("get first check beans {} timeout in " +
+                    "{} millis, try snapshot", cacheKey, timeout);
+            WestCacheItem result = option.getSnapshot().
+                    readSnapshot(option, cacheKey + ".tableflushers");
+            log.info("got {} snapshot {}", cacheKey,
+                    result != null ? result.getObject() : " non-exist");
+            if (result != null) return 1;
         }
 
-        diff(tableRows, beans, option);
+        future.get();
+        return 1;
+    }
 
-        tableRows = beans;
+    @SneakyThrows
+    protected int checkBeans(WestCacheOption option, String cacheKey) {
+        log.debug("start rotating check");
+        val beans = queryAllBeans();
+
+        if (lastExecuted == -1) {
+            tableRows = beans;
+            saveSnapshot(option, cacheKey);
+        } else if (beans.equals(tableRows)) {
+            log.debug("no changes detected");
+        } else {
+            diff(tableRows, beans, option);
+            tableRows = beans;
+        }
         lastExecuted = System.currentTimeMillis();
+        return 1;
+    }
+
+    private void saveSnapshot(WestCacheOption option, String cacheKey) {
+        val snapshot = option.getSnapshot();
+        if (snapshot == null) return;
+
+        option.getSnapshot().saveSnapshot(option,
+                cacheKey + ".tableflushers", new WestCacheItem(tableRows));
     }
 
     protected void diff(List<WestCacheFlusherBean> table,

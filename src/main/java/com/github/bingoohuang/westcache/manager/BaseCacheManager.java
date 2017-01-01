@@ -3,8 +3,8 @@ package com.github.bingoohuang.westcache.manager;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheManager;
+import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
-import com.google.common.base.Optional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -40,7 +40,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
         val shot = new AtomicBoolean(true);
         val flushCallable = new Callable<WestCacheItem>() {
             @Override public WestCacheItem call() throws Exception {
-                Optional<Object> raw = flusher.getDirectValue(option, cacheKey);
+                val raw = flusher.getDirectValue(option, cacheKey);
                 if (raw.isPresent()) return new WestCacheItem(raw);
 
                 shot.set(false);
@@ -55,8 +55,8 @@ public abstract class BaseCacheManager implements WestCacheManager {
             }
         };
         WestCacheItem item = westCache.get(option, cacheKey, wrapCallable);
-
-        log.info("cache key {} shot result {} ", cacheKey, shot.get() ? "bingo" : "misfired");
+        log.info("cache key {} shot result {} ", cacheKey,
+                shot.get() ? "bingo" : "misfired");
 
         return item;
     }
@@ -65,22 +65,27 @@ public abstract class BaseCacheManager implements WestCacheManager {
     private WestCacheItem trySnapshot(final WestCacheOption option,
                                       final String cacheKey,
                                       final Callable<WestCacheItem> callable) {
-        val future = option.getConfig().executorService().submit(new Callable<WestCacheItem>() {
-            @Override public WestCacheItem call() throws Exception {
-                val item = callable.call();
-                westCache.put(option, cacheKey, item);
-                option.getSnapshot().saveSnapshot(option, cacheKey, item);
-                return item;
-            }
-        });
+        val future = option.getConfig().executorService().submit(
+                new Callable<WestCacheItem>() {
+                    @Override public WestCacheItem call() throws Exception {
+                        val item = callable.call();
+                        westCache.put(option, cacheKey, item);
+                        WestCacheSnapshot snapshot = option.getSnapshot();
+                        snapshot.saveSnapshot(option, cacheKey, item);
+                        return item;
+                    }
+                });
 
         long timeout = option.getConfig().timeoutMillisToSnapshot();
         try {
             return future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
-            log.info("get cache {} timeout in {} millis, try snapshot", timeout, cacheKey);
-            WestCacheItem result = option.getSnapshot().readSnapshot(option, cacheKey);
-            log.info("got {} snapshot {}", cacheKey, result != null ? result.getObject() : " non-exist");
+            log.info("get cache {} timeout in {} millis," +
+                    " try snapshot", cacheKey, timeout);
+            WestCacheItem result = option.getSnapshot()
+                    .readSnapshot(option, cacheKey);
+            log.info("got {} snapshot {}", cacheKey,
+                    result != null ? result.getObject() : " non-exist");
             return result != null ? result : future.get();
         }
     }

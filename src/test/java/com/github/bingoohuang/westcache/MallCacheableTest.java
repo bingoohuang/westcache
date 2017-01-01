@@ -9,10 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.n3r.diamond.client.impl.MockDiamondServer;
 
 import static com.github.bingoohuang.westcache.outofbox.PackageLimitedKeyer.DATAID;

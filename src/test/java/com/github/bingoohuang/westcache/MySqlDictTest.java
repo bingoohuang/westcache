@@ -29,7 +29,7 @@ public class MySqlDictTest {
         private String name, addr;
     }
 
-    @EqlerConfig("westcache")
+    @EqlerConfig
     public interface DictDao {
         @Sql("drop table if exists cache_dict;" +
 

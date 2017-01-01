@@ -37,7 +37,7 @@ public class TableCacheFlusherTest {
     @BeforeClass
     public static void beforeClass() {
         WestCacheRegistry.deregisterConfig("default");
-        WestCacheRegistry.register("default", new DefaultWestCacheConfig(){
+        WestCacheRegistry.register("default", new DefaultWestCacheConfig() {
             @Override public long rotateIntervalMillis() {
                 return 500;
             }
@@ -57,7 +57,7 @@ public class TableCacheFlusherTest {
         jedis.close();
     }
 
-    @WestCacheable(flusher = "table", keyer = "simple",
+    @WestCacheable(flusher = "table", keyer = "simple", snapshot = "file",
             specs = "rotateIntervalMillis=1000")
     public static abstract class TitaService {
         public String tita() {
