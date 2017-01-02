@@ -8,6 +8,7 @@ import com.github.bingoohuang.westcache.flusher.SimpleCacheFlusher;
 import com.github.bingoohuang.westcache.keyer.DefaultKeyer;
 import com.github.bingoohuang.westcache.keyer.SimpleKeyer;
 import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
+import com.github.bingoohuang.westcache.manager.ExpiringMapCacheManager;
 import com.github.bingoohuang.westcache.manager.FileCacheManager;
 import com.github.bingoohuang.westcache.manager.GuavaCacheManager;
 import com.github.bingoohuang.westcache.outofbox.PackageLimitedKeyer;
@@ -77,6 +78,7 @@ public class WestCacheRegistry {
         register("guava", new GuavaCacheManager());
         register("diamond", new DiamondCacheManager());
         register("file", new FileCacheManager());
+        register("expiring", new ExpiringMapCacheManager());
     }
 
     public void register(String managerName, WestCacheManager manager) {

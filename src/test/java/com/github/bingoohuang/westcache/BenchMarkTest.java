@@ -57,7 +57,7 @@ public class BenchMarkTest {
         Diamonds.writeDiamond(GROUP, DATAID,
                 "com.github.bingoohuang.westcache");
 
-        val cacheKey = "BenchMarkTest.MallCache.getMallBean";
+        val cacheKey = "BenchMarkTest.BMMallCache.getMallBean";
         val bean = new WestCacheFlusherBean(cacheKey, "full",
                 0, "direct", "readBy=redis");
         long lastExecuted = flusher.getLastExecuted();

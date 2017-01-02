@@ -1,0 +1,43 @@
+package com.github.bingoohuang.westcache.utils;
+
+import java.util.concurrent.TimeUnit;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.lang.String.format;
+
+/**
+ * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/2.
+ */
+public class Durations {
+    public static long parse(String key, String spec, TimeUnit targetTimeUnit) {
+        checkArgument(spec != null && !spec.isEmpty(),
+                "value of key %s omitted", key);
+        try {
+            char lastChar = spec.charAt(spec.length() - 1);
+            TimeUnit timeUnit = parseTimeUnit(key, spec, lastChar);
+
+            long duration = Long.parseLong(spec.substring(0, spec.length() - 1));
+            return targetTimeUnit.convert(duration, timeUnit);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                    format("key %s value set to %s, must be integer", key, spec));
+        }
+    }
+
+    private static TimeUnit parseTimeUnit(String key, String spec, char lastChar) {
+        switch (lastChar) {
+            case 'd':
+                return TimeUnit.DAYS;
+            case 'h':
+                return TimeUnit.HOURS;
+            case 'm':
+                return TimeUnit.MINUTES;
+            case 's':
+                return TimeUnit.SECONDS;
+            default:
+                throw new IllegalArgumentException(
+                        format("key %s invalid format.  was %s, " +
+                                "must end with one of [dDhHmMsS]", key, spec));
+        }
+    }
+}

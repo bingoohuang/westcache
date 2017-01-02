@@ -156,7 +156,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     }
 
     @SneakyThrows
-    protected int firstCheckBeans(final WestCacheOption option, String cacheKey) {
+    protected Object firstCheckBeans(final WestCacheOption option, String cacheKey) {
         val snapshot = option.getSnapshot();
         if (snapshot == null) return checkBeans(option, cacheKey);
 
@@ -164,8 +164,8 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     }
 
     @SneakyThrows
-    private int futureGet(final WestCacheOption option,
-                          final String cacheKey) {
+    private Object futureGet(final WestCacheOption option,
+                             final String cacheKey) {
         Future<Object> future = option.getConfig().executorService()
                 .submit(new Callable<Object>() {
                     @Override public Object call() throws Exception {
@@ -175,7 +175,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
         long timeout = option.getConfig().timeoutMillisToSnapshot();
         try {
-            future.get(timeout, MILLISECONDS);
+            return future.get(timeout, MILLISECONDS);
         } catch (TimeoutException ex) {
             log.info("get first check beans {} timeout in " +
                     "{} millis, try snapshot", cacheKey, timeout);
@@ -186,8 +186,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
             if (result != null) return 1;
         }
 
-        future.get();
-        return 1;
+        return future.get();
     }
 
     @SneakyThrows
