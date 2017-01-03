@@ -31,7 +31,7 @@ public class SpringConfig {
         val jedisPoolConfig = new JedisPoolConfig();
         jedisPoolConfig.setMaxTotal(10);
 
-        final val pool = new JedisPool(jedisPoolConfig,
+        val pool = new JedisPool(jedisPoolConfig,
                 "127.0.0.1", 6379);
 
         return proxyJedisCommands(pool);
@@ -42,7 +42,7 @@ public class SpringConfig {
         val jedisPoolConfig = new JedisPoolConfig();
         jedisPoolConfig.setMaxTotal(10);
 
-        final val pool = new JedisPool(jedisPoolConfig,
+        val pool = new JedisPool(jedisPoolConfig,
                 "127.0.0.1", 7379);
 
         return proxyJedisCommands(pool);
