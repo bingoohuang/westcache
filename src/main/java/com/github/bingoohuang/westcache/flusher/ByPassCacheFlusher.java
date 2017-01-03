@@ -8,7 +8,7 @@ import com.google.common.base.Optional;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
  */
-public class NoneCacheFlusher implements WestCacheFlusher {
+public class ByPassCacheFlusher implements WestCacheFlusher {
     @Override
     public boolean register(WestCacheOption option, String cacheKey, WestCache cache) {
         return false;

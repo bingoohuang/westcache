@@ -14,14 +14,14 @@ public @interface WestCacheable {
      *
      * @return snapshot supported or not.
      */
-    String snapshot() default "none";
+    String snapshot() default "bypass";
 
     /**
      * set cache flusher's name.
      *
      * @return flusher's name.
      */
-    String flusher() default "none";
+    String flusher() default "bypass";
 
     /**
      * set cache manager's name.
@@ -36,6 +36,12 @@ public @interface WestCacheable {
      * @return cache config's name.
      */
     String config() default "default";
+
+    /**
+     * set interceptor name for value callable.
+     * @return
+     */
+    String interceptor() default "bypass";
 
     /**
      * set cache's key.

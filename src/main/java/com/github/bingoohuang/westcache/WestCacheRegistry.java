@@ -3,8 +3,10 @@ package com.github.bingoohuang.westcache;
 import com.github.bingoohuang.westcache.base.*;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.DiamondCacheFlusher;
-import com.github.bingoohuang.westcache.flusher.NoneCacheFlusher;
+import com.github.bingoohuang.westcache.flusher.ByPassCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.SimpleCacheFlusher;
+import com.github.bingoohuang.westcache.interceptor.ByPassInterceptor;
+import com.github.bingoohuang.westcache.interceptor.RedisInterceptor;
 import com.github.bingoohuang.westcache.keyer.DefaultKeyer;
 import com.github.bingoohuang.westcache.keyer.SimpleKeyer;
 import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
@@ -24,7 +26,8 @@ import lombok.val;
  */
 @UtilityClass
 public class WestCacheRegistry {
-    RegistryTemplate<WestCacheConfig> configRegistry = new RegistryTemplate<WestCacheConfig>();
+    RegistryTemplate<WestCacheConfig> configRegistry
+            = new RegistryTemplate<WestCacheConfig>();
 
     static {
         register("default", new DefaultWestCacheConfig());
@@ -42,10 +45,11 @@ public class WestCacheRegistry {
         return configRegistry.get(configName);
     }
 
-    RegistryTemplate<WestCacheFlusher> flusherRegistry = new RegistryTemplate<WestCacheFlusher>();
+    RegistryTemplate<WestCacheFlusher> flusherRegistry
+            = new RegistryTemplate<WestCacheFlusher>();
 
     static {
-        register("none", new NoneCacheFlusher());
+        register("bypass", new ByPassCacheFlusher());
         register("simple", new SimpleCacheFlusher());
         register("diamond", new DiamondCacheFlusher());
         register("table", new TableCacheFlusher());
@@ -68,11 +72,12 @@ public class WestCacheRegistry {
                       String methodName,
                       Object... args) {
         val keyStrategy = option.getKeyStrategy();
-        String cacheKey = keyStrategy.getCacheKey(option, methodName, bean, args);
+        val cacheKey = keyStrategy.getCacheKey(option, methodName, bean, args);
         option.getFlusher().flush(option, cacheKey);
     }
 
-    RegistryTemplate<WestCacheManager> managerRegistry = new RegistryTemplate<WestCacheManager>();
+    RegistryTemplate<WestCacheManager> managerRegistry
+            = new RegistryTemplate<WestCacheManager>();
 
     static {
         register("guava", new GuavaCacheManager());
@@ -93,7 +98,8 @@ public class WestCacheRegistry {
         return managerRegistry.get(managerName);
     }
 
-    RegistryTemplate<WestCacheSnapshot> snapshotRegistry = new RegistryTemplate<WestCacheSnapshot>();
+    RegistryTemplate<WestCacheSnapshot> snapshotRegistry
+            = new RegistryTemplate<WestCacheSnapshot>();
 
     static {
         register("file", new FileCacheSnapshot());
@@ -111,7 +117,8 @@ public class WestCacheRegistry {
         return snapshotRegistry.get(snapshotName);
     }
 
-    RegistryTemplate<WestCacheKeyer> keyStrategyRegistry = new RegistryTemplate<WestCacheKeyer>();
+    RegistryTemplate<WestCacheKeyer> keyStrategyRegistry
+            = new RegistryTemplate<WestCacheKeyer>();
 
     static {
         register("default", new DefaultKeyer());
@@ -129,5 +136,25 @@ public class WestCacheRegistry {
 
     public WestCacheKeyer getKeyStrategy(String keyStrategyName) {
         return keyStrategyRegistry.get(keyStrategyName);
+    }
+
+    RegistryTemplate<WestCacheInterceptor> interceptorRegistry
+            = new RegistryTemplate<WestCacheInterceptor>();
+
+    static {
+        register("bypass", new ByPassInterceptor());
+        register("redis", new RedisInterceptor());
+    }
+
+    public void register(String interceptorName, WestCacheInterceptor keyStrategy) {
+        interceptorRegistry.register(interceptorName, keyStrategy);
+    }
+
+    public void deregisterInterceptor(String interceptorName) {
+        interceptorRegistry.deregister(interceptorName);
+    }
+
+    public WestCacheInterceptor getInterceptor(String interceptorName) {
+        return interceptorRegistry.get(interceptorName);
     }
 }

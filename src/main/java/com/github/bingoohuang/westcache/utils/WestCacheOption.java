@@ -19,6 +19,7 @@ public class WestCacheOption {
     @Getter private final WestCacheManager manager;
     @Getter private final WestCacheSnapshot snapshot;
     @Getter private final WestCacheConfig config;
+    @Getter private final WestCacheInterceptor interceptor;
     @Getter private final WestCacheKeyer keyStrategy;
     @Getter private final String key;
     @Getter private final Map<String, String> specs;
@@ -30,8 +31,9 @@ public class WestCacheOption {
     public static class Builder {
         WestCacheFlusher flusher = WestCacheRegistry.getFlusher("simple");
         WestCacheManager manager = WestCacheRegistry.getManager("guava");
-        WestCacheSnapshot snapshot = WestCacheRegistry.getSnapshot("none");
+        WestCacheSnapshot snapshot = WestCacheRegistry.getSnapshot("bypass");
         WestCacheConfig config = WestCacheRegistry.getConfig("default");
+        WestCacheInterceptor interceptor = WestCacheRegistry.getInterceptor("bypass");
         WestCacheKeyer keyStrategy = WestCacheRegistry.getKeyStrategy("default");
         String key = "";
         Map<String, String> specs = Maps.newHashMap();
@@ -56,6 +58,11 @@ public class WestCacheOption {
             return this;
         }
 
+        public Builder interceptor(String interceptorName) {
+            this.interceptor = WestCacheRegistry.getInterceptor(interceptorName);
+            return this;
+        }
+
         public Builder keyStrategy(String keyStrategyName) {
             this.keyStrategy = WestCacheRegistry.getKeyStrategy(keyStrategyName);
             return this;
@@ -77,7 +84,8 @@ public class WestCacheOption {
         }
 
         public WestCacheOption build() {
-            return new WestCacheOption(flusher, manager, snapshot, config, keyStrategy, key, specs);
+            return new WestCacheOption(flusher, manager, snapshot,
+                    config, interceptor, keyStrategy, key, specs);
         }
 
         public WestCacheOption build(WestCacheable westCacheable) {
@@ -85,6 +93,7 @@ public class WestCacheOption {
             this.manager = WestCacheRegistry.getManager(westCacheable.manager());
             this.snapshot = WestCacheRegistry.getSnapshot(westCacheable.snapshot());
             this.config = WestCacheRegistry.getConfig(westCacheable.config());
+            this.interceptor = WestCacheRegistry.getInterceptor(westCacheable.interceptor());
             this.keyStrategy = WestCacheRegistry.getKeyStrategy(westCacheable.keyer());
             this.key = westCacheable.key();
             this.specs = Specs.parseSpecs(westCacheable.specs());

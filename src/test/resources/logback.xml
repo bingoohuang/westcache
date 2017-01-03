@@ -10,5 +10,9 @@
         <appender-ref ref="Console"/>
     </root>
 
+    <logger name="com.github.bingoohuang.westcache.interceptor.RedisInterceptor" level="DEBUG" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
+
 </configuration>
 

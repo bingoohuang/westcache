@@ -56,7 +56,6 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
             return cacheItem;
         }
 
-
         private boolean lockCacheKey(String lockKey) {
             Object prev = cache.putIfAbsent(lockKey, lockItem);
             return prev == null;

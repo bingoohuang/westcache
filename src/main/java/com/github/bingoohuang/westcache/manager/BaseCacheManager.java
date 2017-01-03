@@ -1,9 +1,6 @@
 package com.github.bingoohuang.westcache.manager;
 
-import com.github.bingoohuang.westcache.base.WestCache;
-import com.github.bingoohuang.westcache.base.WestCacheItem;
-import com.github.bingoohuang.westcache.base.WestCacheManager;
-import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
+import com.github.bingoohuang.westcache.base.*;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +41,8 @@ public abstract class BaseCacheManager implements WestCacheManager {
                 if (raw.isPresent()) return new WestCacheItem(raw);
 
                 shot.set(false);
-                return callable.call();
+                val interceptor = option.getInterceptor();
+                return interceptor.intercept(option, cacheKey, callable);
             }
         };
 

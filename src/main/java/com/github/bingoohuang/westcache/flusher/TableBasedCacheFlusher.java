@@ -73,7 +73,6 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     public boolean isKeyEnabled(WestCacheOption option, String cacheKey) {
         tryStartup(option, cacheKey);
 
-
         val bean = findBean(cacheKey);
         return bean != null;
     }
@@ -120,14 +119,14 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     @SneakyThrows
     private <T> T readSubDirectValue(
             final WestCacheFlusherBean bean, String subKey) {
-        val optional = prefixDirectCache.get(bean.getCacheKey(),
-                new Callable<Optional<Map<String, Object>>>() {
-                    @Override
-                    public Optional<Map<String, Object>> call() throws Exception {
-                        val map = (Map<String, Object>) readDirectValue(bean);
-                        return Optional.fromNullable(map);
-                    }
-                });
+        val loader = new Callable<Optional<Map<String, Object>>>() {
+            @Override
+            public Optional<Map<String, Object>> call() throws Exception {
+                val map = (Map<String, Object>) readDirectValue(bean);
+                return Optional.fromNullable(map);
+            }
+        };
+        val optional = prefixDirectCache.get(bean.getCacheKey(), loader);
 
         return optional.isPresent() ? (T) optional.get().get(subKey) : null;
     }
@@ -156,7 +155,8 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     }
 
     @SneakyThrows
-    protected Object firstCheckBeans(final WestCacheOption option, String cacheKey) {
+    protected Object firstCheckBeans(final WestCacheOption option,
+                                     String cacheKey) {
         val snapshot = option.getSnapshot();
         if (snapshot == null) return checkBeans(option, cacheKey);
 
@@ -212,7 +212,8 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         if (snapshot == null) return;
 
         option.getSnapshot().saveSnapshot(option,
-                cacheKey + ".tableflushers", new WestCacheItem(tableRows));
+                cacheKey + ".tableflushers",
+                new WestCacheItem(tableRows));
     }
 
     protected void diff(List<WestCacheFlusherBean> table,
