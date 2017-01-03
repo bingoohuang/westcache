@@ -60,11 +60,11 @@ public class RedisInterceptor implements WestCacheInterceptor {
             val duration = Durations.parse(keyW, expireWrite, SECONDS);
             jedis.set(redisValueKey, json, "NX", "EX", duration);
             onRedisValueStored(redisValueKey, cacheKey, json, duration);
-            log.debug("set redis value {} with {} seconds expire", json, duration);
+            log.debug("set redis value {}={} with {} seconds expire", redisValueKey, json, duration);
         } else {
             jedis.set(redisValueKey, json);
             onRedisValueStored(redisValueKey, cacheKey, json, -1);
-            log.debug("set redis value {}", json);
+            log.debug("set redis value {}={}", redisValueKey, json);
         }
 
         return item;
