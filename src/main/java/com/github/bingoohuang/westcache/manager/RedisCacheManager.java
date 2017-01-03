@@ -3,12 +3,12 @@ package com.github.bingoohuang.westcache.manager;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.FastJsons;
+import com.github.bingoohuang.westcache.utils.Redis;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
-import redis.clients.jedis.JedisCommands;
 
 import java.util.concurrent.Callable;
 
@@ -16,28 +16,27 @@ import java.util.concurrent.Callable;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/28.
  */
 public class RedisCacheManager extends BaseCacheManager {
-    public RedisCacheManager(JedisCommands jedis, String prefix) {
-        super(new RedisWestCache(jedis, prefix));
+    public RedisCacheManager(String prefix) {
+        super(new RedisWestCache(prefix));
     }
 
-    public RedisCacheManager(JedisCommands jedis) {
-        super(new RedisWestCache(jedis));
+    public RedisCacheManager() {
+        super(new RedisWestCache());
     }
 
     @AllArgsConstructor
     private static class RedisWestCache implements WestCache {
-        JedisCommands jedis;
         String prefix;
 
-        public RedisWestCache(JedisCommands jedis) {
-            this(jedis, "westcache:");
+        public RedisWestCache() {
+            this("westcache:");
         }
 
         @Override @SneakyThrows
         public WestCacheItem get(WestCacheOption option,
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
-            String jsonValue = jedis.get(prefix + cacheKey);
+            String jsonValue = Redis.jedis.get(prefix + cacheKey);
             if (StringUtils.isEmpty(jsonValue))
                 return new WestCacheItem(null);
 
@@ -57,15 +56,15 @@ public class RedisCacheManager extends BaseCacheManager {
                         WestCacheItem cacheValue) {
             if (cacheValue != null) {
                 val json = FastJsons.json(cacheValue.getObject().get());
-                jedis.set(prefix + cacheKey, json);
+                Redis.jedis.set(prefix + cacheKey, json);
             } else {
-                jedis.del(prefix + cacheKey);
+                Redis.jedis.del(prefix + cacheKey);
             }
         }
 
         @Override
         public void invalidate(WestCacheOption option, String cacheKey) {
-            jedis.del(prefix + cacheKey);
+            Redis.jedis.del(prefix + cacheKey);
         }
     }
 }

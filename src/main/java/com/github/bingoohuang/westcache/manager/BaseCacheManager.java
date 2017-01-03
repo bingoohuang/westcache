@@ -1,6 +1,9 @@
 package com.github.bingoohuang.westcache.manager;
 
-import com.github.bingoohuang.westcache.base.*;
+import com.github.bingoohuang.westcache.base.WestCache;
+import com.github.bingoohuang.westcache.base.WestCacheItem;
+import com.github.bingoohuang.westcache.base.WestCacheManager;
+import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -46,13 +49,13 @@ public abstract class BaseCacheManager implements WestCacheManager {
             }
         };
 
-        Callable<WestCacheItem> wrapCallable = new Callable<WestCacheItem>() {
+        val wrapCallable = new Callable<WestCacheItem>() {
             @Override public WestCacheItem call() throws Exception {
                 return option.getSnapshot() == null ? flushCallable.call()
                         : trySnapshot(option, cacheKey, flushCallable);
             }
         };
-        WestCacheItem item = westCache.get(option, cacheKey, wrapCallable);
+        val item = westCache.get(option, cacheKey, wrapCallable);
         log.info("cache key {} shot result {} ", cacheKey,
                 shot.get() ? "bingo" : "misfired");
 

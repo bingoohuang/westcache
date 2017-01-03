@@ -3,36 +3,32 @@ package com.github.bingoohuang.westcache.snapshot;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.FastJsons;
+import com.github.bingoohuang.westcache.utils.Redis;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import lombok.AllArgsConstructor;
 import lombok.val;
-import redis.clients.jedis.JedisCommands;
 
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
+@AllArgsConstructor
 public class RedisCacheSnapshot implements WestCacheSnapshot {
-    JedisCommands jedisCommands;
     String prefix;
 
-    public RedisCacheSnapshot(JedisCommands jedisCommands, String prefix) {
-        this.jedisCommands = jedisCommands;
-        this.prefix = prefix;
-    }
-
-    public RedisCacheSnapshot(JedisCommands jedisCommands) {
-        this(jedisCommands, "westcache:");
+    public RedisCacheSnapshot() {
+        this("westcache:");
     }
 
     @Override
     public void saveSnapshot(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
         val json = FastJsons.json(cacheValue.getObject().orNull());
-        jedisCommands.set(prefix + cacheKey, json);
+        Redis.jedis.set(prefix + cacheKey, json);
     }
 
     @Override
     public WestCacheItem readSnapshot(WestCacheOption option, String cacheKey) {
-        String json = jedisCommands.get(prefix + cacheKey);
+        String json = Redis.jedis.get(prefix + cacheKey);
         if (json == null) return null;
 
         Object object = FastJsons.parse(json);
@@ -41,6 +37,6 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
 
     @Override
     public void deleteSnapshot(WestCacheOption option, String cacheKey) {
-        jedisCommands.del(prefix + cacheKey);
+        Redis.jedis.del(prefix + cacheKey);
     }
 }

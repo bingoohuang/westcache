@@ -39,7 +39,8 @@ public @interface WestCacheable {
 
     /**
      * set interceptor name for value callable.
-     * @return
+     *
+     * @return interceptor's name.
      */
     String interceptor() default "bypass";
 

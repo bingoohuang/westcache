@@ -9,7 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.n3r.diamond.client.impl.MockDiamondServer;
 
 import static com.github.bingoohuang.westcache.outofbox.PackageLimitedKeyer.DATAID;
@@ -36,16 +39,18 @@ public class MallCacheableTest {
     }
 
     static MallCache mallCache = WestCacheFactory.create(MallCache.class);
-    static TableCacheFlusher flusher = (TableCacheFlusher) WestCacheRegistry.getFlusher("table");
+    static TableCacheFlusher flusher = (TableCacheFlusher)
+            WestCacheRegistry.getFlusher("table");
 
     @BeforeClass
     public static void beforeClass() {
         WestCacheRegistry.deregisterConfig("default");
-        WestCacheRegistry.register("default", new DefaultWestCacheConfig() {
-            @Override public long rotateIntervalMillis() {
-                return 500;
-            }
-        });
+        WestCacheRegistry.register("default",
+                new DefaultWestCacheConfig() {
+                    @Override public long rotateIntervalMillis() {
+                        return 500;
+                    }
+                });
 
         flusher.getDao().setup();
         MockDiamondServer.setUpMockServer();
@@ -72,7 +77,8 @@ public class MallCacheableTest {
     @Test
     public void withConfig() {
         try {
-            MockDiamondServer.setConfigInfo(GROUP, DATAID, "com.github.bingoohuang.westcache");
+            MockDiamondServer.setConfigInfo(GROUP, DATAID,
+                    "com.github.bingoohuang.westcache");
             mallCache.getMallBean2();
         } catch (RuntimeException ex) {
             assertThat(ex.getMessage()).isEqualTo(

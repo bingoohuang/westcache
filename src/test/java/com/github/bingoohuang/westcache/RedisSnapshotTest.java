@@ -1,40 +1,18 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.snapshot.RedisCacheSnapshot;
-import com.github.bingoohuang.westcache.util.Conf;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import redis.clients.jedis.Jedis;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.deregisterSnapshot;
-import static com.github.bingoohuang.westcache.WestCacheRegistry.getSnapshot;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/25.
  */
 public class RedisSnapshotTest {
-    static Jedis jedis;
-
-    @BeforeClass
-    public static void beforeClass() {
-        jedis = new Jedis(Conf.REDIS_HOST, Conf.REDIS_PORT);
-        WestCacheRegistry.register("redisSnapshot",
-                new RedisCacheSnapshot(jedis));
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        deregisterSnapshot("redisSnapshot");
-        jedis.close();
-    }
-
     @Data @AllArgsConstructor @NoArgsConstructor
     public static class XyzBean {
         private int id;
@@ -44,7 +22,7 @@ public class RedisSnapshotTest {
     static volatile int cacheMethodExecutedTimes = 0;
 
     public static class XyzServie {
-        @WestCacheable(snapshot = "redisSnapshot")
+        @WestCacheable(snapshot = "redis")
         public XyzBean getXyzBean(int id) {
             ++cacheMethodExecutedTimes;
             return id == 1
@@ -56,12 +34,10 @@ public class RedisSnapshotTest {
     @Test
     public void redisSnapshot() {
         val service = WestCacheFactory.create(XyzServie.class);
-
-        val snapshot = getSnapshot("redisSnapshot");
+        val snapshot = WestCacheRegistry.getSnapshot("redis");
 
         val keyStrategy = WestCacheRegistry.getKeyStrategy("default");
-        val option = WestCacheOption.newBuilder()
-                .snapshot("redisSnapshot").build();
+        val option = WestCacheOption.newBuilder().snapshot("redis").build();
         val cacheKey1 = keyStrategy.getCacheKey(option, "getXyzBean", service, "1");
         val cacheKey2 = keyStrategy.getCacheKey(option, "getXyzBean", service, "2");
 

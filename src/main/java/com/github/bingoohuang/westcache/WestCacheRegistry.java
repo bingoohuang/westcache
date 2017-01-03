@@ -2,21 +2,19 @@ package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.*;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
-import com.github.bingoohuang.westcache.flusher.DiamondCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.ByPassCacheFlusher;
+import com.github.bingoohuang.westcache.flusher.DiamondCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.SimpleCacheFlusher;
 import com.github.bingoohuang.westcache.interceptor.ByPassInterceptor;
 import com.github.bingoohuang.westcache.interceptor.RedisInterceptor;
 import com.github.bingoohuang.westcache.keyer.DefaultKeyer;
 import com.github.bingoohuang.westcache.keyer.SimpleKeyer;
-import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
-import com.github.bingoohuang.westcache.manager.ExpiringMapCacheManager;
-import com.github.bingoohuang.westcache.manager.FileCacheManager;
-import com.github.bingoohuang.westcache.manager.GuavaCacheManager;
+import com.github.bingoohuang.westcache.manager.*;
 import com.github.bingoohuang.westcache.outofbox.PackageLimitedKeyer;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import com.github.bingoohuang.westcache.registry.RegistryTemplate;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
+import com.github.bingoohuang.westcache.snapshot.RedisCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.experimental.UtilityClass;
 import lombok.val;
@@ -84,6 +82,7 @@ public class WestCacheRegistry {
         register("diamond", new DiamondCacheManager());
         register("file", new FileCacheManager());
         register("expiring", new ExpiringMapCacheManager());
+        register("redis", new RedisCacheManager());
     }
 
     public void register(String managerName, WestCacheManager manager) {
@@ -103,6 +102,7 @@ public class WestCacheRegistry {
 
     static {
         register("file", new FileCacheSnapshot());
+        register("redis", new RedisCacheSnapshot());
     }
 
     public void register(String snapshotName, WestCacheSnapshot snapshot) {
