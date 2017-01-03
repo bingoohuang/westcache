@@ -13,7 +13,8 @@ public class PackageLimitedKeyer extends SimpleKeyer {
     public static String GROUP = "west.cache.packagelimit";
     public static String DATAID = "packages";
 
-    private static Splitter splitter = Splitter.onPattern("[\r\n;\\s]").omitEmptyStrings().trimResults();
+    private static Splitter splitter = Splitter.onPattern("[\r\n;\\s]")
+            .omitEmptyStrings().trimResults();
 
     @Override
     public String getCacheKey(WestCacheOption option,

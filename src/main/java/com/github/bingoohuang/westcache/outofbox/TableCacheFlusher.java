@@ -21,7 +21,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 public class TableCacheFlusher extends TableBasedCacheFlusher {
     @Getter volatile long lastReadDirectValue;
-    @Getter TableCacheFlusherDao dao = EqlerFactory.getEqler(TableCacheFlusherDao.class);
+    @Getter TableCacheFlusherDao dao
+            = EqlerFactory.getEqler(TableCacheFlusherDao.class);
     @Getter Jedis jedis = new Jedis();
 
     @Override protected List<WestCacheFlusherBean> queryAllBeans() {

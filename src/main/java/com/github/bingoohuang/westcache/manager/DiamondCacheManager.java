@@ -20,25 +20,31 @@ public class DiamondCacheManager extends BaseCacheManager {
 
     public static class DiamondWestCache implements WestCache {
         @Override
-        public WestCacheItem get(WestCacheOption option, String cacheKey,
+        public WestCacheItem get(WestCacheOption option,
+                                 String cacheKey,
                                  Callable<WestCacheItem> callable) {
             String json = new Miner().getStone(GROUP, cacheKey);
             return new WestCacheItem(FastJsons.parse(json));
         }
 
         @Override
-        public WestCacheItem getIfPresent(WestCacheOption option, String cacheKey) {
+        public WestCacheItem getIfPresent(WestCacheOption option,
+                                          String cacheKey) {
             return get(option, cacheKey, null);
         }
 
         @Override
-        public void put(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
-            throw new UnsupportedOperationException("DiamondCacheManager put is unsupported");
+        public void put(WestCacheOption option,
+                        String cacheKey,
+                        WestCacheItem cacheValue) {
+            throw new UnsupportedOperationException(
+                    "DiamondCacheManager put is unsupported");
         }
 
         @Override
         public void invalidate(WestCacheOption option, String cacheKey) {
-            throw new UnsupportedOperationException("DiamondCacheManager put is unsupported");
+            throw new UnsupportedOperationException(
+                    "DiamondCacheManager put is unsupported");
         }
     }
 }

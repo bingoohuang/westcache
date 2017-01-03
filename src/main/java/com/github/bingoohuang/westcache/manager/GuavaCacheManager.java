@@ -19,10 +19,12 @@ public class GuavaCacheManager extends BaseCacheManager {
     }
 
     private static class GuavaWestCache implements WestCache {
-        private Cache<String, WestCacheItem> cache = CacheBuilder.newBuilder().build();
+        private Cache<String, WestCacheItem> cache
+                = CacheBuilder.newBuilder().build();
 
         @Override @SneakyThrows
-        public WestCacheItem get(WestCacheOption option, String cacheKey,
+        public WestCacheItem get(WestCacheOption option,
+                                 String cacheKey,
                                  Callable<WestCacheItem> callable) {
             try {
                 return cache.get(cacheKey, callable);
@@ -32,17 +34,21 @@ public class GuavaCacheManager extends BaseCacheManager {
         }
 
         @Override
-        public WestCacheItem getIfPresent(WestCacheOption option, String cacheKey) {
+        public WestCacheItem getIfPresent(WestCacheOption option,
+                                          String cacheKey) {
             return cache.getIfPresent(cacheKey);
         }
 
         @Override
-        public void put(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
+        public void put(WestCacheOption option,
+                        String cacheKey,
+                        WestCacheItem cacheValue) {
             cache.put(cacheKey, cacheValue);
         }
 
         @Override
-        public void invalidate(WestCacheOption option, String cacheKey) {
+        public void invalidate(WestCacheOption option,
+                               String cacheKey) {
             cache.invalidate(cacheKey);
         }
     }

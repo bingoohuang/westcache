@@ -16,7 +16,9 @@ public class FileCacheManager extends BaseCacheManager {
         FileCacheSnapshot snapshot = new FileCacheSnapshot();
 
         @Override @SneakyThrows
-        public WestCacheItem get(WestCacheOption option, String cacheKey, Callable<WestCacheItem> callable) {
+        public WestCacheItem get(WestCacheOption option,
+                                 String cacheKey,
+                                 Callable<WestCacheItem> callable) {
             WestCacheItem item = snapshot.readSnapshot(option, cacheKey);
             if (item != null) return item;
 
@@ -27,12 +29,15 @@ public class FileCacheManager extends BaseCacheManager {
         }
 
         @Override
-        public WestCacheItem getIfPresent(WestCacheOption option, String cacheKey) {
+        public WestCacheItem getIfPresent(WestCacheOption option,
+                                          String cacheKey) {
             return snapshot.readSnapshot(option, cacheKey);
         }
 
         @Override
-        public void put(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
+        public void put(WestCacheOption option,
+                        String cacheKey,
+                        WestCacheItem cacheValue) {
             if (cacheValue == null) return;
 
             snapshot.saveSnapshot(option, cacheKey, cacheValue);
