@@ -21,7 +21,7 @@ import java.lang.reflect.Proxy;
 public class SpringConfig {
     @Bean
     public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
-        DefaultAdvisorAutoProxyCreator creator = new DefaultAdvisorAutoProxyCreator();
+        val creator = new DefaultAdvisorAutoProxyCreator();
         creator.setProxyTargetClass(true);
         return creator;
     }
@@ -31,9 +31,7 @@ public class SpringConfig {
         val jedisPoolConfig = new JedisPoolConfig();
         jedisPoolConfig.setMaxTotal(10);
 
-        val pool = new JedisPool(jedisPoolConfig,
-                "127.0.0.1", 6379);
-
+        val pool = new JedisPool(jedisPoolConfig, "127.0.0.1", 6379);
         return proxyJedisCommands(pool);
     }
 
@@ -42,9 +40,7 @@ public class SpringConfig {
         val jedisPoolConfig = new JedisPoolConfig();
         jedisPoolConfig.setMaxTotal(10);
 
-        val pool = new JedisPool(jedisPoolConfig,
-                "127.0.0.1", 7379);
-
+        val pool = new JedisPool(jedisPoolConfig, "127.0.0.1", 7379);
         return proxyJedisCommands(pool);
     }
 
