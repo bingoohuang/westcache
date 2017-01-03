@@ -28,19 +28,19 @@ public class SpringConfig {
 
     @Bean(name = "this")
     public JedisCommands thisJedisCommands() {
-        val jedisPoolConfig = new JedisPoolConfig();
-        jedisPoolConfig.setMaxTotal(10);
+        val poolConfig = new JedisPoolConfig();
+        poolConfig.setMaxTotal(10);
 
-        val pool = new JedisPool(jedisPoolConfig, "127.0.0.1", 6379);
+        val pool = new JedisPool(poolConfig, "127.0.0.1", 6379);
         return proxyJedisCommands(pool);
     }
 
     @Bean(name = "that")
     public JedisCommands thatJedisCommands() {
-        val jedisPoolConfig = new JedisPoolConfig();
-        jedisPoolConfig.setMaxTotal(10);
+        val poolConfig = new JedisPoolConfig();
+        poolConfig.setMaxTotal(10);
 
-        val pool = new JedisPool(jedisPoolConfig, "127.0.0.1", 7379);
+        val pool = new JedisPool(poolConfig, "127.0.0.1", 7379);
         return proxyJedisCommands(pool);
     }
 
