@@ -20,7 +20,7 @@ public class WestCacheOption {
     @Getter private final WestCacheSnapshot snapshot;
     @Getter private final WestCacheConfig config;
     @Getter private final WestCacheInterceptor interceptor;
-    @Getter private final WestCacheKeyer keyStrategy;
+    @Getter private final WestCacheKeyer keyer;
     @Getter private final String key;
     @Getter private final Map<String, String> specs;
 
@@ -34,7 +34,7 @@ public class WestCacheOption {
         WestCacheSnapshot snapshot = WestCacheRegistry.getSnapshot("bypass");
         WestCacheConfig config = WestCacheRegistry.getConfig("default");
         WestCacheInterceptor interceptor = WestCacheRegistry.getInterceptor("bypass");
-        WestCacheKeyer keyStrategy = WestCacheRegistry.getKeyStrategy("default");
+        WestCacheKeyer keyer = WestCacheRegistry.getKeyer("default");
         String key = "";
         Map<String, String> specs = Maps.newHashMap();
 
@@ -63,8 +63,8 @@ public class WestCacheOption {
             return this;
         }
 
-        public Builder keyStrategy(String keyStrategyName) {
-            this.keyStrategy = WestCacheRegistry.getKeyStrategy(keyStrategyName);
+        public Builder keyer(String keyStrategyName) {
+            this.keyer = WestCacheRegistry.getKeyer(keyStrategyName);
             return this;
         }
 
@@ -85,7 +85,7 @@ public class WestCacheOption {
 
         public WestCacheOption build() {
             return new WestCacheOption(flusher, manager, snapshot,
-                    config, interceptor, keyStrategy, key, specs);
+                    config, interceptor, keyer, key, specs);
         }
 
         public WestCacheOption build(WestCacheable westCacheable) {
@@ -94,7 +94,7 @@ public class WestCacheOption {
             this.snapshot = WestCacheRegistry.getSnapshot(westCacheable.snapshot());
             this.config = WestCacheRegistry.getConfig(westCacheable.config());
             this.interceptor = WestCacheRegistry.getInterceptor(westCacheable.interceptor());
-            this.keyStrategy = WestCacheRegistry.getKeyStrategy(westCacheable.keyer());
+            this.keyer = WestCacheRegistry.getKeyer(westCacheable.keyer());
             this.key = westCacheable.key();
             this.specs = Specs.parseSpecs(westCacheable.specs());
             return build();

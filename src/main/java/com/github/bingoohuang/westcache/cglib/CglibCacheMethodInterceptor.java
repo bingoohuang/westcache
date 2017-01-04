@@ -42,7 +42,7 @@ public class CglibCacheMethodInterceptor
                                  Method method,
                                  Object[] args,
                                  MethodProxy proxy) {
-        return option.getKeyStrategy().getCacheKey(option,
+        return option.getKeyer().getCacheKey(option,
                 method, target != null ? target : obj, args);
     }
 }

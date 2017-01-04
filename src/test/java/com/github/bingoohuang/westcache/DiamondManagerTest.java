@@ -21,7 +21,7 @@ public class DiamondManagerTest {
     @Test @SneakyThrows
     public void test() {
         val service = WestCacheFactory.create(DiamondService.class);
-        val keyStrategy = WestCacheRegistry.getKeyStrategy("default");
+        val keyStrategy = WestCacheRegistry.getKeyer("default");
         val option = newBuilder().manager("diamond").specs("static.key=yes").build();
         val cacheKey = keyStrategy.getCacheKey(option, "getBigData", service);
         String content = "Here is Bingoo!" + System.currentTimeMillis();

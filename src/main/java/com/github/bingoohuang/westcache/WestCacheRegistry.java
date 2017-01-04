@@ -69,7 +69,7 @@ public class WestCacheRegistry {
                       Object bean,
                       String methodName,
                       Object... args) {
-        val keyStrategy = option.getKeyStrategy();
+        val keyStrategy = option.getKeyer();
         val cacheKey = keyStrategy.getCacheKey(option, methodName, bean, args);
         option.getFlusher().flush(option, cacheKey);
     }
@@ -134,7 +134,7 @@ public class WestCacheRegistry {
         keyStrategyRegistry.deregister(keyStrategyName);
     }
 
-    public WestCacheKeyer getKeyStrategy(String keyStrategyName) {
+    public WestCacheKeyer getKeyer(String keyStrategyName) {
         return keyStrategyRegistry.get(keyStrategyName);
     }
 

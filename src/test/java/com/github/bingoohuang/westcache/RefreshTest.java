@@ -84,7 +84,7 @@ public class RefreshTest {
         val bigDataXXX = "SnapshotService.getBigData.XXX";
 
         val snapshot = WestCacheRegistry.getSnapshot("file");
-        val keyStrategy = WestCacheRegistry.getKeyStrategy("default");
+        val keyStrategy = WestCacheRegistry.getKeyer("default");
         val option = WestCacheOption.newBuilder()
                 .snapshot("file").flusher("simple").config("snapshotTestConfig")
                 .build();

@@ -38,7 +38,7 @@ public class WestCacheableInterceptor
                                  Method method,
                                  Object[] args,
                                  MethodInvocation invocation) {
-        return option.getKeyStrategy().getCacheKey(option,
+        return option.getKeyer().getCacheKey(option,
                 invocation.getMethod(), invocation.getThis());
     }
 }
