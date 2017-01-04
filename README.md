@@ -94,6 +94,23 @@ public class RedisConfig {
 
 ```
 
+## how to deal global cache like access token in wechat development?
+The access token in wechat is a two hours living and limited times for refresh in a day.
+We can not refresh time by time. We should cache it.
+We can use redis to do this. We try to read it from redis before token api call, 
+and store to redis after a wechat token api call.
+The interceptor is just used to save this.
+
+```java
+@WestCacheable(keyer = "simple", manager = "expiring",
+        interceptor = "redis", specs = "expireAfterWrite=2h")
+public static class WechatTokenService {
+    public String getAccessToken() {
+        // call wechat token api;
+    }
+}
+
+```
 
 ## The source of name as westcache
 Film "West World".
