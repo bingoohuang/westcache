@@ -3,15 +3,13 @@ package com.github.bingoohuang.westcache;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
-import com.github.bingoohuang.westcache.util.Conf;
 import com.github.bingoohuang.westcache.utils.FastJsons;
+import com.github.bingoohuang.westcache.utils.Redis;
 import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import lombok.val;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import redis.clients.jedis.Jedis;
 
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -32,8 +30,6 @@ public class TableCacheFlusherTest {
         }
     }
 
-    static Jedis jedis = new Jedis(Conf.REDIS_HOST, Conf.REDIS_PORT);
-
     @BeforeClass
     public static void beforeClass() {
         WestCacheRegistry.deregisterConfig("default");
@@ -50,11 +46,6 @@ public class TableCacheFlusherTest {
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        jedis.close();
     }
 
     @WestCacheable(flusher = "table", keyer = "simple", snapshot = "file",
@@ -237,7 +228,7 @@ public class TableCacheFlusherTest {
         val bean = new WestCacheFlusherBean(prefix, "full", 0,
                 "direct", "readBy=redis");
 
-        jedis.set(prefix, "\"I am redis body\"");
+        Redis.getJedis().set(Redis.PREFIX + prefix, "\"I am redis body\"");
 
         addConfigBean(bean);
 

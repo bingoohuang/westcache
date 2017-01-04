@@ -5,6 +5,7 @@ import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.MallCacheable;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import com.github.bingoohuang.westcache.utils.FastJsons;
+import com.github.bingoohuang.westcache.utils.Redis;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -98,11 +99,12 @@ public class MallCacheableTest {
                 "com.github.bingoohuang.westcache;com.github.bingoohuang.eastcache");
 
         val cacheKey = "MallCacheableTest.MallCache.getMallBean";
-        val bean = new WestCacheFlusherBean(cacheKey, "full", 0, "direct", "readBy=redis");
+        val bean = new WestCacheFlusherBean(cacheKey, "full",
+                0, "direct", "readBy=redis");
 
         long lastExecuted = flusher.getLastExecuted();
         String json = FastJsons.json(demo);
-        flusher.getJedis().set(cacheKey, json);
+        Redis.getJedis().set(Redis.PREFIX + cacheKey, json);
         flusher.getDao().addBean(bean);
 
         try {
@@ -127,7 +129,8 @@ public class MallCacheableTest {
                 "com.github.bingoohuang.westcache;com.github.bingoohuang.eastcache");
 
         val cacheKey = "MallCacheableTest.MallCache.getMallBean3";
-        val bean = new WestCacheFlusherBean(cacheKey, "full", 0, "direct", null);
+        val bean = new WestCacheFlusherBean(cacheKey, "full",
+                0, "direct", null);
 
         long lastExecuted = flusher.getLastExecuted();
         String json = FastJsons.json(demo);

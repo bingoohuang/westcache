@@ -17,7 +17,7 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
     String prefix;
 
     public RedisCacheSnapshot() {
-        this("westcache:");
+        this(Redis.PREFIX);
     }
 
     @Override

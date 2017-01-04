@@ -19,6 +19,7 @@ import java.lang.reflect.Proxy;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/3.
  */
 public class Redis {
+    public static final String PREFIX = "westcache:";
     private static JedisCommands jedis = createtJedisCommands(
             "127.0.0.1", 6379, 10);
 

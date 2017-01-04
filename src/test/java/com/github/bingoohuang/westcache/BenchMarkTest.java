@@ -6,6 +6,7 @@ import com.github.bingoohuang.westcache.outofbox.MallCacheable;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import com.github.bingoohuang.westcache.utils.Diamonds;
 import com.github.bingoohuang.westcache.utils.FastJsons;
+import com.github.bingoohuang.westcache.utils.Redis;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -62,7 +63,7 @@ public class BenchMarkTest {
                 0, "direct", "readBy=redis");
         long lastExecuted = flusher.getLastExecuted();
         String json = FastJsons.json(demo);
-        flusher.getJedis().set(cacheKey, json);
+        Redis.getJedis().set(Redis.PREFIX + cacheKey, json);
         flusher.getDao().addBean(bean);
 
         try {

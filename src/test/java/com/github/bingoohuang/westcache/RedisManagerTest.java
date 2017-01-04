@@ -24,7 +24,7 @@ public class RedisManagerTest {
 
     @Test
     public void test() {
-        Redis.getJedis().set("westcache:RedisManagerTest" +
+        Redis.getJedis().set(Redis.PREFIX + "RedisManagerTest" +
                 ".RedisManagerService.getSomething", "\"bingoo\"");
 
         String something = service.getSomething();
@@ -37,7 +37,7 @@ public class RedisManagerTest {
         String other2 = service.getOther();
         assertThat(other1).isEqualTo(other2);
 
-        String s = Redis.getJedis().get("westcache:RedisManagerTest" +
+        String s = Redis.getJedis().get(Redis.PREFIX + "RedisManagerTest" +
                 ".RedisManagerService.getOther");
         assertThat(s).isEqualTo(FastJsons.json(other1));
     }

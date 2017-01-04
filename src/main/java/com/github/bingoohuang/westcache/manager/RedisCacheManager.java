@@ -29,7 +29,7 @@ public class RedisCacheManager extends BaseCacheManager {
         String prefix;
 
         public RedisWestCache() {
-            this("westcache:");
+            this(Redis.PREFIX);
         }
 
         @Override @SneakyThrows

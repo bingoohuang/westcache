@@ -24,15 +24,13 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 @Slf4j
 public class RedisInterceptor implements WestCacheInterceptor {
-    String prefix = "westcache:";
-
     @Override
     public WestCacheItem intercept(
             final WestCacheOption option,
             String cacheKey,
             Callable<WestCacheItem> callable) throws Exception {
 
-        final val lockKey = prefix + "lock:" + cacheKey;
+        final val lockKey = Redis.PREFIX + "lock:" + cacheKey;
         log.debug("wait redis lock {}", lockKey);
         val redis = Redis.getRedis(option);
         waitRedisLock(redis, lockKey);
@@ -44,7 +42,7 @@ public class RedisInterceptor implements WestCacheInterceptor {
             }
         }; // free lock automatically
 
-        val redisValueKey = prefix + cacheKey;
+        val redisValueKey = Redis.PREFIX + cacheKey;
         val redisValue = redis.get(redisValueKey);
         if (redisValue != null) {
             log.debug("got redis value {}", redisValue);

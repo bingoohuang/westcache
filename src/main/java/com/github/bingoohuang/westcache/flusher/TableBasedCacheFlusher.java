@@ -98,13 +98,13 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         }
 
         if ("full".equals(bean.getKeyMatch())) {
-            Object value = readDirectValue(bean);
+            Object value = readDirectValue(option, bean);
             return Optional.fromNullable(value);
         }
 
         if ("prefix".equals(bean.getKeyMatch())) {
             val subKey = cacheKey.substring(bean.getCacheKey().length() + 1);
-            Object value = readSubDirectValue(bean, subKey);
+            Object value = readSubDirectValue(option, bean, subKey);
             return Optional.fromNullable(value);
         }
 
@@ -114,15 +114,17 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
     protected abstract List<WestCacheFlusherBean> queryAllBeans();
 
-    protected abstract Object readDirectValue(WestCacheFlusherBean bean);
+    protected abstract Object readDirectValue(WestCacheOption option, WestCacheFlusherBean bean);
 
     @SneakyThrows
     private <T> T readSubDirectValue(
-            final WestCacheFlusherBean bean, String subKey) {
+            final WestCacheOption option,
+            final WestCacheFlusherBean bean,
+            String subKey) {
         val loader = new Callable<Optional<Map<String, Object>>>() {
             @Override
             public Optional<Map<String, Object>> call() throws Exception {
-                val map = (Map<String, Object>) readDirectValue(bean);
+                val map = (Map<String, Object>) readDirectValue(option, bean);
                 return Optional.fromNullable(map);
             }
         };

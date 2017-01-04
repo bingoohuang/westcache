@@ -3,12 +3,13 @@ package com.github.bingoohuang.westcache.outofbox;
 import com.github.bingoohuang.westcache.flusher.TableBasedCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.utils.FastJsons;
+import com.github.bingoohuang.westcache.utils.Redis;
 import com.github.bingoohuang.westcache.utils.Specs;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.n3r.eql.eqler.EqlerFactory;
-import redis.clients.jedis.Jedis;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -23,20 +24,21 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
     @Getter volatile long lastReadDirectValue;
     @Getter TableCacheFlusherDao dao
             = EqlerFactory.getEqler(TableCacheFlusherDao.class);
-    @Getter Jedis jedis = new Jedis();
 
     @Override protected List<WestCacheFlusherBean> queryAllBeans() {
         return dao.selectAllBeans();
     }
 
     @Override @SneakyThrows
-    protected Object readDirectValue(final WestCacheFlusherBean bean) {
+    protected Object readDirectValue(WestCacheOption option,
+                                     WestCacheFlusherBean bean) {
         lastReadDirectValue = System.currentTimeMillis();
 
         val specs = Specs.parseSpecs(bean.getSpecs());
         val readBy = specs.get("readBy");
         if ("redis".equals(readBy)) {
-            val value = jedis.get(bean.getCacheKey());
+            String key = Redis.PREFIX + bean.getCacheKey();
+            val value = Redis.getRedis(option).get(key);
             if (isNotBlank(value)) {
                 return FastJsons.parse(value);
             }
