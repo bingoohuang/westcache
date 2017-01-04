@@ -36,18 +36,27 @@ public class RedisCacheManager extends BaseCacheManager {
         public WestCacheItem get(WestCacheOption option,
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
-            String jsonValue = Redis.jedis.get(prefix + cacheKey);
-            if (StringUtils.isEmpty(jsonValue))
-                return new WestCacheItem(null);
+            String jsonValue = Redis.getRedis(option).get(prefix + cacheKey);
+            if (StringUtils.isNotEmpty(jsonValue)) {
+                Object object = FastJsons.parse(jsonValue);
+                return new WestCacheItem(object);
+            }
 
-            Object object = FastJsons.parse(jsonValue);
-            return new WestCacheItem(object);
+            val item = callable.call();
+            put(option, cacheKey, item);
+            return item;
         }
 
         @Override
         public WestCacheItem getIfPresent(WestCacheOption option,
                                           String cacheKey) {
-            return get(option, cacheKey, null);
+            String jsonValue = Redis.getRedis(option).get(prefix + cacheKey);
+            if (StringUtils.isNotEmpty(jsonValue)) {
+                Object object = FastJsons.parse(jsonValue);
+                return new WestCacheItem(object);
+            }
+
+            return new WestCacheItem(null);
         }
 
         @Override
@@ -56,15 +65,15 @@ public class RedisCacheManager extends BaseCacheManager {
                         WestCacheItem cacheValue) {
             if (cacheValue != null) {
                 val json = FastJsons.json(cacheValue.getObject().get());
-                Redis.jedis.set(prefix + cacheKey, json);
+                Redis.getRedis(option).set(prefix + cacheKey, json);
             } else {
-                Redis.jedis.del(prefix + cacheKey);
+                Redis.getRedis(option).del(prefix + cacheKey);
             }
         }
 
         @Override
         public void invalidate(WestCacheOption option, String cacheKey) {
-            Redis.jedis.del(prefix + cacheKey);
+            Redis.getRedis(option).del(prefix + cacheKey);
         }
     }
 }

@@ -1,9 +1,11 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.github.bingoohuang.westcache.spring.SpringAppContext;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.JedisCommands;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -17,8 +19,29 @@ import java.lang.reflect.Proxy;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/3.
  */
 public class Redis {
-    public static JedisCommands jedis = createtJedisCommands(
+    private static JedisCommands jedis = createtJedisCommands(
             "127.0.0.1", 6379, 10);
+
+    public static void setJedis(JedisCommands settedJedis) {
+        jedis = settedJedis;
+    }
+
+    public static JedisCommands getJedis() {
+        return jedis;
+    }
+
+    public static JedisCommands getRedis(WestCacheOption option) {
+        String redisBean = option.getSpecs().get("redisBean");
+        if (StringUtils.isNotEmpty(redisBean)) {
+            JedisCommands bean = SpringAppContext.getBean(redisBean);
+            if (bean != null) return bean;
+        }
+
+        val bean = SpringAppContext.getBean(JedisCommands.class);
+        if (bean != null) return bean;
+
+        return jedis;
+    }
 
     public static JedisCommands createtJedisCommands(
             String host, int port, int maxTotal) {

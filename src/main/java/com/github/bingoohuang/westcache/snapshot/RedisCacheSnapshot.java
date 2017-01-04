@@ -23,12 +23,12 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
     @Override
     public void saveSnapshot(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
         val json = FastJsons.json(cacheValue.getObject().orNull());
-        Redis.jedis.set(prefix + cacheKey, json);
+        Redis.getRedis(option).set(prefix + cacheKey, json);
     }
 
     @Override
     public WestCacheItem readSnapshot(WestCacheOption option, String cacheKey) {
-        String json = Redis.jedis.get(prefix + cacheKey);
+        String json = Redis.getRedis(option).get(prefix + cacheKey);
         if (json == null) return null;
 
         Object object = FastJsons.parse(json);
@@ -37,6 +37,6 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
 
     @Override
     public void deleteSnapshot(WestCacheOption option, String cacheKey) {
-        Redis.jedis.del(prefix + cacheKey);
+        Redis.getRedis(option).del(prefix + cacheKey);
     }
 }

@@ -31,14 +31,14 @@ public class Cglibs {
     /**
      * create a proxied object by cglib.
      *
-     * @param targetClass target class.
+     * @param superClass target class.
      * @param interceptor interceptor.
      * @param interfaces  interfaces.
      * @return proxied object.
      */
-    public Object proxy(Class<?> targetClass,
+    public Object proxy(Class<?> superClass,
                         MethodInterceptor interceptor,
                         Class<?>... interfaces) {
-        return Enhancer.create(targetClass, interfaces, interceptor);
+        return Enhancer.create(superClass, interfaces, interceptor);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import redis.clients.jedis.JedisCommands;
 
 @Configuration @ComponentScan @WestCacheableScan
@@ -17,7 +18,7 @@ public class SpringConfig {
         return creator;
     }
 
-    @Bean(name = "this")
+    @Bean @Primary
     public JedisCommands thisJedisCommands() {
         return Redis.createtJedisCommands(
                 "127.0.0.1", 6379, 10);
@@ -28,5 +29,6 @@ public class SpringConfig {
         return Redis.createtJedisCommands(
                 "127.0.0.1", 7379, 10);
     }
+
 
 }

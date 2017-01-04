@@ -23,5 +23,9 @@ public class DemoServiceTest {
 
         service.setData("Pingoo");
         assertThat(service.cachedMethod()).isEqualTo("Bingoo");
+
+        String s1 = service.doSth();
+        String s2 = service.doSth();
+        assertThat(s1).isEqualTo(s2);
     }
 }

@@ -18,7 +18,12 @@ import redis.clients.jedis.JedisCommands;
         return data;
     }
 
-    @Autowired @Qualifier("this") JedisCommands thisRedis;
+    @WestCacheable(manager = "redis", keyer = "simple", specs = "redisBean=that")
+    public String doSth() {
+        return System.currentTimeMillis() + "";
+    }
+
+    @Autowired JedisCommands thisRedis;
     @Autowired @Qualifier("that") JedisCommands thatRedis;
 
     public void setXxx() {
