@@ -46,7 +46,7 @@ public class RedisInterceptor implements WestCacheInterceptor {
         val redisValue = redis.get(redisValueKey);
         if (redisValue != null) {
             log.debug("got redis value {}", redisValue);
-            Object value = FastJsons.parse(redisValue);
+            Object value = FastJsons.parse(redisValue, option.getMethod());
             return new WestCacheItem(value);
         }
 

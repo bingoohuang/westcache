@@ -31,7 +31,7 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
         String json = Redis.getRedis(option).get(prefix + cacheKey);
         if (json == null) return null;
 
-        Object object = FastJsons.parse(json);
+        Object object = FastJsons.parse(json, option.getMethod());
         return new WestCacheItem(object);
     }
 

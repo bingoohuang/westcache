@@ -24,7 +24,7 @@ public class DiamondCacheManager extends BaseCacheManager {
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
             String json = new Miner().getStone(GROUP, cacheKey);
-            return new WestCacheItem(FastJsons.parse(json));
+            return new WestCacheItem(FastJsons.parse(json, option.getMethod()));
         }
 
         @Override

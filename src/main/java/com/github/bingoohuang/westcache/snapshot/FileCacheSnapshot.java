@@ -30,7 +30,7 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
         if (!snapshotFile.exists() || !snapshotFile.isFile()) return null;
 
         String json = Files.toString(snapshotFile, Charsets.UTF_8);
-        Object object = FastJsons.parse(json);
+        Object object = FastJsons.parse(json, option.getMethod());
         return new WestCacheItem(object);
     }
 

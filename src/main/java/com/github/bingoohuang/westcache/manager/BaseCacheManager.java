@@ -32,7 +32,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
                              final Callable<WestCacheItem> callable) {
         val flusher = option.getFlusher();
         if (!flusher.isKeyEnabled(option, cacheKey)) {
-            log.info("cache key {} is not enabled", cacheKey);
+            log.warn("cache key {} is not enabled", cacheKey);
             return callable.call();
         }
 
@@ -57,7 +57,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
             }
         };
         val item = westCache.get(option, cacheKey, wrapCallable);
-        log.info("cache key {} shot result {} ", cacheKey,
+        log.debug("cache key {} shot result {} ", cacheKey,
                 shot.get() ? "bingo" : "misfired");
 
         return item;

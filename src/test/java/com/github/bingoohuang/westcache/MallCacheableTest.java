@@ -35,8 +35,6 @@ public class MallCacheableTest {
         MallBean getMallBean();
 
         MallBean getMallBean2();
-
-        MallBean getMallBean3();
     }
 
     static MallCache mallCache = WestCacheFactory.create(MallCache.class);

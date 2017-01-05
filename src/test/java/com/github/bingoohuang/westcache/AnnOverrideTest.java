@@ -28,13 +28,13 @@ public class AnnOverrideTest {
         val service = WestCacheFactory.create(AnnOverrideService.class);
         String s1 = service.m1();
         String r1 = Redis.getJedis().get("westcache:AnnOverrideTest.AnnOverrideService.m1");
-        String j1 = (String) FastJsons.parse(r1);
+        String j1 = FastJsons.parse(r1);
         assertThat(j1).isEqualTo(s1);
 
         String s2 = service.m2();
 
         String r2 = Redis.getJedis().get("westcache:fuckM2");
-        String j2 = (String) FastJsons.parse(r2);
+        String j2 = FastJsons.parse(r2);
         assertThat(j2).isEqualTo(s2);
     }
 

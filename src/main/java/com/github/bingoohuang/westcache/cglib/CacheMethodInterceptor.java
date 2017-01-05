@@ -51,7 +51,7 @@ public abstract class CacheMethodInterceptor<T> {
         @Cleanup val i = new Closeable() {
             @Override public void close() {
                 val end = System.currentTimeMillis();
-                log.debug("get cache {} cost {} millis", cacheKey, (end - start));
+                log.debug("cost {} millis to get cache {} ", (end - start), cacheKey);
             }
         };
 

@@ -38,7 +38,7 @@ public class RedisCacheManager extends BaseCacheManager {
                                  Callable<WestCacheItem> callable) {
             String jsonValue = Redis.getRedis(option).get(prefix + cacheKey);
             if (StringUtils.isNotEmpty(jsonValue)) {
-                Object object = FastJsons.parse(jsonValue);
+                Object object = FastJsons.parse(jsonValue, option.getMethod());
                 return new WestCacheItem(object);
             }
 
@@ -52,7 +52,7 @@ public class RedisCacheManager extends BaseCacheManager {
                                           String cacheKey) {
             String jsonValue = Redis.getRedis(option).get(prefix + cacheKey);
             if (StringUtils.isNotEmpty(jsonValue)) {
-                Object object = FastJsons.parse(jsonValue);
+                Object object = FastJsons.parse(jsonValue, option.getMethod());
                 return new WestCacheItem(object);
             }
 

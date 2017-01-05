@@ -40,7 +40,7 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
             String key = Redis.PREFIX + bean.getCacheKey();
             val value = Redis.getRedis(option).get(key);
             if (isNotBlank(value)) {
-                return FastJsons.parse(value);
+                return FastJsons.parse(value, option.getMethod());
             }
         } else if ("loader".equals(readBy)) {
             val loaderClass = specs.get("loaderClass");

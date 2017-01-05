@@ -25,6 +25,7 @@ public class WestCacheOption {
     @Getter private final WestCacheKeyer keyer;
     @Getter private final String key;
     @Getter private final Map<String, String> specs;
+    @Getter private final Method method;
 
     public static Builder newBuilder() {
         return new Builder();
@@ -40,6 +41,7 @@ public class WestCacheOption {
         WestCacheKeyer keyer = WestCacheRegistry.getKeyer("");
         String key = "";
         Map<String, String> specs = Maps.newHashMap();
+        Method method;
 
         public Builder flusher(String flusherName) {
             this.flusher = WestCacheRegistry.getFlusher(flusherName);
@@ -86,12 +88,17 @@ public class WestCacheOption {
             return this;
         }
 
-        public WestCacheOption build() {
-            return new WestCacheOption(flusher, manager, snapshot,
-                    config, interceptor, keyer, key, specs);
+        public Builder method(Method method) {
+            this.method = method;
+            return this;
         }
 
-        public WestCacheOption build(WestCacheable westCacheable) {
+        public WestCacheOption build() {
+            return new WestCacheOption(flusher, manager, snapshot,
+                    config, interceptor, keyer, key, specs, method);
+        }
+
+        public WestCacheOption build(WestCacheable westCacheable, Method method) {
             this.flusher = WestCacheRegistry.getFlusher(westCacheable.flusher());
             this.manager = WestCacheRegistry.getManager(westCacheable.manager());
             this.snapshot = WestCacheRegistry.getSnapshot(westCacheable.snapshot());
@@ -100,17 +107,18 @@ public class WestCacheOption {
             this.keyer = WestCacheRegistry.getKeyer(westCacheable.keyer());
             this.key = westCacheable.key();
             this.specs = Specs.parseSpecs(westCacheable.specs());
+            this.method = method;
             return build();
         }
     }
 
-
     public static WestCacheOption parseWestCacheable(Method m) {
         Map<String, String> attrs = Anns.parseWestCacheable(m, WestCacheable.class);
-        return attrs == null ? null : buildOption(attrs);
+        return attrs == null ? null : buildOption(attrs, m);
     }
 
-    private static WestCacheOption buildOption(Map<String, String> attrs) {
+    private static WestCacheOption buildOption(
+            Map<String, String> attrs, Method m) {
         return WestCacheOption.newBuilder()
                 .flusher(getAttr(attrs, "flusher"))
                 .manager(getAttr(attrs, "manager"))
@@ -120,6 +128,7 @@ public class WestCacheOption {
                 .keyer(getAttr(attrs, "keyer"))
                 .key(getAttr(attrs, "key"))
                 .specs(parseSpecs(attrs))
+                .method(m)
                 .build();
     }
 
@@ -134,11 +143,9 @@ public class WestCacheOption {
         return specs;
     }
 
-
     private static String getAttr(Map<String, String> attrs,
                                   String attrName) {
         String attr = attrs.get(attrName);
         return attr == null ? "" : attr;
     }
-
 }
