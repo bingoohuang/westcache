@@ -36,10 +36,10 @@ public class RedisSnapshotTest {
         val service = WestCacheFactory.create(XyzServie.class);
         val snapshot = WestCacheRegistry.getSnapshot("redis");
 
-        val keyStrategy = WestCacheRegistry.getKeyer("default");
+        val keyer = WestCacheRegistry.getKeyer("default");
         val option = WestCacheOption.newBuilder().snapshot("redis").build();
-        val cacheKey1 = keyStrategy.getCacheKey(option, "getXyzBean", service, "1");
-        val cacheKey2 = keyStrategy.getCacheKey(option, "getXyzBean", service, "2");
+        val cacheKey1 = keyer.getCacheKey(option, "getXyzBean", service, "1");
+        val cacheKey2 = keyer.getCacheKey(option, "getXyzBean", service, "2");
 
         snapshot.deleteSnapshot(option, cacheKey1);
         snapshot.deleteSnapshot(option, cacheKey2);

@@ -7,7 +7,9 @@ import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Value;
+import lombok.val;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -28,13 +30,14 @@ public class WestCacheOption {
         return new Builder();
     }
 
+
     public static class Builder {
-        WestCacheFlusher flusher = WestCacheRegistry.getFlusher("simple");
-        WestCacheManager manager = WestCacheRegistry.getManager("guava");
-        WestCacheSnapshot snapshot = WestCacheRegistry.getSnapshot("bypass");
-        WestCacheConfig config = WestCacheRegistry.getConfig("default");
-        WestCacheInterceptor interceptor = WestCacheRegistry.getInterceptor("bypass");
-        WestCacheKeyer keyer = WestCacheRegistry.getKeyer("default");
+        WestCacheFlusher flusher = WestCacheRegistry.getFlusher("");
+        WestCacheManager manager = WestCacheRegistry.getManager("");
+        WestCacheSnapshot snapshot = WestCacheRegistry.getSnapshot("");
+        WestCacheConfig config = WestCacheRegistry.getConfig("");
+        WestCacheInterceptor interceptor = WestCacheRegistry.getInterceptor("");
+        WestCacheKeyer keyer = WestCacheRegistry.getKeyer("");
         String key = "";
         Map<String, String> specs = Maps.newHashMap();
 
@@ -63,8 +66,8 @@ public class WestCacheOption {
             return this;
         }
 
-        public Builder keyer(String keyStrategyName) {
-            this.keyer = WestCacheRegistry.getKeyer(keyStrategyName);
+        public Builder keyer(String keyerName) {
+            this.keyer = WestCacheRegistry.getKeyer(keyerName);
             return this;
         }
 
@@ -100,4 +103,42 @@ public class WestCacheOption {
             return build();
         }
     }
+
+
+    public static WestCacheOption parseWestCacheable(Method m) {
+        Map<String, String> attrs = Anns.parseWestCacheable(m, WestCacheable.class);
+        return attrs == null ? null : buildOption(attrs);
+    }
+
+    private static WestCacheOption buildOption(Map<String, String> attrs) {
+        return WestCacheOption.newBuilder()
+                .flusher(getAttr(attrs, "flusher"))
+                .manager(getAttr(attrs, "manager"))
+                .snapshot(getAttr(attrs, "snapshot"))
+                .config(getAttr(attrs, "config"))
+                .interceptor(getAttr(attrs, "interceptor"))
+                .keyer(getAttr(attrs, "keyer"))
+                .key(getAttr(attrs, "key"))
+                .specs(parseSpecs(attrs))
+                .build();
+    }
+
+    private static Map<String, String> parseSpecs(Map<String, String> attrs) {
+        String specsStr = attrs.get("specs");
+        val specs = Specs.parseSpecs(specsStr);
+
+        Anns.removeAttrs(attrs, "flusher", "manager",
+                "snapshot", "config", "interceptor",
+                "keyer", "key", "specs");
+        specs.putAll(attrs);
+        return specs;
+    }
+
+
+    private static String getAttr(Map<String, String> attrs,
+                                  String attrName) {
+        String attr = attrs.get(attrName);
+        return attr == null ? "" : attr;
+    }
+
 }

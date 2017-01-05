@@ -5,6 +5,7 @@ import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheManager;
 import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -19,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Slf4j
 public abstract class BaseCacheManager implements WestCacheManager {
-    private WestCache westCache;
+    @Getter private WestCache westCache;
 
     public BaseCacheManager(WestCache westCache) {
         this.westCache = westCache;

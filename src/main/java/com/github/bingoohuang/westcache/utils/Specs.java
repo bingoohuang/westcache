@@ -17,6 +17,6 @@ public class Specs {
     public static Map<String, String> parseSpecs(String specs) {
         if (StringUtils.isEmpty(specs)) return Maps.newHashMap();
 
-        return SPECS_SPLITTER.split(specs);
+        return Maps.newHashMap(SPECS_SPLITTER.split(specs));
     }
 }

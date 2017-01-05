@@ -6,11 +6,11 @@
         </encoder>
     </appender>
 
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="Console"/>
     </root>
 
-    <logger name="com.github.bingoohuang.westcache.interceptor.RedisInterceptor" level="DEBUG" additivity="false">
+    <logger name="com.github.bingoohuang.westcache.CustomAnnOverrideTest" level="DEBUG" additivity="false">
         <appender-ref ref="Console"/>
     </logger>
 

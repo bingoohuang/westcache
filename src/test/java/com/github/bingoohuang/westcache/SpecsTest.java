@@ -66,7 +66,7 @@ public class SpecsTest {
 
     @AfterClass
     public static void afterClass() {
-        deregisterKeyStrategy("prefix");
+        deregisterKeyer("prefix");
         deregisterConfig("specsTestConfig");
     }
 

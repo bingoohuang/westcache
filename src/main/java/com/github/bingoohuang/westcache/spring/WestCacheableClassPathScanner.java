@@ -1,8 +1,7 @@
 package com.github.bingoohuang.westcache.spring;
 
 import com.github.bingoohuang.westcache.WestCacheFactory;
-import com.github.bingoohuang.westcache.WestCacheable;
-import com.github.bingoohuang.westcache.utils.Anns;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -50,8 +49,8 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
                 Class c = Class.forName(className);
 
                 for (Method m : c.getMethods()) {
-                    val westCacheable = Anns.parseAnn(m, WestCacheable.class);
-                    if (westCacheable == null) return false;
+                    val option = WestCacheOption.parseWestCacheable(m);
+                    if (option == null) return false;
                 }
 
                 return true;

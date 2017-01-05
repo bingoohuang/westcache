@@ -47,7 +47,7 @@ public class WestCacheRegistry {
             = new RegistryTemplate<WestCacheFlusher>();
 
     static {
-        register("bypass", new ByPassCacheFlusher());
+        register("default", new ByPassCacheFlusher());
         register("simple", new SimpleCacheFlusher());
         register("diamond", new DiamondCacheFlusher());
         register("table", new TableCacheFlusher());
@@ -69,8 +69,8 @@ public class WestCacheRegistry {
                       Object bean,
                       String methodName,
                       Object... args) {
-        val keyStrategy = option.getKeyer();
-        val cacheKey = keyStrategy.getCacheKey(option, methodName, bean, args);
+        val keyer = option.getKeyer();
+        val cacheKey = keyer.getCacheKey(option, methodName, bean, args);
         option.getFlusher().flush(option, cacheKey);
     }
 
@@ -78,7 +78,7 @@ public class WestCacheRegistry {
             = new RegistryTemplate<WestCacheManager>();
 
     static {
-        register("guava", new GuavaCacheManager());
+        register("default", new GuavaCacheManager());
         register("diamond", new DiamondCacheManager());
         register("file", new FileCacheManager());
         register("expiring", new ExpiringMapCacheManager());
@@ -117,7 +117,7 @@ public class WestCacheRegistry {
         return snapshotRegistry.get(snapshotName);
     }
 
-    RegistryTemplate<WestCacheKeyer> keyStrategyRegistry
+    RegistryTemplate<WestCacheKeyer> keyerRegistry
             = new RegistryTemplate<WestCacheKeyer>();
 
     static {
@@ -126,28 +126,28 @@ public class WestCacheRegistry {
         register("packagelimit", new PackageLimitedKeyer());
     }
 
-    public void register(String keyStrategyName, WestCacheKeyer keyStrategy) {
-        keyStrategyRegistry.register(keyStrategyName, keyStrategy);
+    public void register(String keyerName, WestCacheKeyer keyer) {
+        keyerRegistry.register(keyerName, keyer);
     }
 
-    public void deregisterKeyStrategy(String keyStrategyName) {
-        keyStrategyRegistry.deregister(keyStrategyName);
+    public void deregisterKeyer(String keyerName) {
+        keyerRegistry.deregister(keyerName);
     }
 
-    public WestCacheKeyer getKeyer(String keyStrategyName) {
-        return keyStrategyRegistry.get(keyStrategyName);
+    public WestCacheKeyer getKeyer(String keyer) {
+        return keyerRegistry.get(keyer);
     }
 
     RegistryTemplate<WestCacheInterceptor> interceptorRegistry
             = new RegistryTemplate<WestCacheInterceptor>();
 
     static {
-        register("bypass", new ByPassInterceptor());
+        register("default", new ByPassInterceptor());
         register("redis", new RedisInterceptor());
     }
 
-    public void register(String interceptorName, WestCacheInterceptor keyStrategy) {
-        interceptorRegistry.register(interceptorName, keyStrategy);
+    public void register(String interceptorName, WestCacheInterceptor interceptor) {
+        interceptorRegistry.register(interceptorName, interceptor);
     }
 
     public void deregisterInterceptor(String interceptorName) {

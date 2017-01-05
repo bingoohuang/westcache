@@ -24,9 +24,9 @@ public class DemoInterfaceTest {
 
     @Test @SneakyThrows
     public void test() {
-        val keyStrategy = WestCacheRegistry.getKeyer("default");
+        val keyer = WestCacheRegistry.getKeyer("default");
         val option = newBuilder().manager("diamond").specs("static.key=yes").build();
-        val cacheKey = keyStrategy.getCacheKey(option, "getBigData", service);
+        val cacheKey = keyer.getCacheKey(option, "getBigData", service);
         String content = "Here is Bingoo!" + System.currentTimeMillis();
         Diamonds.writeDiamondJSON(DiamondCacheManager.GROUP, cacheKey, content);
 

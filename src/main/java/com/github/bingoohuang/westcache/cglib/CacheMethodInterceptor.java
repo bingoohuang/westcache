@@ -1,6 +1,5 @@
 package com.github.bingoohuang.westcache.cglib;
 
-import com.github.bingoohuang.westcache.WestCacheable;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.Anns;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
@@ -33,10 +32,9 @@ public abstract class CacheMethodInterceptor<T> {
                             Method method,
                             Object[] args,
                             T methodProxy) {
-        val ann = Anns.parseAnn(method, WestCacheable.class);
-        if (ann == null) return invokeRaw(obj, args, methodProxy);
+        val option = WestCacheOption.parseWestCacheable(method);
+        if (option == null) return invokeRaw(obj, args, methodProxy);
 
-        val option = WestCacheOption.newBuilder().build(ann);
         return cacheGet(option, obj, method, args, methodProxy);
     }
 
