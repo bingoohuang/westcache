@@ -52,10 +52,25 @@ First, give a brief introduction:
 
 1. manager: the under caching mechanism, like guava, redis, file, expiring. 
 2. keyer: the cache key strategy, like simple deal key like XyzService.cacheMethod.
-3. snapshot：the storage snapshot for cached values， like file, redis.
-4. flusher: the cache flushing mechanism， to trigger cache updating.
+3. snapshot：the storage snapshot for cached values, like file, redis.
+4. flusher: the cache flushing mechanism, to trigger cache updating.
 5. config: provide some configurations.
 6. interceptor：a hood to add some logic around the original method invoke.
+
+## The manager
+The function of manager is to take consideration where the cached data should be stored fast and conveniently.
+The default manager is based guava cache with the name "default".
+The west cache manager should implement the interface WestCacheManager or 
+extends the abstract class BaseCacheManager to provide some common operations.
+```java
+public interface WestCacheManager {
+    WestCacheItem get(WestCacheOption option, String cacheKey, Callable<WestCacheItem> callable);
+
+    WestCacheItem get(WestCacheOption option, String cacheKey);
+
+    void put(WestCacheOption option, String cacheKey, WestCacheItem cacheValue);
+}
+```
 
 ## The problem of cache
 1. Cache invalidation. Even in distributed deployed environment.
@@ -113,7 +128,7 @@ public static class WechatTokenService {
 ```
 
 ## The data format for snapshot or redis caching.
-Westcache use [fastjson](https://github.com/alibaba/fastjson) to serialize cached value with SerializerFeature.WriteClassName.
+Westcache use [fastjson](https://github.com/alibaba/fastjson) to serialize cached value.
 ```java
 JSON.toJSONString(obj);
 ```
