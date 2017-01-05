@@ -127,6 +127,78 @@ So you can check the data in redis, it will look like this:
 }
 ```
 
+## Customized cache annotation support
+Conveniently, customized annoation can be defined to make usage more simpler.
+```java
+@WestCacheable(snapshot = "file", key = "abc")
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+public @interface Ann1 {
+    String key() default ""; // key can be defined to be overriding.
+}
+
+@Service
+public class AnnService {
+    @Ann1(key = "mm22") // this method result will be cache with key mm22
+    public String sth() {
+        return "" + System.currentTimeMillis();
+    }
+}
+```
+
+## Table-based flusher
+A table can be maitained to invalidate cache by increment value_version field.
+The pre-defined flusher "table" will repeatedly check the value versions every 1 minute.
+And when the value version is changed, the related cache will be invalidated.
+
+```sql
+--ORACLE SQL:
+
+ DROP TABLE WESTCACHE_FLUSHER;
+ CREATE TABLE WESTCACHE_FLUSHER(
+    CACHE_KEY VARCHAR2(2000 BYTE) NOT NULL PRIMARY KEY,
+	KEY_MATCH VARCHAR2(20 BYTE) DEFAULT 'full' NOT NULL,
+	VALUE_VERSION NUMBER DEFAULT 0 NOT NULL,
+	CACHE_STATE NUMBER DEFAULT 1 NOT NULL,
+	VALUE_TYPE VARCHAR2(20 BYTE) DEFAULT 'none' NOT NULL,
+	SPECS VARCHAR2(2000 BYTE) NULL,
+	DIRECT_VALUE LONG
+   ) ;
+
+   COMMENT ON COLUMN WESTCACHE_FLUSHER.CACHE_KEY IS 'cache key';
+   COMMENT ON COLUMN WESTCACHE_FLUSHER.KEY_MATCH IS 'full:full match,prefix:prefix match';
+   COMMENT ON COLUMN WESTCACHE_FLUSHER.VALUE_VERSION IS 'version of cache, increment it to update cache';
+   COMMENT ON COLUMN WESTCACHE_FLUSHER.DIRECT_VALUE IS 'direct json value for the cache';
+   COMMENT ON COLUMN WESTCACHE_FLUSHER.CACHE_STATE IS '0 disabled 1 enabled';
+   COMMENT ON COLUMN WESTCACHE_FLUSHER.VALUE_TYPE IS 'value access type, direct: use direct json in DIRECT_VALUE field';
+   COMMENT ON COLUMN WESTCACHE_FLUSHER.SPECS IS 'specs for extension';
+
+-- MySql SQL:
+   DROP TABLE IF EXISTS WESTCACHE_FLUSHER;
+   CREATE TABLE WESTCACHE_FLUSHER(
+    CACHE_KEY VARCHAR(2000) NOT NULL PRIMARY KEY COMMENT 'cache key',
+	KEY_MATCH VARCHAR(20) DEFAULT 'full' NOT NULL COMMENT 'full:full match,prefix:prefix match',
+	VALUE_VERSION TINYINT DEFAULT 0 NOT NULL COMMENT 'version of cache, increment it to update cache',
+	CACHE_STATE TINYINT DEFAULT 1 NOT NULL COMMENT 'direct json value for the cache',
+	VALUE_TYPE VARCHAR(20) DEFAULT 'none' NOT NULL COMMENT 'value access type, direct: use direct json in DIRECT_VALUE field',
+	SPECS VARCHAR(2000) NULL COMMENT 'specs for extension',
+	DIRECT_VALUE TEXT
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+```
+
+
+|CACHE_KEY|KEY_MATCH|VALUE_VERSION|CACHE_STATE|VALUE_TYPE|SPECS|DIRECT_VALUE|
+|---------|---------|-------------|-----------|----------|-----|------------|
+|TitaService.directValue|full|1|1|direct|null|"helllo bingoo"|
+|TitaService.getCities|prefix|1|1|none|null|null|
+|TitaService.getCities2|prefix|3|1|direct|null|{"@type":"java.util.HashMap","JiangXi":"YYY222","JiangSu":"XXX111"}|
+|TitaService.specs|full|0|1|direct|readBy=loader;loaderClass=com.github.bingoohuang.westcache.MyLoader|null|
+|TitaService.specsRedis|full|0|1|direct|readBy=redis|null|
+
+```java
+@WestCacheable(keyer = "simple", flusher = "table")
+```
 
 ## The source of name as westcache
 Film "West World".
