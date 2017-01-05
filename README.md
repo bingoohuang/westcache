@@ -115,16 +115,11 @@ public static class WechatTokenService {
 ## The data format for snapshot or redis caching.
 Westcache use [fastjson](https://github.com/alibaba/fastjson) to serialize cached value with SerializerFeature.WriteClassName.
 ```java
-JSON.toJSONString(obj, SerializerFeature.WriteClassName);
+JSON.toJSONString(obj);
 ```
 So you can check the data in redis, it will look like this:
 ```json
-{
-	"@type": "com.github.bingoohuang.westcache.RedisSnapshotTest$XyzBean",
-	"addr": "北京",
-	"id": 2,
-	"name": "dingoo"
-}
+{"addr":"北京","id":2,"name":"dingoo"}
 ```
 
 ## Customized cache annotation support
