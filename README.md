@@ -215,5 +215,32 @@ Example rows:
 @WestCacheable(keyer = "simple", flusher = "table")
 ```
 
+## expireAfterWrite=[duration] support
+In specs, expireAfterWrite can be set like expireAfterWrite=[duration], 
+Durations are represented by an integer, followed by one of "d", "h", "m", or "s",
+representing days, hours, minutes, or seconds respectively.
+expireAfterWrite will work together with redis cache manager, expiring cache manager or redis interceptor.
+```java
+
+public class RedisExpireService {
+    @WestCacheable(manager = "redis", keyer = "simple", flusher = "table",
+            specs = "expireAfterWrite=2h")
+    public SomeBean doSth() {
+        // ...
+    }
+
+    @@WestCacheable(interceptor = "redis", keyer = "simple", flusher = "table",
+                 specs = "expireAfterWrite=1d")
+    public OtherBean doOther() {
+        // ...
+    }
+    
+    @WestCacheable(manager = "expiring", specs = "expireAfterWrite=10m")
+    public String doThree() {
+        // ...
+    }
+}
+```
+
 ## The source of name as westcache
 Film "West World".
