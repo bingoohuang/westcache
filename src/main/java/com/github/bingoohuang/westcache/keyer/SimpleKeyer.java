@@ -13,11 +13,10 @@ public class SimpleKeyer extends WestCacheKeyer {
                               String methodName,
                               Object bean,
                               Object... args) {
-        if (option.getKey().length() > 0) return option.getKey();
-
-        String mainPart = Keys.createKeyMainPart(methodName, bean, true);
+        String mainPart = option.getKey().length() > 0
+                ? option.getKey()
+                : Keys.createKeyMainPart(methodName, bean, true);
 
         return mainPart + Keys.joinArgs(args);
     }
-
 }

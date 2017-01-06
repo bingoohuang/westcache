@@ -15,13 +15,14 @@ public class DefaultKeyer extends WestCacheKeyer {
                               String methodName,
                               Object bean,
                               Object... args) {
-        if (option.getKey().length() > 0) return option.getKey();
+        val mainPart = option.getKey().length() > 0
+                ? option.getKey()
+                : Keys.createKeyMainPart(methodName, bean, false);
 
-        val mainPart = Keys.createKeyMainPart(methodName, bean, false);
-
-        val staticKey = option.getSpecs().get("static.key");
-        val hashCode = option.getSnapshot() != null || "yes".equals(staticKey)
-                ? "" : "." + bean.hashCode();
+        boolean useStaticKey = option.getSnapshot() != null
+                || option.getKey().length() > 0
+                || "yes".equals(option.getSpecs().get("static.key"));
+        val hashCode = useStaticKey ? "" : "." + bean.hashCode();
 
         return mainPart + hashCode + Keys.joinArgs(args);
     }

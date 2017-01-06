@@ -56,7 +56,6 @@ public class PengTest {
                 new CityBean(111, "tianjin")));
     }
 
-
     @Test
     public void getCities() {
         prepareDirectValue("PengService.getCities", "prefix");
@@ -86,6 +85,12 @@ public class PengTest {
         Assert.fail();
     }
 
+    @Test
+    public void getKeyCities() {
+        val json = prepareDirectValue("mall.city_11", "full");
+        String cities = service.getKeyCities("11");
+        assertThat(cities).isEqualTo(json);
+    }
 
     private String prepareDirectValue(String prefix, String keyMatch) {
         val bean = new WestCacheFlusherBean(prefix, keyMatch, 0,

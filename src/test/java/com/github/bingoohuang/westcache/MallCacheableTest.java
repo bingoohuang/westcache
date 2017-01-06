@@ -44,20 +44,11 @@ public class MallCacheableTest {
     }
 
     static MallCache mallCache = WestCacheFactory.create(MallCache.class);
-    static TableCacheFlusher flusher = (TableCacheFlusher)
-            WestCacheRegistry.getFlusher("table");
+    static TableCacheFlusher flusher;
 
     @BeforeClass
     public static void beforeClass() {
-        WestCacheRegistry.deregisterConfig("default");
-        WestCacheRegistry.register("default",
-                new DefaultWestCacheConfig() {
-                    @Override public long rotateIntervalMillis() {
-                        return 500;
-                    }
-                });
-
-        flusher.getDao().setup();
+        flusher = Helper.setupTableFlusherForTest();
         MockDiamondServer.setUpMockServer();
     }
 

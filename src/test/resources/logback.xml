@@ -10,7 +10,7 @@
         <appender-ref ref="Console"/>
     </root>
 
-    <logger name="eql" level="DEBUG" additivity="false">
+    <logger name="eql" level="INFO" additivity="false">
         <appender-ref ref="Console"/>
     </logger>
 

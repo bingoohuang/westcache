@@ -17,6 +17,9 @@ public abstract class PengService {
 
     public abstract List<CityBean> getCities(String provinceCode);
 
+    @WestCacheable(key = "mall.city")
+    public abstract String getKeyCities(String provinceCode);
+
     // this methos is used to push the rotating checker into running
     public String firstPush() {
         return "first";
