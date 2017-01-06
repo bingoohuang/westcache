@@ -15,6 +15,7 @@ public interface TableCacheFlusherDao {
             "CREATE TABLE WESTCACHE_FLUSHER (" +
             "  CACHE_KEY     VARCHAR(1000)              NOT NULL PRIMARY KEY," +
             "  KEY_MATCH     VARCHAR(20) DEFAULT 'full' NOT NULL COMMENT 'full:full match,prefix:prefix match'," +
+            "  MATCH_PRI     TINYINT DEFAULT 0          NOT NULL COMMENT 'priority to match in descending way'," +
             "  VALUE_VERSION TINYINT DEFAULT 0          NOT NULL COMMENT 'version of cache, increment it to update cache'," +
             "  CACHE_STATE   TINYINT DEFAULT 1          NOT NULL COMMENT 'direct json value for the cache'," +
             "  VALUE_TYPE    VARCHAR(20) DEFAULT 'none' NOT NULL COMMENT 'value access type, direct: use direct json in DIRECT_VALUE field'," +
@@ -25,7 +26,9 @@ public interface TableCacheFlusherDao {
     void setup();
 
     @Sql("SELECT CACHE_KEY, KEY_MATCH, VALUE_VERSION, VALUE_TYPE, SPECS " +
-            "FROM WESTCACHE_FLUSHER WHERE CACHE_STATE = 1")
+            "FROM WESTCACHE_FLUSHER " +
+            "WHERE CACHE_STATE = 1 " +
+            "ORDER BY MATCH_PRI DESC")
     List<WestCacheFlusherBean> selectAllBeans();
 
     @Sql("SELECT DIRECT_VALUE FROM WESTCACHE_FLUSHER " +

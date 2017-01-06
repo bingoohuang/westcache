@@ -168,6 +168,7 @@ DROP TABLE WESTCACHE_FLUSHER;
 CREATE TABLE WESTCACHE_FLUSHER(
     CACHE_KEY VARCHAR2(2000 BYTE) NOT NULL PRIMARY KEY,
     KEY_MATCH VARCHAR2(20 BYTE) DEFAULT 'full' NOT NULL,
+    MATCH_PRI NUMBER DEFAULT 0 NOT NULL,
     VALUE_VERSION NUMBER DEFAULT 0 NOT NULL,
     CACHE_STATE NUMBER DEFAULT 1 NOT NULL,
     VALUE_TYPE VARCHAR2(20 BYTE) DEFAULT 'none' NOT NULL,
@@ -178,6 +179,7 @@ CREATE TABLE WESTCACHE_FLUSHER(
 
 COMMENT ON COLUMN WESTCACHE_FLUSHER.CACHE_KEY IS 'cache key';
 COMMENT ON COLUMN WESTCACHE_FLUSHER.KEY_MATCH IS 'full:full match,prefix:prefix match';
+COMMENT ON COLUMN WESTCACHE_FLUSHER.MATCH_PRI IS 'priority to match in descending way';
 COMMENT ON COLUMN WESTCACHE_FLUSHER.VALUE_VERSION IS 'version of cache, increment it to update cache';
 COMMENT ON COLUMN WESTCACHE_FLUSHER.DIRECT_VALUE IS 'direct json value for the cache';
 COMMENT ON COLUMN WESTCACHE_FLUSHER.CACHE_STATE IS '0 disabled 1 enabled';
@@ -189,6 +191,7 @@ DROP TABLE IF EXISTS WESTCACHE_FLUSHER;
 CREATE TABLE WESTCACHE_FLUSHER(
     CACHE_KEY VARCHAR(2000) NOT NULL PRIMARY KEY COMMENT 'cache key',
     KEY_MATCH VARCHAR(20) DEFAULT 'full' NOT NULL COMMENT 'full:full match,prefix:prefix match',
+    MATCH_PRI TINYINT DEFAULT 0 NOT NULL COMMENT 'priority to match in descending way',
     VALUE_VERSION TINYINT DEFAULT 0 NOT NULL COMMENT 'version of cache, increment it to update cache',
     CACHE_STATE TINYINT DEFAULT 1 NOT NULL COMMENT 'direct json value for the cache',
     VALUE_TYPE VARCHAR(20) DEFAULT 'none' NOT NULL COMMENT 'value access type, direct: use direct json in DIRECT_VALUE field',
@@ -200,13 +203,13 @@ CREATE TABLE WESTCACHE_FLUSHER(
 ```
 Example rows:
 
-|CACHE_KEY|KEY_MATCH|VALUE_VERSION|CACHE_STATE|VALUE_TYPE|SPECS|DIRECT_VALUE|
-|---------|---------|-------------|-----------|----------|-----|------------|
-|TitaService.directValue|full|1|1|direct|null|"helllo bingoo"|
-|TitaService.getCities|prefix|1|1|none|null|null|
-|TitaService.getCities2|prefix|3|1|direct|null|{"@type":"java.util.HashMap","JiangXi":"YYY222","JiangSu":"XXX111"}|
-|TitaService.specs|full|0|1|direct|readBy=loader;loaderClass=com.github.bingoohuang.westcache.MyLoader|null|
-|TitaService.specsRedis|full|0|1|direct|readBy=redis|null|
+|CACHE_KEY|KEY_MATCH|MATCH_PRI|VALUE_VERSION|CACHE_STATE|VALUE_TYPE|SPECS|DIRECT_VALUE|
+|---------|---------|---------|----|-----------|----------|-----|------------|
+|TitaService.directValue|full|0|1|1|direct|null|"helllo bingoo"|
+|TitaService.getCities|prefix|0|1|1|none|null|null|
+|TitaService.getCities2|prefix|0|3|1|direct|null|{"@type":"java.util.HashMap","JiangXi":"YYY222","JiangSu":"XXX111"}|
+|TitaService.specs|full|0|0|1|direct|readBy=loader;loaderClass=com.github.bingoohuang.westcache.MyLoader|null|
+|TitaService.specsRedis|full|0|0|1|direct|readBy=redis|null|
 
 ```java
 @WestCacheable(keyer = "simple", flusher = "table")
