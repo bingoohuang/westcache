@@ -1,5 +1,7 @@
 package com.github.bingoohuang.westcache.outofbox;
 
+import com.alibaba.fastjson.TypeReference;
+import com.github.bingoohuang.westcache.flusher.DirectValueType;
 import com.github.bingoohuang.westcache.flusher.TableBasedCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.utils.FastJsons;
@@ -12,6 +14,7 @@ import lombok.val;
 import org.n3r.eql.eqler.EqlerFactory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -31,7 +34,8 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
 
     @Override @SneakyThrows
     protected Object readDirectValue(WestCacheOption option,
-                                     WestCacheFlusherBean bean) {
+                                     WestCacheFlusherBean bean,
+                                     DirectValueType type) {
         lastReadDirectValue = System.currentTimeMillis();
 
         val specs = Specs.parseSpecs(bean.getSpecs());
@@ -53,6 +57,14 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
 
         String directJson = dao.getDirectValue(bean.getCacheKey());
         if (isBlank(directJson)) return null;
-        return FastJsons.parse(directJson);
+
+        switch (type) {
+            case FULL:
+                return FastJsons.parse(directJson, option.getMethod());
+            case SUB:
+                return FastJsons.parse(directJson, new TypeReference<Map<String, String>>(){});
+        }
+
+        return null;
     }
 }

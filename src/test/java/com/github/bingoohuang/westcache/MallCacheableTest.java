@@ -5,6 +5,7 @@ import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.MallCacheable;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import com.github.bingoohuang.westcache.utils.FastJsons;
+import com.github.bingoohuang.westcache.utils.Helper;
 import com.github.bingoohuang.westcache.utils.Redis;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,10 +32,15 @@ public class MallCacheableTest {
     }
 
     @MallCacheable
-    public interface MallCache {
-        MallBean getMallBean();
+    public abstract static class MallCache {
+        public abstract MallBean getMallBean();
 
-        MallBean getMallBean2();
+        public abstract MallBean getMallBean2();
+
+        public String firstPush() {
+            return "first";
+        }
+
     }
 
     static MallCache mallCache = WestCacheFactory.create(MallCache.class);
@@ -105,14 +111,10 @@ public class MallCacheableTest {
         Redis.getJedis().set(Redis.PREFIX + cacheKey, json);
         flusher.getDao().addBean(bean);
 
-        try {
-            mallCache.getMallBean();
-        } catch (Exception ex) {
-            // ignore
-        }
+        mallCache.firstPush();
 
         // at most 15 seconds
-        TableCacheFlusherTest.waitFlushRun(flusher, lastExecuted);
+        Helper.waitFlushRun(flusher, lastExecuted);
 
         MallBean mallBean2 = mallCache.getMallBean();
 
@@ -135,14 +137,10 @@ public class MallCacheableTest {
         flusher.getDao().addBean(bean);
         flusher.getDao().updateDirectValue(cacheKey, json);
 
-        try {
-            mallCache.getMallBean();
-        } catch (Exception ex) {
-            // ignore
-        }
+        mallCache.firstPush();
 
         // at most 15 seconds
-        TableCacheFlusherTest.waitFlushRun(flusher, lastExecuted);
+        Helper.waitFlushRun(flusher, lastExecuted);
 
         MallBean mallBean2 = mallCache.getMallBean();
 

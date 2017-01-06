@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.flusher;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
+import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.Keys;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
@@ -17,11 +18,7 @@ import lombok.val;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeoutException;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import java.util.concurrent.*;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/28.
@@ -29,8 +26,10 @@ import static java.util.concurrent.TimeUnit.MILLISECONDS;
 @Slf4j
 public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     volatile List<WestCacheFlusherBean> tableRows = Lists.newArrayList();
+    volatile ScheduledFuture<?> scheduledFuture;
+
     @Getter volatile long lastExecuted = -1;
-    Cache<String, Optional<Map<String, Object>>> prefixDirectCache
+    Cache<String, Optional<Map<String, String>>> prefixDirectCache
             = CacheBuilder.newBuilder().build();
 
     @Override @SneakyThrows
@@ -51,6 +50,22 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         }
     }
 
+    @SneakyThrows
+    public void cancelRotateChecker() {
+        val future = scheduledFuture;
+        scheduledFuture = null;
+
+        if (future == null) return;
+        if (future.isDone()) return;
+
+        future.cancel(false);
+        while (!future.isDone()) {
+            Thread.sleep(500L);
+        }
+
+        lastExecuted = -1;
+    }
+
     @Override
     public Optional<Object> getDirectValue(
             WestCacheOption option, String cacheKey) {
@@ -62,7 +77,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         }
 
         if ("full".equals(bean.getKeyMatch())) {
-            Object value = readDirectValue(option, bean);
+            Object value = readDirectValue(option, bean, DirectValueType.FULL);
             return Optional.fromNullable(value);
         }
 
@@ -78,23 +93,29 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
     protected abstract List<WestCacheFlusherBean> queryAllBeans();
 
-    protected abstract Object readDirectValue(WestCacheOption option, WestCacheFlusherBean bean);
+    protected abstract Object readDirectValue(WestCacheOption option,
+                                              WestCacheFlusherBean bean,
+                                              DirectValueType type);
 
     @SneakyThrows
     private <T> T readSubDirectValue(
             final WestCacheOption option,
             final WestCacheFlusherBean bean,
             String subKey) {
-        val loader = new Callable<Optional<Map<String, Object>>>() {
+        val loader = new Callable<Optional<Map<String, String>>>() {
             @Override
-            public Optional<Map<String, Object>> call() throws Exception {
-                val map = (Map<String, Object>) readDirectValue(option, bean);
+            public Optional<Map<String, String>> call() throws Exception {
+                val map = (Map<String, String>) readDirectValue(option, bean, DirectValueType.SUB);
                 return Optional.fromNullable(map);
             }
         };
         val optional = prefixDirectCache.get(bean.getCacheKey(), loader);
+        if (!optional.isPresent()) return null;
 
-        return optional.isPresent() ? (T) optional.get().get(subKey) : null;
+        String json = optional.get().get(subKey);
+        if (json == null) return null;
+
+        return FastJsons.parse(json, option.getMethod());
     }
 
     protected WestCacheFlusherBean findBean(String cacheKey) {
@@ -112,12 +133,13 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
                                         final String cacheKey) {
         firstCheckBeans(option, cacheKey);
 
-        long intervalMillis = option.getConfig().rotateIntervalMillis();
-        option.getConfig().executorService().scheduleAtFixedRate(new Runnable() {
+        val intervalMillis = option.getConfig().rotateIntervalMillis();
+        val executor = option.getConfig().executorService();
+        scheduledFuture = executor.scheduleAtFixedRate(new Runnable() {
             @Override public void run() {
                 checkBeans(option, cacheKey);
             }
-        }, intervalMillis, intervalMillis, MILLISECONDS);
+        }, intervalMillis, intervalMillis, TimeUnit.MILLISECONDS);
     }
 
     @SneakyThrows
@@ -141,7 +163,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
         long timeout = option.getConfig().timeoutMillisToSnapshot();
         try {
-            return future.get(timeout, MILLISECONDS);
+            return future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (TimeoutException ex) {
             log.info("get first check beans {} timeout in " +
                     "{} millis, try snapshot", cacheKey, timeout);
@@ -205,11 +227,13 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     }
 
     private Map<String, WestCacheFlusherBean> getDiffFlushKeys(
-            List<WestCacheFlusherBean> table, List<WestCacheFlusherBean> beans) {
+            List<WestCacheFlusherBean> table,
+            List<WestCacheFlusherBean> beans) {
         Map<String, WestCacheFlusherBean> flushKeys = Maps.newHashMap();
         for (val bean : table) {
             val found = find(bean, beans);
-            if (found == null || found.getValueVersion() != bean.getValueVersion()) {
+            if (found == null ||
+                    found.getValueVersion() != bean.getValueVersion()) {
                 flushKeys.put(bean.getCacheKey(), bean);
             }
         }

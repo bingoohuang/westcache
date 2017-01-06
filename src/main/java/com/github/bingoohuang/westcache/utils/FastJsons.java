@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.val;
@@ -9,6 +10,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/29.
@@ -24,9 +26,6 @@ public class FastJsons {
     }
 
     public Object parse(String json, Class<?> returnType) {
-        Object object = JSON.parse(json);
-        if (returnType.isInstance(object)) return object;
-
         return JSON.parseObject(json, returnType);
     }
 
@@ -51,5 +50,9 @@ public class FastJsons {
             if (returnType == String.class) return (T) json;
             throw ex;
         }
+    }
+
+    public static <T> T parse(String json, TypeReference typeReference) {
+        return (T) JSON.parseObject(json, typeReference);
     }
 }

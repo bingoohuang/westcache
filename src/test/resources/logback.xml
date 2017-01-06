@@ -10,6 +10,10 @@
         <appender-ref ref="Console"/>
     </root>
 
+    <logger name="eql" level="DEBUG" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
+
     <logger name="com.github.bingoohuang.westcache.CustomAnnOverrideTest" level="DEBUG" additivity="false">
         <appender-ref ref="Console"/>
     </logger>

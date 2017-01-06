@@ -1,9 +1,9 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import com.github.bingoohuang.westcache.utils.FastJsons;
+import com.github.bingoohuang.westcache.utils.Helper;
 import com.github.bingoohuang.westcache.utils.Redis;
 import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
@@ -21,7 +21,6 @@ import static com.google.common.truth.Truth.assertThat;
  */
 public class TableCacheFlusherTest {
     static TableCacheFlusher flusher;
-    static volatile long lastReadDirectValue;
     static volatile long getCitiesCalledTimes;
 
     public static class MyLoader implements Callable {
@@ -32,25 +31,17 @@ public class TableCacheFlusherTest {
 
     @BeforeClass
     public static void beforeClass() {
-        WestCacheRegistry.deregisterConfig("default");
-        WestCacheRegistry.register("default", new DefaultWestCacheConfig() {
-            @Override public long rotateIntervalMillis() {
-                return 500;
-            }
-        });
-        flusher = (TableCacheFlusher) WestCacheRegistry.getFlusher("table");
-        flusher.getDao().setup();
+        flusher = Helper.setupTableFlusherForTest();
 
-        try {
-            service.tita();
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
+        service.firstPush();
     }
 
-    @WestCacheable(flusher = "table", keyer = "simple", snapshot = "file",
-            specs = "rotateIntervalMillis=1000")
+    @WestCacheable(flusher = "table", keyer = "simple", snapshot = "file")
     public static abstract class TitaService {
+        public String firstPush() {
+            return "first";
+        }
+
         public String tita() {
             return "" + System.currentTimeMillis();
         }
@@ -80,7 +71,7 @@ public class TableCacheFlusherTest {
 
         long lastExecuted = flusher.getLastExecuted();
         flusher.getDao().addBean(bean);
-        waitFlushRun(flusher, lastExecuted);
+        Helper.waitFlushRun(flusher, lastExecuted);
 
         val tita2 = service.tita();
         val tita3 = service.tita();
@@ -89,7 +80,7 @@ public class TableCacheFlusherTest {
 
         lastExecuted = flusher.getLastExecuted();
         flusher.getDao().upgradeVersion(cacheKey);
-        waitFlushRun(flusher, lastExecuted);
+        Helper.waitFlushRun(flusher, lastExecuted);
 
         val tita4 = service.tita();
         val tita5 = service.tita();
@@ -106,15 +97,13 @@ public class TableCacheFlusherTest {
         long lastExecuted = flusher.getLastExecuted();
         flusher.getDao().addBean(bean);
         flusher.getDao().updateDirectValue(cacheKey, "\"helllo bingoo\"");
-        waitFlushRun(flusher, lastExecuted);
+        Helper.waitFlushRun(flusher, lastExecuted);
 
         val tita1 = service.directValue();
         assertThat(tita1).isNotEqualTo("hello bingoo");
 
-        val last1 = lastReadDirectValue;
         val tita2 = service.directValue();
         assertThat(tita2).isSameAs(tita1);
-        assertThat(last1).isEqualTo(lastReadDirectValue);
     }
 
     @Test @SneakyThrows
@@ -125,7 +114,7 @@ public class TableCacheFlusherTest {
 
         long lastExecuted = flusher.getLastExecuted();
         flusher.getDao().addBean(bean);
-        waitFlushRun(flusher, lastExecuted);
+        Helper.waitFlushRun(flusher, lastExecuted);
 
         String jiangSuCities1 = service.getCities("JiangSu");
         String jiangXiCities1 = service.getCities("JiangXi");
@@ -140,7 +129,7 @@ public class TableCacheFlusherTest {
 
         lastExecuted = flusher.getLastExecuted();
         flusher.getDao().upgradeVersion(prefix);
-        waitFlushRun(flusher, lastExecuted);
+        Helper.waitFlushRun(flusher, lastExecuted);
 
         String jiangSuCities2 = service.getCities("JiangSu");
         String jiangXiCities2 = service.getCities("JiangXi");
@@ -163,7 +152,7 @@ public class TableCacheFlusherTest {
         long lastExecuted = flusher.getLastExecuted();
         flusher.getDao().addBean(bean);
         flusher.getDao().updateDirectValue(prefix, json);
-        waitFlushRun(flusher, lastExecuted);
+        Helper.waitFlushRun(flusher, lastExecuted);
 
         String jiangSuCities1 = service.getCities2("JiangSu");
         String jiangXiCities1 = service.getCities2("JiangXi");
@@ -177,7 +166,7 @@ public class TableCacheFlusherTest {
 
         lastExecuted = flusher.getLastExecuted();
         flusher.getDao().upgradeVersion(prefix);
-        waitFlushRun(flusher, lastExecuted);
+        Helper.waitFlushRun(flusher, lastExecuted);
 
         String jiangSuCities2 = service.getCities2("JiangSu");
         String jiangXiCities2 = service.getCities2("JiangXi");
@@ -191,7 +180,7 @@ public class TableCacheFlusherTest {
 
         lastExecuted = flusher.getLastExecuted();
         flusher.getDao().updateDirectValue(prefix, json2);
-        waitFlushRun(flusher, lastExecuted);
+        Helper.waitFlushRun(flusher, lastExecuted);
 
         String jiangSuCitiesA = service.getCities2("JiangSu");
         String jiangXiCitiesA = service.getCities2("JiangXi");
@@ -219,7 +208,7 @@ public class TableCacheFlusherTest {
     private void addConfigBean(WestCacheFlusherBean bean) throws InterruptedException {
         long lastExecuted = flusher.getLastExecuted();
         flusher.getDao().addBean(bean);
-        waitFlushRun(flusher, lastExecuted);
+        Helper.waitFlushRun(flusher, lastExecuted);
     }
 
     @Test @SneakyThrows
@@ -236,10 +225,4 @@ public class TableCacheFlusherTest {
         assertThat(r1).isEqualTo("I am redis body");
     }
 
-    @SneakyThrows
-    public static void waitFlushRun(TableCacheFlusher flusher, long lastExecuted) {
-        do {
-            Thread.sleep(100L);
-        } while (flusher.getLastExecuted() == lastExecuted);
-    }
 }

@@ -6,6 +6,7 @@ import com.github.bingoohuang.westcache.outofbox.MallCacheable;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import com.github.bingoohuang.westcache.utils.Diamonds;
 import com.github.bingoohuang.westcache.utils.FastJsons;
+import com.github.bingoohuang.westcache.utils.Helper;
 import com.github.bingoohuang.westcache.utils.Redis;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -73,7 +74,7 @@ public class BenchMarkTest {
         }
 
         // at most 15 seconds
-        TableCacheFlusherTest.waitFlushRun(flusher, lastExecuted);
+        Helper.waitFlushRun(flusher, lastExecuted);
     }
 
     @Benchmark
