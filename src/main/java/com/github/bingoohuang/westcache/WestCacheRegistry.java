@@ -71,7 +71,7 @@ public class WestCacheRegistry {
                       Object... args) {
         val keyer = option.getKeyer();
         val cacheKey = keyer.getCacheKey(option, methodName, bean, args);
-        option.getFlusher().flush(option, cacheKey);
+        option.getFlusher().flush(option, cacheKey, "");
     }
 
     RegistryTemplate<WestCacheManager> managerRegistry

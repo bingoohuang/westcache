@@ -7,9 +7,7 @@ import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +15,6 @@ import lombok.val;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.*;
 
 /**
@@ -25,7 +22,7 @@ import java.util.concurrent.*;
  */
 @Slf4j
 public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
-    volatile List<WestCacheFlusherBean> tableRows = Lists.newArrayList();
+    volatile List<WestCacheFlusherBean> tableRows;
     volatile ScheduledFuture<?> scheduledFuture;
 
     @Getter volatile long lastExecuted = -1;
@@ -60,7 +57,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
         future.cancel(false);
         while (!future.isDone()) {
-            Thread.sleep(500L);
+            Thread.sleep(100L);
         }
 
         lastExecuted = -1;
@@ -110,7 +107,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         val optional = prefixDirectCache.get(bean.getCacheKey(), loader);
         if (!optional.isPresent()) return null;
 
-        String json = optional.get().get(subKey);
+        val json = optional.get().get(subKey);
         if (json == null) return null;
 
         return FastJsons.parse(json, option.getMethod());
@@ -118,15 +115,13 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
     protected WestCacheFlusherBean findBean(String cacheKey) {
         for (val bean : tableRows) {
-            if ("full".equals(bean.getKeyMatch())) {
-                if (bean.getCacheKey().equals(cacheKey)) return bean;
-            }
+            if (!"full".equals(bean.getKeyMatch())) continue;
+            if (bean.getCacheKey().equals(cacheKey)) return bean;
         }
 
         for (val bean : tableRows) {
-            if ("prefix".equals(bean.getKeyMatch())) {
-                if (Keys.isPrefix(cacheKey, bean.getCacheKey())) return bean;
-            }
+            if (!"prefix".equals(bean.getKeyMatch())) continue;
+            if (Keys.isPrefix(cacheKey, bean.getCacheKey())) return bean;
         }
 
         return null;
@@ -213,19 +208,19 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         val flushKeys = getDiffFlushKeys(table, beans);
         if (flushKeys.isEmpty()) return;
 
-        Set<String> prefixKeys = Sets.newHashSet();
-        Set<String> fullKeys = Sets.newHashSet();
+        Map<String, String> prefixKeys = Maps.newHashMap();
+        Map<String, String> fullKeys = Maps.newHashMap();
         getFlushKeys(flushKeys, prefixKeys, fullKeys);
 
         log.debug("flush full keys:{}", fullKeys);
         log.debug("flush prefix keys:{}", prefixKeys);
 
-        for (String fullKey : fullKeys) {
-            flush(option, fullKey);
+        for (Map.Entry<String, String> entry : fullKeys.entrySet()) {
+            flush(option, entry.getKey(), entry.getValue());
         }
 
-        for (String prefixKey : prefixKeys) {
-            flushPrefix(prefixKey);
+        for (Map.Entry<String, String> entry : prefixKeys.entrySet()) {
+            flushPrefix(entry.getKey());
         }
     }
 
@@ -244,19 +239,20 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     }
 
     private void getFlushKeys(Map<String, WestCacheFlusherBean> flushKeys,
-                              Set<String> prefixKeys, Set<String> fullKeys) {
+                              Map<String, String> prefixKeys,
+                              Map<String, String> fullKeys) {
         for (val key : getRegistry().asMap().keySet()) {
             if (flushKeys.containsKey(key)) {
-                fullKeys.add(key);
+                fullKeys.put(key, "" + flushKeys.get(key).getValueVersion());
                 continue;
             }
 
             for (val bean : flushKeys.values()) {
                 if (!"prefix".equals(bean.getKeyMatch())) continue;
-                if (Keys.isPrefix(key, bean.getCacheKey())) {
-                    fullKeys.add(key);
-                    prefixKeys.add(bean.getCacheKey());
-                }
+                if (!Keys.isPrefix(key, bean.getCacheKey())) continue;
+
+                fullKeys.put(key, "" + bean.getValueVersion());
+                prefixKeys.put(bean.getCacheKey(), "" + bean.getValueVersion());
             }
         }
     }

@@ -44,7 +44,7 @@ public class FileCacheManager extends BaseCacheManager {
         }
 
         @Override
-        public void invalidate(WestCacheOption option, String cacheKey) {
+        public void invalidate(WestCacheOption option, String cacheKey, String version) {
             snapshot.deleteSnapshot(option, cacheKey);
         }
     }

@@ -14,7 +14,7 @@ public class ByPassCacheFlusher implements WestCacheFlusher {
         return false;
     }
 
-    @Override public boolean flush(WestCacheOption option, String cacheKey) {
+    @Override public boolean flush(WestCacheOption option, String cacheKey, String version) {
         return false;
     }
 

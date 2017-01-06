@@ -7,10 +7,8 @@ import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.Redis;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Cleanup;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import redis.clients.jedis.JedisCommands;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -29,11 +27,18 @@ public class RedisInterceptor implements WestCacheInterceptor {
             final WestCacheOption option,
             String cacheKey,
             Callable<WestCacheItem> callable) throws Exception {
+        val redisValueKey = Redis.PREFIX + cacheKey;
+        val redis = Redis.getRedis(option);
+        val redisValue1 = redis.get(redisValueKey);
+        if (redisValue1 != null) {
+            log.debug("got redis value {}", redisValue1);
+            Object value = FastJsons.parse(redisValue1, option.getMethod());
+            return new WestCacheItem(value);
+        }
 
         final val lockKey = Redis.PREFIX + "lock:" + cacheKey;
         log.debug("wait redis lock {}", lockKey);
-        val redis = Redis.getRedis(option);
-        waitRedisLock(redis, lockKey);
+        Redis.waitRedisLock(redis, lockKey);
         log.debug("got redis lock {}", lockKey);
         @Cleanup val i = new Closeable() {
             @Override public void close() throws IOException {
@@ -42,11 +47,10 @@ public class RedisInterceptor implements WestCacheInterceptor {
             }
         }; // free lock automatically
 
-        val redisValueKey = Redis.PREFIX + cacheKey;
-        val redisValue = redis.get(redisValueKey);
-        if (redisValue != null) {
-            log.debug("got redis value {}", redisValue);
-            Object value = FastJsons.parse(redisValue, option.getMethod());
+        val redisValue2 = redis.get(redisValueKey);
+        if (redisValue2 != null) {
+            log.debug("got redis value {}", redisValue2);
+            Object value = FastJsons.parse(redisValue2, option.getMethod());
             return new WestCacheItem(value);
         }
 
@@ -74,16 +78,5 @@ public class RedisInterceptor implements WestCacheInterceptor {
                                       String json,
                                       long duration) {
         // maybe used to synchronized with other center.
-    }
-
-    @SneakyThrows
-    private void waitRedisLock(JedisCommands redis, String lockKey) {
-        int maxWaitTimes = 10;
-        while (maxWaitTimes-- > 0) {
-            Long lock = redis.setnx(lockKey, "lock");
-            if (lock == 1L) return;
-
-            Thread.sleep(100L);
-        }
     }
 }

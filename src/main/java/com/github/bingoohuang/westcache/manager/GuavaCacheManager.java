@@ -48,7 +48,7 @@ public class GuavaCacheManager extends BaseCacheManager {
 
         @Override
         public void invalidate(WestCacheOption option,
-                               String cacheKey) {
+                               String cacheKey, String version) {
             cache.invalidate(cacheKey);
         }
     }

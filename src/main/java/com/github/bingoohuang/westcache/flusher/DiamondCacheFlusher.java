@@ -25,7 +25,7 @@ public class DiamondCacheFlusher extends SimpleCacheFlusher {
         val diamondManager = new DiamondManager(GROUP, cacheKey);
         val listener = new DiamondListenerAdapter() {
             @Override public void accept(DiamondStone diamondStone) {
-                flush(option, cacheKey);
+                flush(option, cacheKey, "");
             }
         };
         diamondManager.addDiamondListener(listener);

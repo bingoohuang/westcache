@@ -60,6 +60,18 @@ public class Redis {
                 new JedisInvocationHandler(pool));
     }
 
+    @SneakyThrows
+    public static boolean waitRedisLock(JedisCommands redis, String lockKey) {
+        int maxWaitTimes = 10;
+        while (maxWaitTimes-- > 0) {
+            Long lock = redis.setnx(lockKey, "lock");
+            if (lock == 1L) return true;
+
+            Thread.sleep(50L);
+        }
+        return false;
+    }
+
     @AllArgsConstructor
     public static class JedisInvocationHandler implements InvocationHandler {
         final JedisPool pool;

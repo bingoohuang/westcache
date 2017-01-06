@@ -15,11 +15,8 @@ import lombok.val;
  */
 @Slf4j
 public class SimpleCacheFlusher implements WestCacheFlusher {
-    @Getter private Cache<String, WestCache> registry;
-
-    {
-        registry = CacheBuilder.newBuilder().build();
-    }
+    @Getter private Cache<String, WestCache>
+            registry = CacheBuilder.newBuilder().build();
 
     @Override
     public boolean isKeyEnabled(WestCacheOption option, String cacheKey) {
@@ -38,18 +35,21 @@ public class SimpleCacheFlusher implements WestCacheFlusher {
         return registered;
     }
 
-    @Override public boolean flush(WestCacheOption option, String cacheKey) {
+    @Override public boolean flush(WestCacheOption option,
+                                   String cacheKey,
+                                   String version) {
         val westCache = registry.getIfPresent(cacheKey);
         log.debug("flush key:{}, westcache:{}", cacheKey, westCache);
 
         boolean flushSent = westCache != null;
-        if (flushSent) westCache.invalidate(option, cacheKey);
+        if (flushSent) westCache.invalidate(option, cacheKey, version);
 
         return flushSent;
     }
 
     @Override
-    public Optional<Object> getDirectValue(WestCacheOption option, String cacheKey) {
+    public Optional<Object> getDirectValue(WestCacheOption option,
+                                           String cacheKey) {
         return Optional.absent();
     }
 

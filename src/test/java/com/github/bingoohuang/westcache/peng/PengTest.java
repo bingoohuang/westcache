@@ -18,12 +18,10 @@ import static com.google.common.truth.Truth.assertThat;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/6.
  */
 public class PengTest {
-    static TableCacheFlusher flusher;
+    static TableCacheFlusher flusher = Helper.setupTableFlusherForTest();
 
     @BeforeClass
     public static void beforeClass() {
-        flusher = Helper.setupTableFlusherForTest();
-
         service.firstPush();
     }
 
@@ -95,18 +93,13 @@ public class PengTest {
     private String prepareDirectValue(String prefix, String keyMatch) {
         val bean = new WestCacheFlusherBean(prefix, keyMatch, 0,
                 "direct", null);
-        long lastExecuted = flusher.getLastExecuted();
-        flusher.getDao().addBean(bean);
-
         // [{"code":110,"name":"beijing"},{"code":111,"name":"tianjin"}]
         String json =
                 keyMatch.equals("full")
                         ? "[{\"code\":110,\"name\":\"beijing\"},{\"code\":111,\"name\":\"tianjin\"}]"
                         : "{\"11\":[{\"code\":110,\"name\":\"bj\"},{\"code\":111,\"name\":\"tj\"}],\"22\":[{\"code\":220,\"name\":\"nj\"},{\"code\":221,\"name\":\"wx\"}]}";
 
-        lastExecuted = flusher.getLastExecuted();
-        flusher.getDao().updateDirectValue(prefix, json);
-        Helper.waitFlushRun(flusher, lastExecuted);
+        Helper.addBeanAndUpdateDirectValue(prefix, flusher, json, bean);
         return json;
     }
 
