@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache;
 
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.junit.Test;
 
@@ -7,6 +8,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/6.
@@ -16,10 +19,9 @@ public class ScheduledExecutorServiceCancelTest {
     static ScheduledFuture<?> t;
 
     static class MyTask implements Runnable {
-        private int attempt = 1;
+        @Getter private volatile int attempt = 0;
 
         public void run() {
-            System.out.print(attempt + " ");
             if (++attempt > 5) {
                 t.cancel(false);
             }
@@ -28,9 +30,12 @@ public class ScheduledExecutorServiceCancelTest {
 
     @Test @SneakyThrows
     public void test() {
-        t = executor.scheduleAtFixedRate(new MyTask(), 0, 10, TimeUnit.MILLISECONDS);
+        MyTask task = new MyTask();
+        t = executor.scheduleAtFixedRate(task, 0, 10, TimeUnit.MILLISECONDS);
         while (!t.isDone()) {
             Thread.sleep(50);
         }
+        assertThat(task.getAttempt()).isEqualTo(6);
+
     }
 }

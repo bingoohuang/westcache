@@ -1,9 +1,12 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.github.bingoohuang.westcache.base.WestCacheItem;
+import com.github.bingoohuang.westcache.manager.RedisCacheManager;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.JedisCommands;
@@ -15,9 +18,13 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/3.
  */
+@Slf4j
 public class Redis {
     public static final String PREFIX = "westcache:";
     private static JedisCommands jedis = createtJedisCommands(
@@ -70,6 +77,30 @@ public class Redis {
             Thread.sleep(50L);
         }
         return false;
+    }
+
+    public static WestCacheItem getWestCacheItem(WestCacheOption option,
+                                                 JedisCommands redis,
+                                                 String redisKey) {
+        val jsonValue = redis.get(redisKey);
+        if (jsonValue == null) return null;
+
+        val value = FastJsons.parse(jsonValue, option.getMethod());
+        return new WestCacheItem(value);
+    }
+
+    public static String expirePut(WestCacheOption option,
+                                   JedisCommands redis,
+                                   String redisKey,
+                                   WestCacheItem item) {
+        val json = FastJsons.json(item.orNull());
+        val expireKey = "expireAfterWrite";
+        val expireWrite = option.getSpecs().get(expireKey);
+        if (isBlank(expireWrite)) return redis.set(redisKey, json);
+
+        val duration = Durations.parse(expireKey, expireWrite, SECONDS);
+        log.info("redis set {}={} in expire {} seconds", redisKey, json, duration);
+        return redis.set(redisKey, json, "NX", "EX", duration);
     }
 
     @AllArgsConstructor
