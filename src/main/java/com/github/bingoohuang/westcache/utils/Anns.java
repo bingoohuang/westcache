@@ -150,13 +150,7 @@ public class Anns {
         }
     }
 
-    /**
-     * Retrieve the <em>value</em> of a named attribute, given an annotation instance.
-     *
-     * @param ann      the annotation instance from which to retrieve the value
-     * @param attrName the name of the attribute value to retrieve
-     * @return the attribute value, or {@code null} if not found
-     */
+    @SuppressWarnings("unchecked")
     public static <T> T getValue(Annotation ann, String attrName) {
         if (ann == null || isBlank(attrName)) return null;
 
@@ -170,6 +164,7 @@ public class Anns {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getDefaultValue(Annotation ann, String attrName) {
         if (ann == null || isBlank(attrName)) return null;
         val annotationType = ann.annotationType();
@@ -177,6 +172,7 @@ public class Anns {
         return getDefaultValue(annotationType, attrName);
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T getDefaultValue(Class<?> annType, String attrName) {
         try {
             Method method = annType.getDeclaredMethod(attrName);

@@ -20,6 +20,8 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
+import static com.github.bingoohuang.westcache.WestCacheRegistry.configRegistry;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.flusherRegistry;
 import static com.github.bingoohuang.westcache.outofbox.PackageLimitedKeyer.DATAID;
 import static com.github.bingoohuang.westcache.outofbox.PackageLimitedKeyer.GROUP;
 import static com.google.common.truth.Truth.assertThat;
@@ -39,16 +41,15 @@ public class BenchMarkTest {
         BenchMallBean getMallBean();
     }
 
-    static TableCacheFlusher flusher = (TableCacheFlusher)
-            WestCacheRegistry.getFlusher("table");
+    static TableCacheFlusher flusher = (TableCacheFlusher) flusherRegistry.get("table");
 
     static BMMallCache mallCache = WestCacheFactory.create(BMMallCache.class);
     static BenchMallBean demo = new BenchMallBean("新几次哇一次抹黑头次", 123);
 
     @BeforeClass
     public static void beforeClass() {
-        WestCacheRegistry.deregisterConfig("default");
-        WestCacheRegistry.register("default",
+        configRegistry.deregister("default");
+        configRegistry.register("default",
                 new DefaultWestCacheConfig() {
                     @Override public long rotateIntervalMillis() {
                         return 1000;

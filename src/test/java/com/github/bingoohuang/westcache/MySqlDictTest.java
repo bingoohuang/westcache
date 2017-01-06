@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.github.bingoohuang.westcache.WestCacheRegistry.flusherRegistry;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -82,7 +83,7 @@ public class MySqlDictTest {
                 log.debug("lastMax:{}, max:{}, updateCheckTime:{}", lastMax, max, updateCheckTime);
 
                 if (lastMax != null && lastMax > 0L) {
-                    val flusher = WestCacheRegistry.getFlusher("simple");
+                    val flusher = flusherRegistry.get("simple");
                     flusher.flush(null, "mysql.cache_dicts", "");
                     updateCheckTime = System.currentTimeMillis();
                     log.debug("update updateCheckTime:{}", updateCheckTime);

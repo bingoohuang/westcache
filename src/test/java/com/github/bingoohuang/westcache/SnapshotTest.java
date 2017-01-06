@@ -15,7 +15,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.register;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.configRegistry;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.snapshotRegistry;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -40,7 +41,7 @@ public class SnapshotTest {
 
     @BeforeClass
     public static void beforeClass() {
-        register("snapshotTestConfig", new DefaultWestCacheConfig() {
+        configRegistry.register("snapshotTestConfig", new DefaultWestCacheConfig() {
             @Override
             public long timeoutMillisToSnapshot() {
                 return 100L;
@@ -50,7 +51,7 @@ public class SnapshotTest {
 
     @AfterClass
     public static void afterClass() {
-        WestCacheRegistry.deregisterConfig("snapshotTestConfig");
+        configRegistry.deregister("snapshotTestConfig");
     }
 
     public static class SnapshotService extends BasicSnapshotService {
@@ -90,7 +91,7 @@ public class SnapshotTest {
         val bigDataXXX = "SnapshotService.getBigData.XXX";
         val bigDataYYY = "SnapshotService.getBigData.YYY";
 
-        val snapshot = WestCacheRegistry.getSnapshot("file");
+        val snapshot = snapshotRegistry.get("file");
         val cacheKey = serviceClass.getName().replace('$', '.') + ".getBigDataCache";
         snapshot.saveSnapshot(null, cacheKey, new WestCacheItem(bigDataXXX));
 

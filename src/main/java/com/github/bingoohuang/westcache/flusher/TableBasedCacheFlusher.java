@@ -93,7 +93,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
                                               WestCacheFlusherBean bean,
                                               DirectValueType type);
 
-    @SneakyThrows
+    @SneakyThrows @SuppressWarnings("unchecked")
     private <T> T readSubDirectValue(final WestCacheOption option,
                                      final WestCacheFlusherBean bean,
                                      String subKey) {

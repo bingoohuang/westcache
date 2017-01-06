@@ -28,7 +28,7 @@ public class WestCacheFactory {
      * @param <T>         target class type
      * @return proxied object.
      */
-    @SneakyThrows
+    @SneakyThrows  @SuppressWarnings("unchecked")
     public <T> T create(Class<T> targetClass) {
         val wccClass = WCC_CLZ.isAssignableFrom(targetClass);
         if (wccClass) return targetClass.newInstance();
@@ -46,6 +46,7 @@ public class WestCacheFactory {
      * @param <T>    target class.
      * @return proxied object.
      */
+    @SuppressWarnings("unchecked")
     public <T> T create(T target) {
         if (target instanceof WestCacheCglib) return target;
 

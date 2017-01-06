@@ -21,6 +21,7 @@ public class SpringAppContext implements ApplicationContextAware {
         return appContext;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getBean(String beanName) {
         if (appContext == null) return null;
         if (StringUtils.isEmpty(beanName)) return null;
@@ -28,6 +29,7 @@ public class SpringAppContext implements ApplicationContextAware {
         return (T) appContext.getBean(beanName);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getBean(Class<T> clazz) {
         if (appContext == null) return null;
         if (clazz == null) return null;

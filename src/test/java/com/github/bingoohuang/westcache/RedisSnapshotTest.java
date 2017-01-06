@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.junit.Test;
 
+import static com.github.bingoohuang.westcache.WestCacheRegistry.keyerRegistry;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.snapshotRegistry;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -34,9 +36,9 @@ public class RedisSnapshotTest {
     @Test
     public void redisSnapshot() {
         val service = WestCacheFactory.create(XyzServie.class);
-        val snapshot = WestCacheRegistry.getSnapshot("redis");
+        val snapshot = snapshotRegistry.get("redis");
 
-        val keyer = WestCacheRegistry.getKeyer("default");
+        val keyer = keyerRegistry.get("default");
         val option = WestCacheOption.newBuilder()
                 .snapshot("redis")
                 .method(XyzServie.class.getMethods()[0])

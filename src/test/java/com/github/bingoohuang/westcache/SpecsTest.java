@@ -42,7 +42,7 @@ public class SpecsTest {
 
     @BeforeClass
     public static void beforeClass() {
-        WestCacheRegistry.register("prefix", new DefaultKeyer() {
+        keyerRegistry.register("prefix", new DefaultKeyer() {
             @Override
             public String getCacheKey(WestCacheOption option,
                                       Method method,
@@ -55,7 +55,7 @@ public class SpecsTest {
                 return cacheKey;
             }
         });
-        WestCacheRegistry.register("specsTestConfig",
+        configRegistry.register("specsTestConfig",
                 new DefaultWestCacheConfig() {
                     @Override
                     public long timeoutMillisToSnapshot() {
@@ -66,8 +66,8 @@ public class SpecsTest {
 
     @AfterClass
     public static void afterClass() {
-        deregisterKeyer("prefix");
-        deregisterConfig("specsTestConfig");
+        keyerRegistry.deregister("prefix");
+        configRegistry.deregister("specsTestConfig");
     }
 
     public static class MyService {
@@ -89,7 +89,7 @@ public class SpecsTest {
 
         String cacheKey = "demo.provinces";
         List<String> provinces = Lists.newArrayList("江苏省", "浙江省");
-        val fileSnapshot = getSnapshot("file");
+        val fileSnapshot = snapshotRegistry.get("file");
 
         fileSnapshot.saveSnapshot(null, cacheKey, new WestCacheItem(provinces));
 

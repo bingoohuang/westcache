@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.Test;
 
+import static com.github.bingoohuang.westcache.WestCacheRegistry.keyerRegistry;
 import static com.github.bingoohuang.westcache.utils.WestCacheOption.newBuilder;
 import static com.google.common.truth.Truth.assertThat;
 
@@ -21,7 +22,7 @@ public class DiamondManagerTest {
     @Test @SneakyThrows
     public void test() {
         val service = WestCacheFactory.create(DiamondService.class);
-        val keyer = WestCacheRegistry.getKeyer("default");
+        val keyer = keyerRegistry.get("default");
         val option = newBuilder().manager("diamond").specs("static.key=yes").build();
         val cacheKey = keyer.getCacheKey(option, "getBigData", service);
         String content = "Here is Bingoo!" + System.currentTimeMillis();

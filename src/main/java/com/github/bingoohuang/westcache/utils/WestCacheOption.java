@@ -1,6 +1,5 @@
 package com.github.bingoohuang.westcache.utils;
 
-import com.github.bingoohuang.westcache.WestCacheRegistry;
 import com.github.bingoohuang.westcache.WestCacheable;
 import com.github.bingoohuang.westcache.base.*;
 import com.google.common.collect.Maps;
@@ -11,6 +10,8 @@ import lombok.val;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+
+import static com.github.bingoohuang.westcache.WestCacheRegistry.*;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
@@ -33,43 +34,43 @@ public class WestCacheOption {
 
 
     public static class Builder {
-        WestCacheFlusher flusher = WestCacheRegistry.getFlusher("");
-        WestCacheManager manager = WestCacheRegistry.getManager("");
-        WestCacheSnapshot snapshot = WestCacheRegistry.getSnapshot("");
-        WestCacheConfig config = WestCacheRegistry.getConfig("");
-        WestCacheInterceptor interceptor = WestCacheRegistry.getInterceptor("");
-        WestCacheKeyer keyer = WestCacheRegistry.getKeyer("");
+        WestCacheFlusher flusher = flusherRegistry.get("");
+        WestCacheManager manager = managerRegistry.get("");
+        WestCacheSnapshot snapshot = snapshotRegistry.get("");
+        WestCacheConfig config = configRegistry.get("");
+        WestCacheInterceptor interceptor = interceptorRegistry.get("");
+        WestCacheKeyer keyer = keyerRegistry.get("");
         String key = "";
         Map<String, String> specs = Maps.newHashMap();
         Method method;
 
         public Builder flusher(String flusherName) {
-            this.flusher = WestCacheRegistry.getFlusher(flusherName);
+            this.flusher = flusherRegistry.get(flusherName);
             return this;
         }
 
         public Builder manager(String managerName) {
-            this.manager = WestCacheRegistry.getManager(managerName);
+            this.manager = managerRegistry.get(managerName);
             return this;
         }
 
         public Builder snapshot(String snapshotName) {
-            this.snapshot = WestCacheRegistry.getSnapshot(snapshotName);
+            this.snapshot = snapshotRegistry.get(snapshotName);
             return this;
         }
 
         public Builder config(String configName) {
-            this.config = WestCacheRegistry.getConfig(configName);
+            this.config = configRegistry.get(configName);
             return this;
         }
 
         public Builder interceptor(String interceptorName) {
-            this.interceptor = WestCacheRegistry.getInterceptor(interceptorName);
+            this.interceptor = interceptorRegistry.get(interceptorName);
             return this;
         }
 
         public Builder keyer(String keyerName) {
-            this.keyer = WestCacheRegistry.getKeyer(keyerName);
+            this.keyer = keyerRegistry.get(keyerName);
             return this;
         }
 
@@ -99,12 +100,12 @@ public class WestCacheOption {
         }
 
         public WestCacheOption build(WestCacheable westCacheable, Method method) {
-            this.flusher = WestCacheRegistry.getFlusher(westCacheable.flusher());
-            this.manager = WestCacheRegistry.getManager(westCacheable.manager());
-            this.snapshot = WestCacheRegistry.getSnapshot(westCacheable.snapshot());
-            this.config = WestCacheRegistry.getConfig(westCacheable.config());
-            this.interceptor = WestCacheRegistry.getInterceptor(westCacheable.interceptor());
-            this.keyer = WestCacheRegistry.getKeyer(westCacheable.keyer());
+            this.flusher = flusherRegistry.get(westCacheable.flusher());
+            this.manager = managerRegistry.get(westCacheable.manager());
+            this.snapshot = snapshotRegistry.get(westCacheable.snapshot());
+            this.config = configRegistry.get(westCacheable.config());
+            this.interceptor = interceptorRegistry.get(westCacheable.interceptor());
+            this.keyer = keyerRegistry.get(westCacheable.keyer());
             this.key = westCacheable.key();
             this.specs = Specs.parseSpecs(westCacheable.specs());
             this.method = method;

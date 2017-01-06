@@ -10,7 +10,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/29.
@@ -21,6 +20,7 @@ public class FastJsons {
         return JSON.toJSONString(obj);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T parse(String json) {
         return (T) JSON.parse(json);
     }
@@ -29,7 +29,7 @@ public class FastJsons {
         return JSON.parseObject(json, returnType);
     }
 
-    @SneakyThrows
+    @SneakyThrows  @SuppressWarnings("unchecked")
     public <T> T parse(String json, Method method) {
         Class<?> returnType = method.getReturnType();
 
@@ -52,6 +52,7 @@ public class FastJsons {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T parse(String json, TypeReference typeReference) {
         return (T) JSON.parseObject(json, typeReference);
     }

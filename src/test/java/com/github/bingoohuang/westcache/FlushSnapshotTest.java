@@ -11,6 +11,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import static com.github.bingoohuang.westcache.WestCacheRegistry.*;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -34,7 +35,7 @@ public class FlushSnapshotTest {
 
     @BeforeClass
     public static void beforeClass() {
-        WestCacheRegistry.register("snapshotTest",
+        configRegistry.register("snapshotTest",
                 new DefaultWestCacheConfig() {
                     @Override public long timeoutMillisToSnapshot() {
                         return 100L;
@@ -44,7 +45,7 @@ public class FlushSnapshotTest {
 
     @AfterClass
     public static void afterClass() {
-        WestCacheRegistry.deregisterConfig("snapshotTest");
+        configRegistry.deregister("snapshotTest");
     }
 
     String north = "NORTH", south = "SOUTH";
@@ -55,8 +56,8 @@ public class FlushSnapshotTest {
 
         val bigDataXXX = "BigData.XXX";
 
-        val snapshot = WestCacheRegistry.getSnapshot("file");
-        val keyer = WestCacheRegistry.getKeyer("default");
+        val snapshot = snapshotRegistry.get("file");
+        val keyer = keyerRegistry.get("default");
         val option = WestCacheOption.newBuilder()
                 .snapshot("file").flusher("simple").config("snapshotTest")
                 .build();
