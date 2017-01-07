@@ -10,8 +10,8 @@ import org.n3r.diamond.client.Miner;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/30.
  */
 public class PackageLimitedKeyer extends SimpleKeyer {
-    public static String GROUP = "west.cache.packagelimit";
-    public static String DATAID = "packages";
+    public final static String GROUP = "west.cache.packagelimit";
+    public final static String DATAID = "packages";
 
     private static Splitter splitter = Splitter.onPattern("[\r\n;\\s]")
             .omitEmptyStrings().trimResults();

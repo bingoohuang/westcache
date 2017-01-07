@@ -22,14 +22,14 @@ import lombok.val;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
  */
 public class WestCacheRegistry {
-    public static RegistryTemplate<WestCacheConfig> configRegistry
+    public final  static RegistryTemplate<WestCacheConfig> configRegistry
             = new RegistryTemplate<WestCacheConfig>();
 
     static {
         configRegistry.register("default", new DefaultWestCacheConfig());
     }
 
-    public static RegistryTemplate<WestCacheFlusher> flusherRegistry
+    public final static RegistryTemplate<WestCacheFlusher> flusherRegistry
             = new RegistryTemplate<WestCacheFlusher>();
 
     static {
@@ -48,7 +48,7 @@ public class WestCacheRegistry {
         option.getFlusher().flush(option, cacheKey, "");
     }
 
-    public static RegistryTemplate<WestCacheManager> managerRegistry
+    public final static RegistryTemplate<WestCacheManager> managerRegistry
             = new RegistryTemplate<WestCacheManager>();
 
     static {
@@ -59,7 +59,7 @@ public class WestCacheRegistry {
         managerRegistry.register("redis", new RedisCacheManager());
     }
 
-    public static RegistryTemplate<WestCacheSnapshot> snapshotRegistry
+    public final static RegistryTemplate<WestCacheSnapshot> snapshotRegistry
             = new RegistryTemplate<WestCacheSnapshot>();
 
     static {
@@ -67,7 +67,7 @@ public class WestCacheRegistry {
         snapshotRegistry.register("redis", new RedisCacheSnapshot());
     }
 
-    public static RegistryTemplate<WestCacheKeyer> keyerRegistry
+    public final static RegistryTemplate<WestCacheKeyer> keyerRegistry
             = new RegistryTemplate<WestCacheKeyer>();
 
     static {
@@ -76,7 +76,7 @@ public class WestCacheRegistry {
         keyerRegistry.register("packagelimit", new PackageLimitedKeyer());
     }
 
-    public static RegistryTemplate<WestCacheInterceptor> interceptorRegistry
+    public final static RegistryTemplate<WestCacheInterceptor> interceptorRegistry
             = new RegistryTemplate<WestCacheInterceptor>();
 
     static {

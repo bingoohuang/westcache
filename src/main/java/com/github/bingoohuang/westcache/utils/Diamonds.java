@@ -28,18 +28,12 @@ public class Diamonds {
         writeDiamond(file, content);
     }
 
-    public static void removeDiamond(String group, String dataid) {
-        File file = getDiamondFile(group, dataid);
-        file.delete();
-    }
-
     public File getDiamondFile(String group, String dataid) {
         val configDataDir = new File(USER_HOME, ".diamond-client/config-data");
         val groupDir = new File(configDataDir, group);
         groupDir.mkdirs();
-        val diamondFile = new File(groupDir, dataid + ".diamond");
 
-        return diamondFile;
+        return new File(groupDir, dataid + ".diamond");
     }
 
     public void writeDiamondJSON(File diamondFile, Object content) throws IOException {

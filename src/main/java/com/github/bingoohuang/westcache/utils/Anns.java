@@ -11,14 +11,11 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Set;
 
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
 public class Anns {
-    public static Map<String, String> parseWestCacheable(
+    static Map<String, String> parseWestCacheable(
             Method method,
             Class<? extends Annotation> annClass) {
         val methodAnn = method.getAnnotation(annClass);
@@ -51,7 +48,7 @@ public class Anns {
         return attrs;
     }
 
-    public static Map<String, String> searchAnn(
+    private static Map<String, String> searchAnn(
             Set<Annotation> setAnns,
             Annotation[] anns,
             Class<? extends Annotation> annClass) {
@@ -82,20 +79,14 @@ public class Anns {
 
             try {
                 String value = (String) method.invoke(ann);
-                if (isNotEmpty(value)) attrs.put(method.getName(), value);
+                if (StringUtils.isEmpty(value)) continue;
+
+                attrs.put(method.getName(), value);
             } catch (Exception ex) {
                 // ignore
             }
         }
         return attrs;
-    }
-
-    public static boolean anyOf(String str, String... ranges) {
-        for (String val : ranges) {
-            if (StringUtils.equals(val, str)) return true;
-        }
-
-        return false;
     }
 
     private static Map<String, String> parseRecursiveAnn(
@@ -147,45 +138,6 @@ public class Anns {
             String specsJoin = mapJoiner.join(treeMap);
             firstMap.put("specs", specsJoin);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T getValue(Annotation ann, String attrName) {
-        if (ann == null || isBlank(attrName)) return null;
-
-        try {
-            val annType = ann.annotationType();
-            Method method = annType.getDeclaredMethod(attrName);
-            makeAccessible(method);
-            return (T) method.invoke(ann);
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T getDefaultValue(Annotation ann, String attrName) {
-        if (ann == null || isBlank(attrName)) return null;
-        val annotationType = ann.annotationType();
-
-        return getDefaultValue(annotationType, attrName);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T getDefaultValue(Class<?> annType, String attrName) {
-        try {
-            Method method = annType.getDeclaredMethod(attrName);
-            return (T) method.getDefaultValue();
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-
-    public static void makeAccessible(Method method) {
-        if (method.isAccessible()) return;
-
-        method.setAccessible(true);
     }
 
     public static boolean isWestCacheAnnotated(Class c) {

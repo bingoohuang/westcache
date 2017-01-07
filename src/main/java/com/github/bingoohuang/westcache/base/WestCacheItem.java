@@ -9,7 +9,7 @@ import lombok.Getter;
 public class WestCacheItem {
     @Getter private final long createTime;
     private final Optional<Object> optional;
-    @Getter private volatile long shotTimes;
+    @Getter private long shotTimes;
 
     public WestCacheItem(Object object) {
         this(Optional.fromNullable(object));
