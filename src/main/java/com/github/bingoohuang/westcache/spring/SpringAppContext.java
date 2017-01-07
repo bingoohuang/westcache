@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.spring;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,13 @@ public class SpringAppContext implements ApplicationContextAware {
         if (appContext == null) return null;
         if (StringUtils.isEmpty(beanName)) return null;
 
-        return (T) appContext.getBean(beanName);
+        try {
+            return (T) appContext.getBean(beanName);
+        } catch (NoSuchBeanDefinitionException e) {
+            // ignore
+        }
+
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -34,6 +41,12 @@ public class SpringAppContext implements ApplicationContextAware {
         if (appContext == null) return null;
         if (clazz == null) return null;
 
-        return appContext.getBean(clazz);
+        try {
+            return appContext.getBean(clazz);
+        } catch (NoSuchBeanDefinitionException e) {
+            // ignore
+        }
+
+        return null;
     }
 }
