@@ -2,6 +2,10 @@ package com.github.bingoohuang.westcache.utils;
 
 import com.github.bingoohuang.westcache.WestCacheable;
 import com.github.bingoohuang.westcache.base.*;
+import com.google.common.base.Optional;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -98,24 +102,21 @@ public class WestCacheOption {
             return new WestCacheOption(flusher, manager, snapshot,
                     config, interceptor, keyer, key, specs, method);
         }
-
-        public WestCacheOption build(WestCacheable westCacheable, Method method) {
-            this.flusher = flusherRegistry.get(westCacheable.flusher());
-            this.manager = managerRegistry.get(westCacheable.manager());
-            this.snapshot = snapshotRegistry.get(westCacheable.snapshot());
-            this.config = configRegistry.get(westCacheable.config());
-            this.interceptor = interceptorRegistry.get(westCacheable.interceptor());
-            this.keyer = keyerRegistry.get(westCacheable.keyer());
-            this.key = westCacheable.key();
-            this.specs = Specs.parseSpecs(westCacheable.specs());
-            this.method = method;
-            return build();
-        }
     }
 
+    static LoadingCache<Method, Optional<WestCacheOption>> optionCache
+            = CacheBuilder.newBuilder().build(
+            new CacheLoader<Method, Optional<WestCacheOption>>() {
+                @Override
+                public Optional<WestCacheOption> load(Method m) throws Exception {
+                    val attrs = Anns.parseWestCacheable(m, WestCacheable.class);
+                    val opt = attrs == null ? null : buildOption(attrs, m);
+                    return Optional.fromNullable(opt);
+                }
+            });
+
     public static WestCacheOption parseWestCacheable(Method m) {
-        Map<String, String> attrs = Anns.parseWestCacheable(m, WestCacheable.class);
-        return attrs == null ? null : buildOption(attrs, m);
+        return optionCache.getUnchecked(m).orNull();
     }
 
     private static WestCacheOption buildOption(

@@ -47,7 +47,7 @@ public class ExpiringMapCacheManagerTest {
         val cacheValue2 = service.cacheAccess();
         assertThat(cacheValue1).isSameAs(cacheValue2);
 
-        Thread.sleep(1000L);
+        Thread.sleep(1100L);
         val cacheValue3 = service.cacheAccess();
         assertThat(cacheValue3).isEqualTo("Access@3");
         val cacheValue4 = service.cacheAccess();
@@ -64,7 +64,7 @@ public class ExpiringMapCacheManagerTest {
         val cacheValue2 = service.cacheWrite();
         assertThat(cacheValue1).isSameAs(cacheValue2);
 
-        Thread.sleep(500L);
+        Thread.sleep(600L);
         val cacheValue3 = service.cacheWrite();
         assertThat(cacheValue3).isEqualTo("Write@3");
         val cacheValue4 = service.cacheWrite();

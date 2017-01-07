@@ -17,7 +17,6 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class WestCacheableScannerRegistrar
         implements ImportBeanDefinitionRegistrar, ResourceLoaderAware {
 
@@ -38,28 +37,29 @@ public class WestCacheableScannerRegistrar
             scanner.setResourceLoader(resourceLoader);
         }
 
-        Class<? extends BeanNameGenerator> generatorClass = annoAttrs.getClass("nameGenerator");
+        Class<? extends BeanNameGenerator> generatorClass;
+        generatorClass = annoAttrs.getClass("nameGenerator");
         if (!BeanNameGenerator.class.equals(generatorClass)) {
             scanner.setBeanNameGenerator(BeanUtils.instantiateClass(generatorClass));
         }
 
         List<String> basePackages = new ArrayList<String>();
-        for (String pkg : annoAttrs.getStringArray("value")) {
+        for (val pkg : annoAttrs.getStringArray("value")) {
             if (StringUtils.hasText(pkg)) {
                 basePackages.add(pkg);
             }
         }
-        for (String pkg : annoAttrs.getStringArray("basePackages")) {
+        for (val pkg : annoAttrs.getStringArray("basePackages")) {
             if (StringUtils.hasText(pkg)) {
                 basePackages.add(pkg);
             }
         }
-        for (Class<?> clazz : annoAttrs.getClassArray("basePackageClasses")) {
+        for (val clazz : annoAttrs.getClassArray("basePackageClasses")) {
             basePackages.add(ClassUtils.getPackageName(clazz));
         }
 
         if (basePackages.isEmpty()) {
-            String className = importingClassMetadata.getClassName();
+            val className = importingClassMetadata.getClassName();
             basePackages.add(ClassUtils.getPackageName(className));
         }
 
