@@ -1,7 +1,6 @@
 package com.github.bingoohuang.westcache.utils;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
-import com.github.bingoohuang.westcache.manager.RedisCacheManager;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
@@ -60,7 +59,7 @@ public class Redis {
         return proxyJedisCommands(pool);
     }
 
-    private static JedisCommands proxyJedisCommands(JedisPool pool) {
+    public static JedisCommands proxyJedisCommands(JedisPool pool) {
         return (JedisCommands) Proxy.newProxyInstance(
                 JedisInvocationHandler.class.getClassLoader(),
                 new Class[]{JedisCommands.class},
@@ -100,7 +99,10 @@ public class Redis {
 
         val duration = Durations.parse(expireKey, expireWrite, SECONDS);
         log.info("redis set {}={} in expire {} seconds", redisKey, json, duration);
-        return redis.set(redisKey, json, "NX", "EX", duration);
+        val result = redis.set(redisKey, json);
+        redis.expire(redisKey, (int) duration);
+
+        return result;
     }
 
     @AllArgsConstructor
