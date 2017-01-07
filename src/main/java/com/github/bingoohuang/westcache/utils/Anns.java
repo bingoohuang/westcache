@@ -76,8 +76,7 @@ public class Anns {
         Map<String, String> attrs = Maps.newHashMap();
         if (ann == null) return attrs;
 
-        Method[] methods = ann.annotationType().getDeclaredMethods();
-        for (Method method : methods) {
+        for (val method : ann.annotationType().getDeclaredMethods()) {
             if (method.getParameterTypes().length > 0) continue;
             if (method.getReturnType() != String.class) continue;
 
@@ -187,5 +186,14 @@ public class Anns {
         if (method.isAccessible()) return;
 
         method.setAccessible(true);
+    }
+
+    public static boolean isWestCacheAnnotated(Class c) {
+        for (Method m : c.getMethods()) {
+            val option = WestCacheOption.parseWestCacheable(m);
+            if (option != null) return true;
+        }
+
+        return false;
     }
 }

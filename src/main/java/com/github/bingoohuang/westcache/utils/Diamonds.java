@@ -9,7 +9,7 @@ import lombok.val;
 import java.io.File;
 import java.io.IOException;
 
-import static com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot.USER_HOME;
+import static com.github.bingoohuang.westcache.utils.Snapshots.USER_HOME;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/25.

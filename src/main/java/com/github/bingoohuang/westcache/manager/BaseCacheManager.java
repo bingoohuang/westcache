@@ -3,7 +3,6 @@ package com.github.bingoohuang.westcache.manager;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheManager;
-import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -72,13 +71,13 @@ public abstract class BaseCacheManager implements WestCacheManager {
                     @Override public WestCacheItem call() throws Exception {
                         val item = callable.call();
                         westCache.put(option, cacheKey, item);
-                        WestCacheSnapshot snapshot = option.getSnapshot();
+                        val snapshot = option.getSnapshot();
                         snapshot.saveSnapshot(option, cacheKey, item);
                         return item;
                     }
                 });
 
-        long timeout = option.getConfig().timeoutMillisToSnapshot();
+        val timeout = option.getConfig().timeoutMillisToSnapshot();
         try {
             return future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {

@@ -19,7 +19,7 @@ public class DefaultKeyer extends WestCacheKeyer {
                 ? option.getKey()
                 : Keys.createKeyMainPart(methodName, bean, false);
 
-        boolean useStaticKey = option.getSnapshot() != null
+        val useStaticKey = option.getSnapshot() != null
                 || option.getKey().length() > 0
                 || "yes".equals(option.getSpecs().get("static.key"));
         val hashCode = useStaticKey ? "" : "." + bean.hashCode();

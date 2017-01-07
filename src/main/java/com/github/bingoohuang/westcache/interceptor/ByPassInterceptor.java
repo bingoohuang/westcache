@@ -12,7 +12,9 @@ import java.util.concurrent.Callable;
 public class ByPassInterceptor implements WestCacheInterceptor {
     @Override
     public WestCacheItem intercept(
-            WestCacheOption option, String cacheKey, Callable<WestCacheItem> callable) throws Exception {
+            WestCacheOption option,
+            String cacheKey,
+            Callable<WestCacheItem> callable) throws Exception {
         return callable.call();
     }
 }

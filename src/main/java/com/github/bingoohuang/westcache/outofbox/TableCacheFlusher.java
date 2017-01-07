@@ -11,14 +11,12 @@ import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.n3r.eql.eqler.EqlerFactory;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/30.
@@ -41,28 +39,30 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
         val specs = Specs.parseSpecs(bean.getSpecs());
         val readBy = specs.get("readBy");
         if ("redis".equals(readBy)) {
-            String key = Redis.PREFIX + bean.getCacheKey();
+            val key = Redis.PREFIX + bean.getCacheKey();
             val value = Redis.getRedis(option).get(key);
-            if (isNotBlank(value)) {
+            if (StringUtils.isNotBlank(value)) {
                 return FastJsons.parse(value, option.getMethod());
             }
         } else if ("loader".equals(readBy)) {
             val loaderClass = specs.get("loaderClass");
-            if (isNotBlank(loaderClass)) {
-                Class<?> clazz = Class.forName(loaderClass);
+            if (StringUtils.isNotBlank(loaderClass)) {
+                val clazz = Class.forName(loaderClass);
                 val loader = (Callable) clazz.newInstance();
                 return loader.call();
             }
         }
 
-        String directJson = dao.getDirectValue(bean.getCacheKey());
-        if (isBlank(directJson)) return null;
+        val directJson = dao.getDirectValue(bean.getCacheKey());
+        if (StringUtils.isBlank(directJson)) return null;
 
         switch (type) {
             case FULL:
                 return FastJsons.parse(directJson, option.getMethod());
             case SUB:
-                return FastJsons.parse(directJson, new TypeReference<Map<String, String>>(){});
+                return FastJsons.parse(directJson,
+                        new TypeReference<Map<String, String>>() {
+                        });
         }
 
         return null;

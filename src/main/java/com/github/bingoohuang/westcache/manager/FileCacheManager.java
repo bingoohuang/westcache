@@ -5,6 +5,7 @@ import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.SneakyThrows;
+import lombok.val;
 
 import java.util.concurrent.Callable;
 
@@ -12,6 +13,10 @@ import java.util.concurrent.Callable;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/28.
  */
 public class FileCacheManager extends BaseCacheManager {
+    public FileCacheManager() {
+        super(new FileWestCache());
+    }
+
     static class FileWestCache implements WestCache {
         FileCacheSnapshot snapshot = new FileCacheSnapshot();
 
@@ -19,10 +24,10 @@ public class FileCacheManager extends BaseCacheManager {
         public WestCacheItem get(WestCacheOption option,
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
-            WestCacheItem item = snapshot.readSnapshot(option, cacheKey);
+            val item = snapshot.readSnapshot(option, cacheKey);
             if (item != null) return item;
 
-            WestCacheItem result = callable.call();
+            val result = callable.call();
             put(option, cacheKey, result);
 
             return result;
@@ -49,7 +54,4 @@ public class FileCacheManager extends BaseCacheManager {
         }
     }
 
-    public FileCacheManager() {
-        super(new FileWestCache());
-    }
 }

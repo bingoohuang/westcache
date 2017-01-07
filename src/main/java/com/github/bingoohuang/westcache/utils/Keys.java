@@ -39,7 +39,9 @@ public class Keys {
                                     Object bean,
                                     boolean removePackage) {
         val superClassName = Cglibs.getSuperClassName(bean);
-        val simpleClassName = removePackage ? removePackage(superClassName) : superClassName;
+        val simpleClassName = removePackage
+                ? removePackage(superClassName)
+                : superClassName;
         val dottedClassName = simpleClassName.replace('$', '.');
         return dottedClassName + "." + methodName;
     }

@@ -17,7 +17,8 @@ public class DefaultWestCacheConfig implements WestCacheConfig {
         return 1000L;
     }
 
-    ScheduledExecutorService executorService = Executors.newScheduledThreadPool(10);
+    ScheduledExecutorService executorService
+            = Executors.newScheduledThreadPool(10);
 
     @Override
     public ScheduledExecutorService executorService() {

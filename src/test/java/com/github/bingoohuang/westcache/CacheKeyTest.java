@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot.getSnapshotFile;
+import static com.github.bingoohuang.westcache.utils.Snapshots.getSnapshotFile;
 import static com.google.common.truth.Truth.assertThat;
 
 /**

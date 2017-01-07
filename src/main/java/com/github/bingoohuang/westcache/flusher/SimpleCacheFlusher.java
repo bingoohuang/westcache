@@ -28,9 +28,9 @@ public class SimpleCacheFlusher implements WestCacheFlusher {
                             String cacheKey,
                             WestCache cache) {
         val westCache = registry.getIfPresent(cacheKey);
-        log.debug("register flush key {} for westcache {}", cacheKey, westCache);
+        log.debug("register flush key {} for cache {}", cacheKey, westCache);
 
-        boolean registered = westCache == null;
+        val registered = westCache == null;
         if (registered) registry.put(cacheKey, cache);
         return registered;
     }
@@ -39,9 +39,9 @@ public class SimpleCacheFlusher implements WestCacheFlusher {
                                    String cacheKey,
                                    String version) {
         val westCache = registry.getIfPresent(cacheKey);
-        log.debug("flush key:{}, westcache:{}", cacheKey, westCache);
+        log.debug("flush key {} for cache {}", cacheKey, westCache);
 
-        boolean flushSent = westCache != null;
+        val flushSent = westCache != null;
         if (flushSent) westCache.invalidate(option, cacheKey, version);
 
         return flushSent;

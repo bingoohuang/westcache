@@ -42,15 +42,16 @@ public class RedisCacheManager extends BaseCacheManager {
         public WestCacheItem get(WestCacheOption option,
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
-            return new RedisInterceptor().intercept(option, cacheKey, callable);
+            RedisInterceptor interceptor = new RedisInterceptor();
+            return interceptor.intercept(option, cacheKey, callable);
         }
 
         @Override
         public WestCacheItem getIfPresent(WestCacheOption option,
                                           String cacheKey) {
-            val jsonValue = Redis.getRedis(option).get(prefix + cacheKey);
-            if (StringUtils.isNotEmpty(jsonValue)) {
-                val object = FastJsons.parse(jsonValue, option.getMethod());
+            val json = Redis.getRedis(option).get(prefix + cacheKey);
+            if (StringUtils.isNotEmpty(json)) {
+                val object = FastJsons.parse(json, option.getMethod());
                 return new WestCacheItem(object);
             }
 

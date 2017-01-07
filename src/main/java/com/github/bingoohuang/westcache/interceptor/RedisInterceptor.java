@@ -27,7 +27,7 @@ public class RedisInterceptor implements WestCacheInterceptor {
         val item1 = Redis.getWestCacheItem(option, redis, redisKey);
         if (item1 != null) return item1;
 
-        final val lockKey = Redis.PREFIX + "lock:" + cacheKey;
+        val lockKey = Redis.PREFIX + "lock:" + cacheKey;
         Redis.waitRedisLock(redis, lockKey);
         log.debug("got redis lock {}", lockKey);
 

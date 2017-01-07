@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache.snapshot;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.FastJsons;
+import com.github.bingoohuang.westcache.utils.Snapshots;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -17,16 +18,19 @@ import java.io.File;
  */
 public class FileCacheSnapshot implements WestCacheSnapshot {
     @Override @SneakyThrows
-    public void saveSnapshot(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
+    public void saveSnapshot(WestCacheOption option,
+                             String cacheKey,
+                             WestCacheItem cacheValue) {
         val json = FastJsons.json(cacheValue.getObject().orNull());
 
-        File snapshotFile = getSnapshotFile(cacheKey);
+        File snapshotFile = Snapshots.getSnapshotFile(cacheKey);
         Files.write(json, snapshotFile, Charsets.UTF_8);
     }
 
     @Override @SneakyThrows @SuppressWarnings("unchecked")
-    public WestCacheItem readSnapshot(WestCacheOption option, String cacheKey) {
-        File snapshotFile = getSnapshotFile(cacheKey);
+    public WestCacheItem readSnapshot(WestCacheOption option,
+                                      String cacheKey) {
+        File snapshotFile = Snapshots.getSnapshotFile(cacheKey);
         if (!snapshotFile.exists() || !snapshotFile.isFile()) return null;
 
         String json = Files.toString(snapshotFile, Charsets.UTF_8);
@@ -36,26 +40,12 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
 
     @SneakyThrows @Override
     public void deleteSnapshot(WestCacheOption option, String cacheKey) {
-        File snapshotFile = getSnapshotFile(cacheKey);
+        File snapshotFile = Snapshots.getSnapshotFile(cacheKey);
         if (!snapshotFile.exists() || !snapshotFile.isFile()) return;
 
-        File tempFile = File.createTempFile(cacheKey, EXTENSION, CACHE_HOME);
+        File tempFile = File.createTempFile(cacheKey, Snapshots.EXTENSION, Snapshots.CACHE_HOME);
         snapshotFile.renameTo(tempFile);
 
         tempFile.delete();
-    }
-
-    public static String USER_HOME = System.getProperty("user.home");
-    public static String EXTENSION = ".westcache";
-    public static File CACHE_HOME = new File(USER_HOME, EXTENSION);
-
-    public static File getSnapshotFile(String cacheKey) {
-        File westCacheHome = tryCreateWestCacheHome();
-        return new File(westCacheHome, cacheKey + EXTENSION);
-    }
-
-    private static File tryCreateWestCacheHome() {
-        CACHE_HOME.mkdirs();
-        return CACHE_HOME;
     }
 }

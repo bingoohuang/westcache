@@ -21,17 +21,20 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
     }
 
     @Override
-    public void saveSnapshot(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
+    public void saveSnapshot(WestCacheOption option,
+                             String cacheKey,
+                             WestCacheItem cacheValue) {
         val json = FastJsons.json(cacheValue.getObject().orNull());
         Redis.getRedis(option).set(prefix + cacheKey, json);
     }
 
     @Override
-    public WestCacheItem readSnapshot(WestCacheOption option, String cacheKey) {
-        String json = Redis.getRedis(option).get(prefix + cacheKey);
+    public WestCacheItem readSnapshot(WestCacheOption option,
+                                      String cacheKey) {
+        val json = Redis.getRedis(option).get(prefix + cacheKey);
         if (json == null) return null;
 
-        Object object = FastJsons.parse(json, option.getMethod());
+        val object = FastJsons.parse(json, option.getMethod());
         return new WestCacheItem(object);
     }
 

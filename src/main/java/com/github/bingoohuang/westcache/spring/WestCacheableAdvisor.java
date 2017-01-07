@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.spring;
 
-import com.github.bingoohuang.westcache.WestCacheable;
+import com.github.bingoohuang.westcache.utils.Anns;
 import org.aopalliance.aop.Advice;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.support.AbstractPointcutAdvisor;
@@ -15,8 +15,7 @@ public class WestCacheableAdvisor extends AbstractPointcutAdvisor {
     final StaticMethodMatcherPointcut pointcut = new StaticMethodMatcherPointcut() {
         @Override
         public boolean matches(Method method, Class<?> targetClass) {
-            return targetClass.isAnnotationPresent(WestCacheable.class)
-                    || method.isAnnotationPresent(WestCacheable.class);
+            return Anns.isWestCacheAnnotated(targetClass);
         }
     };
 

@@ -4,6 +4,7 @@ import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import lombok.val;
 import org.n3r.diamond.client.Miner;
 
 import java.util.concurrent.Callable;
@@ -23,8 +24,9 @@ public class DiamondCacheManager extends BaseCacheManager {
         public WestCacheItem get(WestCacheOption option,
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
-            String json = new Miner().getStone(GROUP, cacheKey);
-            return new WestCacheItem(FastJsons.parse(json, option.getMethod()));
+            val json = new Miner().getStone(GROUP, cacheKey);
+            val object = FastJsons.parse(json, option.getMethod());
+            return new WestCacheItem(object);
         }
 
         @Override

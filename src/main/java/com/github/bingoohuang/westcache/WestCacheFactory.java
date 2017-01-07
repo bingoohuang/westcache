@@ -4,17 +4,15 @@ import com.github.bingoohuang.westcache.cglib.CglibCacheMethodInterceptor;
 import com.github.bingoohuang.westcache.cglib.Cglibs;
 import com.github.bingoohuang.westcache.cglib.WestCacheCglib;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import lombok.val;
 
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/21.
  */
-@UtilityClass
 public class WestCacheFactory {
-    public Class<WestCacheCglib> WCC_CLZ = WestCacheCglib.class;
-    CglibCacheMethodInterceptor interceptor = new CglibCacheMethodInterceptor();
+    public static Class<WestCacheCglib> WCC_CLZ = WestCacheCglib.class;
+    static CglibCacheMethodInterceptor interceptor = new CglibCacheMethodInterceptor();
 
     /**
      * Create a proxied object of target class.
@@ -28,8 +26,8 @@ public class WestCacheFactory {
      * @param <T>         target class type
      * @return proxied object.
      */
-    @SneakyThrows  @SuppressWarnings("unchecked")
-    public <T> T create(Class<T> targetClass) {
+    @SneakyThrows @SuppressWarnings("unchecked")
+    public static <T> T create(Class<T> targetClass) {
         val wccClass = WCC_CLZ.isAssignableFrom(targetClass);
         if (wccClass) return targetClass.newInstance();
 
@@ -47,7 +45,7 @@ public class WestCacheFactory {
      * @return proxied object.
      */
     @SuppressWarnings("unchecked")
-    public <T> T create(T target) {
+    public static <T> T create(T target) {
         if (target instanceof WestCacheCglib) return target;
 
         val interceptor = new CglibCacheMethodInterceptor(target);

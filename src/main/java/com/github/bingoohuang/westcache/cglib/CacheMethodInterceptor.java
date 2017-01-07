@@ -1,7 +1,6 @@
 package com.github.bingoohuang.westcache.cglib;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
-import com.github.bingoohuang.westcache.utils.Anns;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
@@ -69,7 +68,7 @@ public abstract class CacheMethodInterceptor<T> {
     private void checkNoneAbstractMethod(String cacheKey, Method method) {
         if (!Modifier.isAbstract(method.getModifiers())) return;
 
-        String msg = "cache key " + cacheKey + " missed executable body in abstract method "
+        val msg = "cache key " + cacheKey + " missed executable body in abstract method "
                 + method.getDeclaringClass().getName() + "." + method.getName();
         throw new RuntimeException(msg);
     }

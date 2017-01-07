@@ -8,8 +8,8 @@ import java.util.concurrent.Callable;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/3.
  */
 public interface WestCacheInterceptor {
-    WestCacheItem intercept(WestCacheOption option,
-                            String cacheKey,
-                            Callable<WestCacheItem> callable)
-            throws Exception;
+    WestCacheItem intercept(
+            WestCacheOption option,
+            String cacheKey,
+            Callable<WestCacheItem> callable) throws Exception;
 }

@@ -19,7 +19,7 @@ public class DiamondCacheFlusher extends SimpleCacheFlusher {
     public boolean register(final WestCacheOption option,
                             final String cacheKey,
                             WestCache cache) {
-        boolean firstRegistered = super.register(option, cacheKey, cache);
+        val firstRegistered = super.register(option, cacheKey, cache);
         if (!firstRegistered) return false;
 
         val diamondManager = new DiamondManager(GROUP, cacheKey);

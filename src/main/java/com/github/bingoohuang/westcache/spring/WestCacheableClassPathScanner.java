@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache.spring;
 
 import com.github.bingoohuang.westcache.WestCacheFactory;
-import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.github.bingoohuang.westcache.utils.Anns;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -17,7 +17,6 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -48,12 +47,7 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
                 val className = classMetadata.getClassName();
                 Class c = Class.forName(className);
 
-                for (Method m : c.getMethods()) {
-                    val option = WestCacheOption.parseWestCacheable(m);
-                    if (option == null) return false;
-                }
-
-                return true;
+                return Anns.isWestCacheAnnotated(c);
             }
         });
     }
