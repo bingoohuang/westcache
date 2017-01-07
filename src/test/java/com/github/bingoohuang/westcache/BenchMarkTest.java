@@ -4,7 +4,6 @@ import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.MallCacheable;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
-import com.github.bingoohuang.westcache.utils.Diamonds;
 import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.Helper;
 import com.github.bingoohuang.westcache.utils.Redis;
@@ -14,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.n3r.diamond.client.impl.MockDiamondServer;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
@@ -57,7 +57,7 @@ public class BenchMarkTest {
                 });
         flusher.getDao().setup();
 
-        Diamonds.writeDiamond(GROUP, DATAID,
+        MockDiamondServer.setConfigInfo(GROUP, DATAID,
                 "com.github.bingoohuang.westcache");
 
         val cacheKey = "BenchMarkTest.BMMallCache.getMallBean";

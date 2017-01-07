@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.spring;
 
+import com.github.bingoohuang.westcache.utils.EmbeddedRedis;
 import com.github.bingoohuang.westcache.utils.Redis;
 import lombok.val;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
@@ -21,14 +22,12 @@ public class SpringConfig {
     @Bean @Primary
     public JedisCommands thisJedisCommands() {
         return Redis.createtJedisCommands(
-                "127.0.0.1", 6379, 10);
+                "127.0.0.1", EmbeddedRedis.port1, 10);
     }
 
     @Bean(name = "that")
     public JedisCommands thatJedisCommands() {
         return Redis.createtJedisCommands(
-                "127.0.0.1", 7379, 10);
+                "127.0.0.1", EmbeddedRedis.port2, 10);
     }
-
-
 }

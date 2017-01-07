@@ -6,7 +6,6 @@ import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.Helper;
 import com.github.bingoohuang.westcache.utils.Redis;
 import lombok.val;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +15,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import redis.clients.jedis.JedisCommands;
-
-import java.util.List;
 
 import static com.github.bingoohuang.westcache.outofbox.PackageLimitedKeyer.DATAID;
 import static com.github.bingoohuang.westcache.outofbox.PackageLimitedKeyer.GROUP;
@@ -37,12 +34,6 @@ public class BasicDataCacheTest {
     @BeforeClass
     public static void beforeClass() {
         flusher = Helper.setupTableFlusherForTest();
-        MockDiamondServer.setUpMockServer();
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        MockDiamondServer.tearDownMockServer();
     }
 
     @Test
@@ -71,7 +62,7 @@ public class BasicDataCacheTest {
 
         assertThat(jedis.get(redisAbc)).isEqualTo(FastJsons.json(abc));
         assertThat(jedis.get(redisEfg)).isEqualTo(FastJsons.json(efg));
-        assertThat(jedis.ttl(redisAbc)).isAtMost(10*60L);
-        assertThat(jedis.ttl(redisEfg)).isAtMost(10*60L);
+        assertThat(jedis.ttl(redisAbc)).isAtMost(10 * 60L);
+        assertThat(jedis.ttl(redisEfg)).isAtMost(10 * 60L);
     }
 }

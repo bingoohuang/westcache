@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.val;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,7 +38,6 @@ public class MallCacheableTest {
         public String firstPush() {
             return "first";
         }
-
     }
 
     static MallCache mallCache = WestCacheFactory.create(MallCache.class);
@@ -48,12 +46,6 @@ public class MallCacheableTest {
     @BeforeClass
     public static void beforeClass() {
         flusher = Helper.setupTableFlusherForTest();
-        MockDiamondServer.setUpMockServer();
-    }
-
-    @AfterClass
-    public static void afterClass() {
-        MockDiamondServer.tearDownMockServer();
     }
 
     @Test

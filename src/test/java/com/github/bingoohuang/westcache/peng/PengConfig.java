@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.peng;
 
 import com.github.bingoohuang.westcache.spring.WestCacheableEnabled;
+import com.github.bingoohuang.westcache.utils.EmbeddedRedis;
 import com.github.bingoohuang.westcache.utils.Redis;
 import lombok.val;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
@@ -17,7 +18,7 @@ public class PengConfig {
     @Bean(name = "singleRedis")
     public JedisCommands singleRedis() {
         return Redis.createtJedisCommands(
-                "127.0.0.1", 6379, 10);
+                "127.0.0.1", EmbeddedRedis.port1, 10);
     }
 
     @Bean
