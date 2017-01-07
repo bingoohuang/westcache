@@ -48,7 +48,7 @@ public interface WestCache {
      * Invalidate the cache。
      *  @param option   westcache settings.
      * @param cacheKey cache key.
-     * @param version
+     * @param version version string.
      */
     void invalidate(WestCacheOption option, String cacheKey, String version);
 }
