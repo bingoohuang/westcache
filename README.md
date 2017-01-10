@@ -1,7 +1,6 @@
 # westcache
 java cache with single-point administration
 [![Build Status](https://travis-ci.org/bingoohuang/westcache.svg?branch=master)](https://travis-ci.org/bingoohuang/westcache)
-[![Coverage Status](https://coveralls.io/repos/github/bingoohuang/westcache/badge.svg?branch=master)](https://coveralls.io/github/bingoohuang/westcache?branch=master)
 
 ## In ideal world, no cache needed.
 In the ideal world, everything works well and fast, and there is no need to considerate caching which is in order to make things faster.
