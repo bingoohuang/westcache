@@ -39,13 +39,16 @@ public class Redis {
 
     public static JedisCommands getRedis(WestCacheOption option) {
         String redisBean = option.getSpecs().get("redisBean");
-        if (StringUtils.isNotEmpty(redisBean)) {
+
+        if (Envs.hasSpring && StringUtils.isNotEmpty(redisBean)) {
             JedisCommands bean = SpringAppContext.getBean(redisBean);
             if (bean != null) return bean;
         }
 
-        val bean = SpringAppContext.getBean(JedisCommands.class);
-        if (bean != null) return bean;
+        if (Envs.hasSpring) {
+            val bean = SpringAppContext.getBean(JedisCommands.class);
+            if (bean != null) return bean;
+        }
 
         return jedis;
     }

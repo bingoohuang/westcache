@@ -22,6 +22,8 @@ public class RegistryTemplate<T> {
     }
 
     public T get(String name) {
-        return registry.getIfPresent(name.isEmpty() ? "default" : name);
+        String key = name.isEmpty() ? "default" : name;
+        T obj = registry.getIfPresent(key);
+        return obj;
     }
 }

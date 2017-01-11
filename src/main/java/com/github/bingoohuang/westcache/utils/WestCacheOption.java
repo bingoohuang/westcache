@@ -50,32 +50,51 @@ public class WestCacheOption {
 
         public Builder flusher(String flusherName) {
             this.flusher = flusherRegistry.get(flusherName);
+            checkNotNull(this.flusher, flusherName, "flusher");
+
             return this;
         }
 
         public Builder manager(String managerName) {
             this.manager = managerRegistry.get(managerName);
+            checkNotNull(this.manager, managerName, "manager");
+
             return this;
         }
 
         public Builder snapshot(String snapshotName) {
             this.snapshot = snapshotRegistry.get(snapshotName);
+
             return this;
         }
 
         public Builder config(String configName) {
             this.config = configRegistry.get(configName);
+            checkNotNull(this.config, configName, "config");
+
             return this;
         }
 
         public Builder interceptor(String interceptorName) {
             this.interceptor = interceptorRegistry.get(interceptorName);
+            checkNotNull(this.interceptor, interceptorName, "interceptor");
+
             return this;
         }
 
         public Builder keyer(String keyerName) {
             this.keyer = keyerRegistry.get(keyerName);
+            checkNotNull(this.keyer, keyerName, "keyer");
+
             return this;
+        }
+
+        private void checkNotNull(Object object, String name, String attr) {
+            if (object != null) return;
+
+            String key = name.isEmpty() ? "default" : name;
+            throw new RuntimeException(attr + " " + key + " is not registered, " +
+                    "please check your config or dependencies");
         }
 
         public Builder key(String key) {
