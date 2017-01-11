@@ -3,7 +3,6 @@ package com.github.bingoohuang.westcache.utils;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 
@@ -29,10 +28,9 @@ public class Helper {
         return flusher;
     }
 
-    @SneakyThrows
     public void waitFlushRun(TableCacheFlusher flusher, long lastExecuted) {
         do {
-            Thread.sleep(100L);
+            Envs.sleepMillis(100L);
         } while (flusher.getLastExecuted() == lastExecuted);
     }
 

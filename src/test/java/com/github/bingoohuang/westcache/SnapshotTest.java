@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
+import com.github.bingoohuang.westcache.utils.Envs;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -33,7 +34,7 @@ public class SnapshotTest {
         @SneakyThrows
         public String getBigDataSlow() {
             // some milliseconds to simulate slow of reading big data
-            Thread.sleep(sleepMillis);
+            Envs.sleepMillis(sleepMillis);
             setCacheMethodExecuted(true);
             return bigData;
         }
@@ -86,7 +87,6 @@ public class SnapshotTest {
         snapshot(SnapshotServiceCustomizedAnnotation.class);
     }
 
-    @SneakyThrows
     public void snapshot(Class<? extends BasicSnapshotService> serviceClass) {
         val bigDataXXX = "SnapshotService.getBigData.XXX";
         val bigDataYYY = "SnapshotService.getBigData.YYY";
@@ -103,7 +103,7 @@ public class SnapshotTest {
         assertThat(dataCache1).isEqualTo(bigDataXXX);
 
         do {
-            Thread.sleep(50L);
+            Envs.sleepMillis(50L);
         } while (!service.isCacheMethodExecuted());
 
         val dataCache2 = service.getBigDataCache();

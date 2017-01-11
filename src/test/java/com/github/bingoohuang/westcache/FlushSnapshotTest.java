@@ -2,10 +2,10 @@ package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
+import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -23,11 +23,10 @@ public class FlushSnapshotTest {
         @Setter volatile long sleepMillis = 150L;
         @Getter @Setter volatile boolean cacheMethodExecuted = false;
 
-        @WestCacheable(snapshot = "file", flusher = "simple",
-                config = "snapshotTest") @SneakyThrows
+        @WestCacheable(snapshot = "file", flusher = "simple", config = "snapshotTest")
         public String getHomeAreaWithCache() {
             // 700 milliseconds to simulate slow of reading big data
-            Thread.sleep(sleepMillis);
+            Envs.sleepMillis(sleepMillis);
             setCacheMethodExecuted(true);
             return homeArea;
         }
@@ -50,7 +49,7 @@ public class FlushSnapshotTest {
 
     String north = "NORTH", south = "SOUTH";
 
-    @Test @SneakyThrows
+    @Test
     public void flushSnapshot() {
         val bean = WestCacheFactory.create(FlushSnapshotBean.class);
 
@@ -71,7 +70,7 @@ public class FlushSnapshotTest {
         assertThat(cached).isEqualTo(bigDataXXX);
 
         do {
-            Thread.sleep(50L);
+            Envs.sleepMillis(50L);
         } while (!bean.isCacheMethodExecuted());
 
         cached = bean.getHomeAreaWithCache();

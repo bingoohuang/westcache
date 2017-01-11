@@ -3,8 +3,8 @@ package com.github.bingoohuang.westcache.manager;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
+import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
-import lombok.SneakyThrows;
 import lombok.val;
 
 import java.util.concurrent.Callable;
@@ -20,14 +20,14 @@ public class FileCacheManager extends BaseCacheManager {
     static class FileWestCache implements WestCache {
         FileCacheSnapshot snapshot = new FileCacheSnapshot();
 
-        @Override @SneakyThrows
+        @Override
         public WestCacheItem get(WestCacheOption option,
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
             val item = getIfPresent(option, cacheKey);
             if (item != null) return item;
 
-            val result = callable.call();
+            val result = Envs.execute(callable);
             put(option, cacheKey, result);
 
             return result;

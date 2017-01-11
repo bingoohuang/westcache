@@ -3,14 +3,14 @@ package com.github.bingoohuang.westcache.manager;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.Durations;
+import com.github.bingoohuang.westcache.utils.Envs;
+import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Cleanup;
-import lombok.SneakyThrows;
 import lombok.val;
 import net.jodah.expiringmap.ExpiringMap;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.concurrent.Callable;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -33,7 +33,7 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
                         .variableExpiration()
                         .build();
 
-        @Override @SneakyThrows
+        @Override
         public WestCacheItem get(WestCacheOption option,
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
@@ -41,16 +41,16 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
             if (cacheItem1 != null) return cacheItem1;
 
             val lockKey = cacheKey + ":lock";
-            while (!lockCacheKey(lockKey)) Thread.sleep(100);
-            @Cleanup val i = new Closeable() {
-                @Override public void close() throws IOException {
+            while (!lockCacheKey(lockKey)) Envs.sleepMillis(100L);
+            @Cleanup val i = new QuietCloseable() {
+                @Override public void close() {
                     cache.remove(lockKey);
                 }
             };
             val cacheItem2 = cache.get(cacheKey);
             if (cacheItem2 != null) return cacheItem2;
 
-            val cacheItem3 = callable.call();
+            val cacheItem3 = Envs.execute(callable);
             putItem(cache, option, cacheKey, cacheItem3);
 
             return cacheItem3;

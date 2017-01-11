@@ -4,6 +4,7 @@ import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.interceptor.RedisInterceptor;
 import com.github.bingoohuang.westcache.utils.FastJsons;
+import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.Redis;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.AllArgsConstructor;
@@ -67,7 +68,7 @@ public class RedisCacheManager extends BaseCacheManager {
             Redis.expirePut(option, redis, key, cacheValue);
         }
 
-        @Override @SneakyThrows
+        @Override
         public void invalidate(WestCacheOption option,
                                String cacheKey,
                                String version) {
@@ -83,8 +84,8 @@ public class RedisCacheManager extends BaseCacheManager {
             Redis.waitRedisLock(redis, lockKey);
             log.debug("got redis lock {} for invalidate", lockKey);
 
-            @Cleanup val i = new Closeable() {
-                @Override public void close() throws IOException {
+            @Cleanup val i = new QuietCloseable() {
+                @Override public void close() {
                     redis.del(lockKey);
                     log.debug("del redis lock {} for invalidate", lockKey);
                 }

@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.WestCacheFlusher;
+import com.github.bingoohuang.westcache.utils.Envs;
 import com.google.common.collect.Lists;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -117,7 +118,7 @@ public class MySqlDictTest {
         }
     }
 
-    @Test @SneakyThrows
+    @Test
     public void dictCache() {
         val service = WestCacheFactory.create(CacheDictService.class);
         val beans = Lists.newArrayList(
@@ -137,7 +138,7 @@ public class MySqlDictTest {
         }};
 
         do {
-            Thread.sleep(50L);
+            Envs.sleepMillis(50L);
         } while (updateCheckTime == lastUpdateCheckTime);
 
         val cacheDicts = service.getCacheDicts();
@@ -160,7 +161,7 @@ public class MySqlDictTest {
         }};
 
         do {
-            Thread.sleep(50L);
+            Envs.sleepMillis(50L);
         } while (updateCheckTime == lastUpdateCheckTime);
 
         val cacheDicts3 = service.getCacheDicts();

@@ -1,13 +1,12 @@
 package com.github.bingoohuang.westcache.cglib;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
+import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Cleanup;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
-import java.io.Closeable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.Callable;
@@ -38,7 +37,6 @@ public abstract class CacheMethodInterceptor<T> {
     }
 
 
-    @SneakyThrows
     private Object cacheGet(final WestCacheOption option,
                             final Object obj,
                             final Method method,
@@ -47,7 +45,7 @@ public abstract class CacheMethodInterceptor<T> {
         val cacheKey = getCacheKey(option, obj, method, args, proxy);
 
         val start = System.currentTimeMillis();
-        @Cleanup val i = new Closeable() {
+        @Cleanup val i = new QuietCloseable() {
             @Override public void close() {
                 val end = System.currentTimeMillis();
                 log.debug("cost {} millis to get cache {} ", (end - start), cacheKey);

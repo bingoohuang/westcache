@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.flusher;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
+import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.Keys;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
@@ -29,7 +30,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     Cache<String, Optional<Map<String, String>>> prefixDirectCache
             = CacheBuilder.newBuilder().build();
 
-    @Override @SneakyThrows
+    @Override
     public boolean isKeyEnabled(WestCacheOption option, String cacheKey) {
         tryStartup(option, cacheKey);
 
@@ -47,7 +48,6 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         }
     }
 
-    @SneakyThrows
     public void cancelRotateChecker() {
         val future = scheduledFuture;
         scheduledFuture = null;
@@ -57,7 +57,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
         future.cancel(false);
         while (!future.isDone()) {
-            Thread.sleep(100L);
+            Envs.sleepMillis(100L);
         }
 
         lastExecuted = -1;
@@ -84,7 +84,8 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
             return Optional.fromNullable(value);
         }
 
-        return Optional.absent();
+        throw new IllegalArgumentException("key match {" + bean.getKeyMatch()
+                + "} is not supported, please use full or prefix");
     }
 
     protected abstract List<WestCacheFlusherBean> queryAllBeans();
@@ -93,7 +94,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
                                               WestCacheFlusherBean bean,
                                               DirectValueType type);
 
-    @SneakyThrows @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") @SneakyThrows
     private <T> T readSubDirectValue(final WestCacheOption option,
                                      final WestCacheFlusherBean bean,
                                      String subKey) {
@@ -140,7 +141,6 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         }, intervalMillis, intervalMillis, TimeUnit.MILLISECONDS);
     }
 
-    @SneakyThrows
     protected Object firstCheckBeans(final WestCacheOption option,
                                      String cacheKey) {
         val snapshot = option.getSnapshot();
@@ -149,7 +149,6 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         return futureGet(option, cacheKey);
     }
 
-    @SneakyThrows
     private Object futureGet(final WestCacheOption option,
                              final String cacheKey) {
         Future<Object> future = option.getConfig().executorService()
@@ -161,21 +160,20 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
         long timeout = option.getConfig().timeoutMillisToSnapshot();
         try {
-            return future.get(timeout, TimeUnit.MILLISECONDS);
+            return Envs.futureGet(future, timeout);
         } catch (TimeoutException ex) {
             log.info("get first check beans {} timeout in " +
                     "{} millis, try snapshot", cacheKey, timeout);
-            WestCacheItem result = option.getSnapshot().
+            val result = option.getSnapshot().
                     readSnapshot(option, cacheKey + ".tableflushers");
             log.info("got {} snapshot {}", cacheKey,
                     result != null ? result.getObject() : " non-exist");
             if (result != null) return 1;
         }
 
-        return future.get();
+        return Envs.futureGet(future);
     }
 
-    @SneakyThrows
     protected int checkBeans(WestCacheOption option, String cacheKey) {
         log.debug("start rotating check");
         val beans = queryAllBeans();

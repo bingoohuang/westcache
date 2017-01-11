@@ -4,7 +4,6 @@ import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +11,6 @@ import redis.clients.jedis.JedisCommands;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
-import java.io.Closeable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -69,14 +67,13 @@ public abstract class Redis {
                 new JedisInvocationHandler(pool));
     }
 
-    @SneakyThrows
     public static boolean waitRedisLock(JedisCommands redis, String lockKey) {
         int maxWaitTimes = 10;
         while (maxWaitTimes-- > 0) {
             Long lock = redis.setnx(lockKey, "lock");
             if (lock == 1L) return true;
 
-            Thread.sleep(50L);
+            Envs.sleepMillis(50L);
         }
         return false;
     }
@@ -117,8 +114,8 @@ public abstract class Redis {
                              Method method,
                              Object[] args) throws Throwable {
             val jedis = pool.getResource();
-            @Cleanup val i = new Closeable() {
-                @Override @SneakyThrows public void close() {
+            @Cleanup val i = new QuietCloseable() {
+                @Override public void close() {
                     jedis.close();
                 }
             };

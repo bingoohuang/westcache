@@ -11,5 +11,5 @@ public interface WestCacheInterceptor {
     WestCacheItem intercept(
             WestCacheOption option,
             String cacheKey,
-            Callable<WestCacheItem> callable) throws Exception;
+            Callable<WestCacheItem> callable);
 }

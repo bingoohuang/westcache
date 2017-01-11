@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
+import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.Helper;
 import com.github.bingoohuang.westcache.utils.Redis;
 import lombok.SneakyThrows;
@@ -60,7 +61,7 @@ public class RedisManagerExpireTest {
 
     public static final int COUNT = 20;
 
-    @Test @SneakyThrows
+    @Test
     public void test() {
         val prefix = "RedisManagerExpireTest.RedisExpireService.getTimestamp";
         val bean = new WestCacheFlusherBean(prefix, "full", 0,
@@ -70,12 +71,12 @@ public class RedisManagerExpireTest {
         runThreads(1);
         assertThat(calledTimes).isEqualTo(1);
 
-        Thread.sleep(1000L);
+        Envs.sleepMillis(1000L);
         runThreads(1);
         assertThat(calledTimes).isEqualTo(2);
     }
 
-    @Test @SneakyThrows
+    @Test
     public void test2() {
         val prefix = "RedisManagerExpireTest.RedisExpireService.getTimestamp2";
         val bean = new WestCacheFlusherBean(prefix, "full", 0,
@@ -88,14 +89,14 @@ public class RedisManagerExpireTest {
         assertThat(calledTimes2).isEqualTo(2);
     }
 
-    @SneakyThrows
     private void upgradeVersion(String prefix) {
         Helper.upgradeVersion(prefix, flusher);
 
         runThreads(2);
     }
 
-    private void runThreads(final int methodIndex) throws InterruptedException {
+    @SneakyThrows
+    private void runThreads(final int methodIndex)  {
         val cdl = new CountDownLatch(COUNT);
         Runnable runnable = new Runnable() {
             @Override @SneakyThrows public void run() {

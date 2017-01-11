@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.keyer.DefaultKeyer;
+import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -75,9 +76,9 @@ public class SpecsTest {
         @Setter long sleepMillis;
         @Getter @Setter private volatile boolean cacheMethodExecuted = false;
 
-        @DemoCacheMe @CustomizedCacheKey("provinces") @SneakyThrows
+        @DemoCacheMe @CustomizedCacheKey("provinces")
         public List<String> getProvincesCache() {
-            Thread.sleep(sleepMillis);
+            Envs.sleepMillis(sleepMillis);
             setCacheMethodExecuted(true);
             return provinces;
         }
@@ -101,7 +102,7 @@ public class SpecsTest {
         assertThat(cachedProvinces).isEqualTo(provinces);
 
         do {
-            Thread.sleep(50L);
+            Envs.sleepMillis(50L);
         } while (!myService.isCacheMethodExecuted());
 
         cachedProvinces = myService.getProvincesCache();

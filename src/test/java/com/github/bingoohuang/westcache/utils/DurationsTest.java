@@ -32,6 +32,6 @@ public class DurationsTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void exception2() {
-       Durations.parse("expire", "xx", TimeUnit.SECONDS);
+       Durations.parse("expire", "xs", TimeUnit.SECONDS);
     }
 }

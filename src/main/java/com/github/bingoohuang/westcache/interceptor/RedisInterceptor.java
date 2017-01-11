@@ -2,6 +2,8 @@ package com.github.bingoohuang.westcache.interceptor;
 
 import com.github.bingoohuang.westcache.base.WestCacheInterceptor;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
+import com.github.bingoohuang.westcache.utils.Envs;
+import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.Redis;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Cleanup;
@@ -21,7 +23,7 @@ public class RedisInterceptor implements WestCacheInterceptor {
     public WestCacheItem intercept(
             final WestCacheOption option,
             String cacheKey,
-            Callable<WestCacheItem> callable) throws Exception {
+            Callable<WestCacheItem> callable) {
         val redisKey = Redis.PREFIX + cacheKey;
         val redis = Redis.getRedis(option);
         val item1 = Redis.getWestCacheItem(option, redis, redisKey);
@@ -31,8 +33,8 @@ public class RedisInterceptor implements WestCacheInterceptor {
         Redis.waitRedisLock(redis, lockKey);
         log.debug("got redis lock {}", lockKey);
 
-        @Cleanup val i = new Closeable() {
-            @Override public void close() throws IOException {
+        @Cleanup val i = new QuietCloseable() {
+            @Override public void close() {
                 redis.del(lockKey);
                 log.debug("del redis lock {}", lockKey);
             }
@@ -41,7 +43,7 @@ public class RedisInterceptor implements WestCacheInterceptor {
         val item2 = Redis.getWestCacheItem(option, redis, redisKey);
         if (item2 != null) return item2;
 
-        val item = callable.call();
+        val item = Envs.execute(callable);
         Redis.expirePut(option, redis, redisKey, item);
 
         return item;

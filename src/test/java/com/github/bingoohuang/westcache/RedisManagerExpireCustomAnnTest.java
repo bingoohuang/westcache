@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache;
 
-import lombok.SneakyThrows;
+import com.github.bingoohuang.westcache.utils.Envs;
 import org.junit.Test;
 
 import java.lang.annotation.ElementType;
@@ -33,11 +33,11 @@ public class RedisManagerExpireCustomAnnTest {
 
     static RedisCacheService service = WestCacheFactory.create(RedisCacheService.class);
 
-    @Test @SneakyThrows
+    @Test
     public void test() {
         service.getTimestamp();
         service.getTimestamp();
-        Thread.sleep(1000L);
+        Envs.sleepMillis(1000L);
         service.getTimestamp();
         assertThat(calledTimes).isEqualTo(2);
     }

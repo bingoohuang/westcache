@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheKeyer;
 import com.github.bingoohuang.westcache.manager.BaseCacheManager;
+import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -77,24 +78,24 @@ public class ExpiringMapCacheManagerTest {
         val cacheValue2 = service.cacheAccess();
         assertThat(cacheValue1).isSameAs(cacheValue2);
 
-        Thread.sleep(1100L);
+        Envs.sleepMillis(1100L);
         val cacheValue3 = service.cacheAccess();
         assertThat(cacheValue3).isEqualTo("Access@3");
         val cacheValue4 = service.cacheAccess();
         assertThat(cacheValue3).isSameAs(cacheValue4);
     }
 
-    @Test @SneakyThrows
+    @Test
     public void expiringAfterWrite() {
         service.setTimestamp(1L);
         val cacheValue1 = service.cacheWrite();
         assertThat(cacheValue1).isEqualTo("Write@1");
-        Thread.sleep(500L);
+        Envs.sleepMillis(500L);
         service.setTimestamp(3L);
         val cacheValue2 = service.cacheWrite();
         assertThat(cacheValue1).isSameAs(cacheValue2);
 
-        Thread.sleep(600L);
+        Envs.sleepMillis(600L);
         val cacheValue3 = service.cacheWrite();
         assertThat(cacheValue3).isEqualTo("Write@3");
         val cacheValue4 = service.cacheWrite();

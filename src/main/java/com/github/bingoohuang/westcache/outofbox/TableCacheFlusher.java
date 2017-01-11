@@ -4,12 +4,8 @@ import com.alibaba.fastjson.TypeReference;
 import com.github.bingoohuang.westcache.flusher.DirectValueType;
 import com.github.bingoohuang.westcache.flusher.TableBasedCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
-import com.github.bingoohuang.westcache.utils.FastJsons;
-import com.github.bingoohuang.westcache.utils.Redis;
-import com.github.bingoohuang.westcache.utils.Specs;
-import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.github.bingoohuang.westcache.utils.*;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.n3r.eql.eqler.EqlerFactory;
@@ -30,7 +26,7 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
         return dao.selectAllBeans();
     }
 
-    @Override @SneakyThrows
+    @Override
     protected Object readDirectValue(WestCacheOption option,
                                      WestCacheFlusherBean bean,
                                      DirectValueType type) {
@@ -47,9 +43,8 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
         } else if ("loader".equals(readBy)) {
             val loaderClass = specs.get("loaderClass");
             if (StringUtils.isNotBlank(loaderClass)) {
-                val clazz = Class.forName(loaderClass);
-                val loader = (Callable) clazz.newInstance();
-                return loader.call();
+                Callable loader = Envs.newInstance(loaderClass);
+                return Envs.execute(loader);
             }
         }
 
@@ -67,4 +62,5 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
 
         return null;
     }
+
 }
