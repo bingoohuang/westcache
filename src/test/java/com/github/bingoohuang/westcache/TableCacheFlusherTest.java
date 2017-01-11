@@ -8,6 +8,7 @@ import com.github.bingoohuang.westcache.utils.Redis;
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -31,6 +32,11 @@ public class TableCacheFlusherTest {
     @BeforeClass
     public static void beforeClass() {
         service.firstPush();
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        flusher.cancelRotateChecker();
     }
 
     @WestCacheable(flusher = "table", keyer = "simple", snapshot = "file")

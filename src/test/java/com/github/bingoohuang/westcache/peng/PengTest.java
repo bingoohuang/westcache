@@ -6,6 +6,7 @@ import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import com.github.bingoohuang.westcache.utils.Helper;
 import com.google.common.collect.Lists;
 import lombok.val;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,6 +25,12 @@ public class PengTest {
     public static void beforeClass() {
         service.firstPush();
     }
+
+    @AfterClass
+    public static void afterClass() {
+        flusher.cancelRotateChecker();
+    }
+
 
     public static PengService service = WestCacheFactory.create(PengService.class);
 

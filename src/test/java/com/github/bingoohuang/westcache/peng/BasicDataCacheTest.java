@@ -6,6 +6,7 @@ import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.Helper;
 import com.github.bingoohuang.westcache.utils.Redis;
 import lombok.val;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,11 @@ public class BasicDataCacheTest {
     @BeforeClass
     public static void beforeClass() {
         flusher = Helper.setupTableFlusherForTest();
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        flusher.cancelRotateChecker();
     }
 
     @Test

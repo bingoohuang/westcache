@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.val;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,6 +47,11 @@ public class MallCacheableTest {
     @BeforeClass
     public static void beforeClass() {
         flusher = Helper.setupTableFlusherForTest();
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        flusher.cancelRotateChecker();
     }
 
     @Test

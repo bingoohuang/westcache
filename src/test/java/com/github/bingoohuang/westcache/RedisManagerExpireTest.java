@@ -6,6 +6,7 @@ import com.github.bingoohuang.westcache.utils.Helper;
 import com.github.bingoohuang.westcache.utils.Redis;
 import lombok.SneakyThrows;
 import lombok.val;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -50,6 +51,11 @@ public class RedisManagerExpireTest {
         service.firstPush();
         Redis.getJedis().del("westcache:version:RedisManagerExpireTest.RedisExpireService.getTimestamp");
         Redis.getJedis().del("westcache:version:RedisManagerExpireTest.RedisExpireService.getTimestamp2");
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        flusher.cancelRotateChecker();
     }
 
     public static final int COUNT = 20;

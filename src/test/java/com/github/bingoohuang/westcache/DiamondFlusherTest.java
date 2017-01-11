@@ -35,7 +35,7 @@ public class DiamondFlusherTest {
 
         val keyer = keyerRegistry.get("default");
         val option = WestCacheOption.newBuilder()
-                .flusher("diamondflusher").specs("static.key=yes")
+                .flusher("diamond").specs("static.key=yes")
                 .build();
         val cacheKey = keyer.getCacheKey(option, "getCachedContent", service);
 
