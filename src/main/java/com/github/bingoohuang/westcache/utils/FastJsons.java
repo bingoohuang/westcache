@@ -3,7 +3,6 @@ package com.github.bingoohuang.westcache.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import lombok.val;
 
 import java.lang.reflect.Method;
@@ -14,23 +13,23 @@ import java.util.Collection;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/29.
  */
-@UtilityClass
-public class FastJsons {
-    public String json(Object obj) {
+public abstract class FastJsons {
+    public static String json(Object obj) {
         return JSON.toJSONString(obj);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T parse(String json) {
+    public static <T> T parse(String json) {
         return (T) JSON.parse(json);
     }
 
-    public Object parse(String json, Class<?> returnType) {
-        return JSON.parseObject(json, returnType);
+    @SuppressWarnings("unchecked")
+    public static <T> T parse(String json, Class<?> returnType) {
+        return (T) JSON.parseObject(json, returnType);
     }
 
-    @SneakyThrows  @SuppressWarnings("unchecked")
-    public <T> T parse(String json, Method method) {
+    @SneakyThrows @SuppressWarnings("unchecked")
+    public static <T> T parse(String json, Method method) {
         Class<?> returnType = method.getReturnType();
 
         Type genericReturnType = method.getGenericReturnType();
@@ -45,7 +44,7 @@ public class FastJsons {
         }
 
         try {
-            return (T) JSON.parseObject(json, returnType);
+            return (T) parse(json, returnType);
         } catch (Exception ex) {
             if (returnType == String.class) return (T) json;
             throw ex;

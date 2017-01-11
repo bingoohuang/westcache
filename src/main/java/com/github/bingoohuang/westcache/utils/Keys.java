@@ -1,15 +1,13 @@
 package com.github.bingoohuang.westcache.utils;
 
 import com.github.bingoohuang.westcache.cglib.Cglibs;
-import lombok.experimental.UtilityClass;
 import lombok.val;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/30.
  */
-@UtilityClass
-public class Keys {
-    public String joinArgs(Object[] args) {
+public abstract class Keys {
+    public static String joinArgs(Object[] args) {
         val argsPart = new StringBuilder();
 
         for (val arg : args) {
@@ -21,13 +19,13 @@ public class Keys {
         return argsPart.toString();
     }
 
-    public String removePackage(String className) {
+    public static String removePackage(String className) {
         int lastDotPos = className.lastIndexOf('.');
         if (lastDotPos == -1) return className;
         return className.substring(lastDotPos + 1);
     }
 
-    public boolean isPrefix(String str, String prefix) {
+    public static boolean isPrefix(String str, String prefix) {
         if (!str.startsWith(prefix)) return false;
         if (str.length() == prefix.length()) return true;
 
@@ -35,9 +33,9 @@ public class Keys {
         return nextChar == '.' || nextChar == '_';
     }
 
-    public String createKeyMainPart(String methodName,
-                                    Object bean,
-                                    boolean removePackage) {
+    public static String createKeyMainPart(String methodName,
+                                           Object bean,
+                                           boolean removePackage) {
         val superClassName = Cglibs.getSuperClassName(bean);
         val simpleClassName = removePackage
                 ? removePackage(superClassName)

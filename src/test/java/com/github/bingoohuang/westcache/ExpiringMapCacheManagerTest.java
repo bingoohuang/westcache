@@ -1,5 +1,9 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.westcache.base.WestCacheItem;
+import com.github.bingoohuang.westcache.base.WestCacheKeyer;
+import com.github.bingoohuang.westcache.manager.BaseCacheManager;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -8,6 +12,8 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
+
+import java.lang.reflect.Method;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -37,6 +43,30 @@ public class ExpiringMapCacheManagerTest {
 
     static ExpiringDemoService service =
             WestCacheFactory.create(ExpiringDemoService.class);
+
+
+    @Test
+    public void put() {
+        WestCacheOption option = WestCacheOption.newBuilder().manager("expiring")
+                .method(getCacheThreeMethod()).build();
+        val manager = (BaseCacheManager) option.getManager();
+        WestCacheKeyer keyer = option.getKeyer();
+        String cacheKey = keyer.getCacheKey(option, "cacheThree", service);
+
+        manager.getWestCache().put(null, cacheKey, new WestCacheItem("fuck"));
+        val cacheValue3 = service.cacheThree();
+        assertThat(cacheValue3).isEqualTo("fuck");
+
+        manager.getWestCache().invalidate(option, cacheKey, "");
+        service.setTimestamp3(10L);
+        val cacheValue31 = service.cacheThree();
+        assertThat(cacheValue31).isEqualTo("Three@10");
+    }
+
+    @SneakyThrows
+    private Method getCacheThreeMethod() {
+        return ExpiringDemoService.class.getDeclaredMethod("cacheThree");
+    }
 
     @Test @SneakyThrows
     public void expiringAfterAccess() {

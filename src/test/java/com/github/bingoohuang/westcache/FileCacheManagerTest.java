@@ -1,5 +1,7 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.westcache.manager.BaseCacheManager;
+import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.val;
 import org.junit.Test;
 
@@ -18,6 +20,13 @@ public class FileCacheManagerTest {
 
     @Test
     public void fileManager() {
+        WestCacheOption option = WestCacheOption.newBuilder()
+                .manager("file").keyer("simple").build();
+        BaseCacheManager manager = (BaseCacheManager) option.getManager();
+
+        val cacheKey = "FileCacheManagerTest.FileService.executeSomething";
+        manager.getWestCache().invalidate(option, cacheKey, null);
+
         val service = WestCacheFactory.create(FileService.class);
         val sth1 = service.executeSomething();
         val sth2 = service.executeSomething();

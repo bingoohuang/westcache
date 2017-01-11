@@ -37,7 +37,7 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
         public WestCacheItem get(WestCacheOption option,
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
-            val cacheItem1 = cache.get(cacheKey);
+            val cacheItem1 = getIfPresent(option, cacheKey);
             if (cacheItem1 != null) return cacheItem1;
 
             val lockKey = cacheKey + ":lock";

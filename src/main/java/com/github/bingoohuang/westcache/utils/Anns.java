@@ -14,7 +14,7 @@ import java.util.Set;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
-public class Anns {
+public abstract class Anns {
     static Map<String, String> parseWestCacheable(
             Method method,
             Class<? extends Annotation> annClass) {

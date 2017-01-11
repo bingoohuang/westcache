@@ -24,7 +24,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/3.
  */
 @Slf4j
-public class Redis {
+public abstract class Redis {
     public static final String PREFIX = "westcache:";
     private static JedisCommands jedis = createtJedisCommands(
             "127.0.0.1", 6379, 10);

@@ -1,4 +1,4 @@
-package com.github.bingoohuang.westcache.spring;
+package com.github.bingoohuang.westcache.springann;
 
 import com.github.bingoohuang.westcache.WestCacheable;
 import lombok.Setter;

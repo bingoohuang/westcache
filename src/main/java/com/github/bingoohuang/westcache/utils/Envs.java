@@ -3,7 +3,7 @@ package com.github.bingoohuang.westcache.utils;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/11.
  */
-public class Envs {
+public abstract class Envs {
     public static boolean hasSpring = classExists("org.springframework.context.ApplicationContext");
     public static boolean hasDiamond = classExists("org.n3r.diamond.client.DiamondListener");
     public static boolean hasExpiring = classExists("net.jodah.expiringmap.ExpiringMap");

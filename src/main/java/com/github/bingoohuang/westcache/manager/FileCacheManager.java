@@ -24,7 +24,7 @@ public class FileCacheManager extends BaseCacheManager {
         public WestCacheItem get(WestCacheOption option,
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
-            val item = snapshot.readSnapshot(option, cacheKey);
+            val item = getIfPresent(option, cacheKey);
             if (item != null) return item;
 
             val result = callable.call();

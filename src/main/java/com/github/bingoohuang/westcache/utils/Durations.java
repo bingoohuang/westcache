@@ -8,7 +8,7 @@ import static java.lang.String.format;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/2.
  */
-public class Durations {
+public abstract class Durations {
     public static long parse(String key, String spec, TimeUnit targetTimeUnit) {
         checkArgument(spec != null && !spec.isEmpty(),
                 "value of key %s omitted", key);

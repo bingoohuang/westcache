@@ -64,11 +64,7 @@ public class RedisCacheManager extends BaseCacheManager {
                         WestCacheItem cacheValue) {
             val redis = Redis.getRedis(option);
             val key = prefix + cacheKey;
-            if (cacheValue != null) {
-                Redis.expirePut(option, redis, key, cacheValue);
-            } else {
-                redis.del(key);
-            }
+            Redis.expirePut(option, redis, key, cacheValue);
         }
 
         @Override @SneakyThrows

@@ -1,5 +1,8 @@
-package com.github.bingoohuang.westcache.spring;
 
+package com.github.bingoohuang.westcache.springann;
+
+import com.github.bingoohuang.westcache.spring.WestCacheableEnabled;
+import com.github.bingoohuang.westcache.spring.WestCacheableScan;
 import com.github.bingoohuang.westcache.utils.EmbeddedRedis;
 import com.github.bingoohuang.westcache.utils.Redis;
 import lombok.val;
@@ -10,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import redis.clients.jedis.JedisCommands;
 
-@Configuration @ComponentScan @WestCacheableScan
+@Configuration @ComponentScan @WestCacheableScan @WestCacheableEnabled
 public class SpringConfig {
     @Bean
     public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {

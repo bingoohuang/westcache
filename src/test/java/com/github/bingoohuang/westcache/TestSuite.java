@@ -2,11 +2,10 @@ package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.peng.BasicDataCacheTest;
 import com.github.bingoohuang.westcache.peng.PengTest;
-import com.github.bingoohuang.westcache.spring.DemoInterfaceTest;
-import com.github.bingoohuang.westcache.spring.DemoServiceTest;
-import com.github.bingoohuang.westcache.utils.AnnsTest;
-import com.github.bingoohuang.westcache.utils.EmbeddedRedis;
-import com.github.bingoohuang.westcache.utils.FastJsonsTest;
+import com.github.bingoohuang.westcache.springann.DemoInterfaceTest;
+import com.github.bingoohuang.westcache.springann.DemoServiceTest;
+import com.github.bingoohuang.westcache.springxml.ServiceSpringXmlTest;
+import com.github.bingoohuang.westcache.utils.*;
 import org.junit.ClassRule;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.RunWith;
@@ -47,6 +46,11 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         SnapshotTest.class,
         SpecsTest.class,
         TableCacheFlusherTest.class,
+        DurationsTest.class,
+        EnvsTest.class,
+        MiscTest.class,
+        ServiceSpringXmlTest.class,
+        WestCacheOptionTest.class,
 })
 public class TestSuite {
     @ClassRule

@@ -4,6 +4,7 @@ import com.github.bingoohuang.westcache.WestCacheFactory;
 import com.github.bingoohuang.westcache.utils.Anns;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 
+@Slf4j
 public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanner {
     public WestCacheableClassPathScanner(BeanDefinitionRegistry registry) {
         super(registry, false);
@@ -62,21 +64,21 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
         Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
 
         if (beanDefinitions.isEmpty()) {
-            logger.warn("No WestCacheable was found in '" + Arrays.toString(basePackages) + "' package. Please check your configuration.");
-        } else {
-            for (BeanDefinitionHolder holder : beanDefinitions) {
-                GenericBeanDefinition definition = (GenericBeanDefinition) holder.getBeanDefinition();
+            log.warn("No WestCacheable was found in '{}' package. Please check your configuration.",
+                    Arrays.toString(basePackages));
+            return beanDefinitions;
+        }
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Creating WestCacheableFactoryBean with name '" + holder.getBeanName()
-                            + "' and '" + definition.getBeanClassName() + "' eqlerInterface");
-                }
+        for (val holder : beanDefinitions) {
+            val definition = (GenericBeanDefinition) holder.getBeanDefinition();
 
-                // the mapper interface is the original class of the bean
-                // but, the actual class of the bean is MapperFactoryBean
-                definition.getPropertyValues().add("targetClass", definition.getBeanClassName());
-                definition.setBeanClass(WestCacheableFactoryBean.class);
-            }
+            log.debug("Creating WestCacheableFactoryBean with name '{}' and '{}'",
+                    holder.getBeanName(), definition.getBeanClassName());
+
+            // the mapper interface is the original class of the bean
+            // but, the actual class of the bean is MapperFactoryBean
+            definition.getPropertyValues().add("targetClass", definition.getBeanClassName());
+            definition.setBeanClass(WestCacheableFactoryBean.class);
         }
 
         return beanDefinitions;
@@ -95,14 +97,12 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
      */
     @Override
     protected boolean checkCandidate(String beanName, BeanDefinition beanDefinition) throws IllegalStateException {
-        if (super.checkCandidate(beanName, beanDefinition)) {
-            return true;
-        } else {
-            logger.warn("Skipping WestCacheableFactoryBean with name '" + beanName
-                    + "' and '" + beanDefinition.getBeanClassName() + "' targetClass"
-                    + ". Bean already defined with the same name!");
-            return false;
-        }
+        if (super.checkCandidate(beanName, beanDefinition)) return true;
+
+        log.warn("Skipping WestCacheableFactoryBean with name '{}' and '{}' targetClass. " +
+                        "Bean already defined with the same name!",
+                beanName, beanDefinition.getBeanClassName());
+        return false;
     }
 
 
