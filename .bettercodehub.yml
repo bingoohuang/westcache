@@ -1,5 +1,5 @@
-exclude:
-- /src/test/java/com/github/bingoohuang/westcache/.*
+#exclude:
+#- /src/test/java/com/github/bingoohuang/westcache/.*
 component_depth: 1
 languages:
 - java
