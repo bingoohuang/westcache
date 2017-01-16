@@ -269,6 +269,7 @@ public static class QuartzService {
 }
 ```
 The scheduled expression can be in format as followings:
+
 1. `Every 1 minute` 表示每1分钟
 1. `Every 30 minutes` 表示每30分钟
 1. `Every 10 hours` 表示每10小时
