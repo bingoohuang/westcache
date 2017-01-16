@@ -46,7 +46,7 @@ public class DiamondCacheManager extends BaseCacheManager {
         @Override
         public void invalidate(WestCacheOption option, String cacheKey, String version) {
             throw new UnsupportedOperationException(
-                    "DiamondCacheManager put is unsupported");
+                    "DiamondCacheManager invalidate is unsupported");
         }
     }
 }

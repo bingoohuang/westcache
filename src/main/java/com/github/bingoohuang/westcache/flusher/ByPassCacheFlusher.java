@@ -10,12 +10,8 @@ import com.google.common.base.Optional;
  */
 public class ByPassCacheFlusher implements WestCacheFlusher {
     @Override
-    public boolean register(WestCacheOption option, String cacheKey, WestCache cache) {
-        return false;
-    }
-
-    @Override public boolean flush(WestCacheOption option, String cacheKey, String version) {
-        return false;
+    public boolean isKeyEnabled(WestCacheOption option, String cacheKey) {
+        return true;
     }
 
     @Override
@@ -24,7 +20,11 @@ public class ByPassCacheFlusher implements WestCacheFlusher {
     }
 
     @Override
-    public boolean isKeyEnabled(WestCacheOption option, String cacheKey) {
-        return true;
+    public boolean register(WestCacheOption option, String cacheKey, WestCache cache) {
+        return false;
+    }
+
+    @Override public boolean flush(WestCacheOption option, String cacheKey, String version) {
+        return false;
     }
 }

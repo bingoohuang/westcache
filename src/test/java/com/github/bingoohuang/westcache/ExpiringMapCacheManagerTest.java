@@ -25,6 +25,7 @@ public class ExpiringMapCacheManagerTest {
     public static class ExpiringDemoService {
         @Setter private long timestamp;
         @Setter private long timestamp3;
+        @Setter private long timestamp4;
 
         @WestCacheable(manager = "expiring", specs = "expireAfterAccess=1s")
         public String cacheAccess() {
@@ -39,6 +40,11 @@ public class ExpiringMapCacheManagerTest {
         @WestCacheable(manager = "expiring")
         public String cacheThree() {
             return "Three@" + timestamp3;
+        }
+
+        @WestCacheable(manager = "expiring")
+        public String cacheFour() {
+            return "Four@" + timestamp4;
         }
     }
 
@@ -104,9 +110,9 @@ public class ExpiringMapCacheManagerTest {
 
     @Benchmark
     public void benchmark() {
-        service.setTimestamp3(1L);
-        val cacheValue3 = service.cacheThree();
-        assertThat(cacheValue3).isEqualTo("Three@1");
+        service.setTimestamp4(1L);
+        val cacheValue3 = service.cacheFour();
+        assertThat(cacheValue3).isEqualTo("Four@1");
     }
 
     @Test @SneakyThrows

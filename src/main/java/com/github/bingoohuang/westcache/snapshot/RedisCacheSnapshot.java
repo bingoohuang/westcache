@@ -14,7 +14,7 @@ import lombok.val;
  */
 @AllArgsConstructor
 public class RedisCacheSnapshot implements WestCacheSnapshot {
-    String prefix;
+    final String prefix;
 
     public RedisCacheSnapshot() {
         this(Redis.PREFIX);

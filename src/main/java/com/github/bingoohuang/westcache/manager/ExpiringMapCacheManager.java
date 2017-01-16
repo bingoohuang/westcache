@@ -10,7 +10,6 @@ import lombok.Cleanup;
 import lombok.val;
 import net.jodah.expiringmap.ExpiringMap;
 
-import java.io.Closeable;
 import java.util.concurrent.Callable;
 
 import static java.util.concurrent.TimeUnit.SECONDS;

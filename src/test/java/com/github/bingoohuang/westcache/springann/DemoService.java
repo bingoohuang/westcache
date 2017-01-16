@@ -18,7 +18,8 @@ import redis.clients.jedis.JedisCommands;
         return data;
     }
 
-    @WestCacheable(manager = "redis", keyer = "simple", specs = "redisBean=that")
+    @WestCacheable(manager = "redis", keyer = "simple",
+            specs = "redisBean=that")
     public String doSth() {
         return System.currentTimeMillis() + "";
     }
@@ -29,5 +30,13 @@ import redis.clients.jedis.JedisCommands;
     public void setXxx() {
         thisRedis.set("xxx", "bingoo");
         thatRedis.set("yyy", "huang");
+    }
+
+    @WestCacheable(
+            manager = "quartz-manager",
+            flusher = "quartz-flusher",
+            specs = "scheduledBean=cacheFlushScheduledBean")
+    public long doWhat() {
+        return System.currentTimeMillis();
     }
 }

@@ -14,7 +14,7 @@
         <appender-ref ref="Console"/>
     </logger>
 
-    <logger name="com.github.bingoohuang.westcache.CustomAnnOverrideTest" level="DEBUG" additivity="false">
+    <logger name="com.github.bingoohuang.westcache.flusher.QuartzCacheFlusher" level="DEBUG" additivity="false">
         <appender-ref ref="Console"/>
     </logger>
 

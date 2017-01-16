@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache;
 import com.github.bingoohuang.westcache.base.*;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.ByPassCacheFlusher;
+import com.github.bingoohuang.westcache.flusher.QuartzCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.DiamondCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.SimpleCacheFlusher;
 import com.github.bingoohuang.westcache.interceptor.ByPassInterceptor;
@@ -22,7 +23,7 @@ import lombok.val;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
  */
-public class WestCacheRegistry {
+public abstract class WestCacheRegistry {
     public final static RegistryTemplate<WestCacheConfig> configRegistry
             = new RegistryTemplate<WestCacheConfig>();
 
@@ -38,6 +39,7 @@ public class WestCacheRegistry {
         flusherRegistry.register("simple", new SimpleCacheFlusher());
         if (Envs.hasDiamond) flusherRegistry.register("diamond", new DiamondCacheFlusher());
         if (Envs.hasEql) flusherRegistry.register("table", new TableCacheFlusher());
+        if (Envs.hasQuartz) flusherRegistry.register("quartz", new QuartzCacheFlusher());
     }
 
     public static void flush(WestCacheOption option,

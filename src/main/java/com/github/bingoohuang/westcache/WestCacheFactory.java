@@ -10,7 +10,7 @@ import lombok.val;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/21.
  */
-public class WestCacheFactory {
+public abstract class WestCacheFactory {
     private final static Class<WestCacheCglib> WCC_CLZ = WestCacheCglib.class;
     private final static CglibCacheMethodInterceptor interceptor = new CglibCacheMethodInterceptor();
 

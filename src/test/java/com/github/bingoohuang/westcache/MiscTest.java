@@ -28,6 +28,8 @@ public class MiscTest {
         new Snapshots(){};
         new Specs(){};
         new Cglibs(){};
-
+        new WestCacheFactory(){};
+        new WestCacheRegistry(){};
+        new Guavas(){};
     }
 }

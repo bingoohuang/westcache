@@ -2,11 +2,10 @@ package com.github.bingoohuang.westcache.manager;
 
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
+import com.github.bingoohuang.westcache.utils.Guavas;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.util.concurrent.UncheckedExecutionException;
-import lombok.SneakyThrows;
 
 import java.util.concurrent.Callable;
 
@@ -22,15 +21,11 @@ public class GuavaCacheManager extends BaseCacheManager {
         private Cache<String, WestCacheItem> cache
                 = CacheBuilder.newBuilder().build();
 
-        @Override @SneakyThrows
+        @Override
         public WestCacheItem get(WestCacheOption option,
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
-            try {
-                return cache.get(cacheKey, callable);
-            } catch (UncheckedExecutionException ex) {
-                throw ex.getCause();
-            }
+            return Guavas.cacheGet(cache, cacheKey, callable);
         }
 
         @Override

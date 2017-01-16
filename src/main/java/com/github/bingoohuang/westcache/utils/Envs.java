@@ -17,6 +17,7 @@ public abstract class Envs {
     public static boolean hasExpiring = classExists("net.jodah.expiringmap.ExpiringMap");
     public static boolean hasJedis = classExists("redis.clients.jedis.JedisCommands");
     public static boolean hasEql = classExists("org.n3r.eql.eqler.EqlerFactory");
+    public static boolean hasQuartz = classExists("org.quartz.JobDetail");
 
     public static boolean classExists(String className) {
         try {

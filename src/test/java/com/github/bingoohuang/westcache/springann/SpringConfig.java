@@ -33,4 +33,9 @@ public class SpringConfig {
         return Redis.createtJedisCommands(
                 "127.0.0.1", EmbeddedRedis.port2, 10);
     }
+
+    @Bean(name = "cacheFlushScheduledBean")
+    public String cacheFlushScheduled() {
+        return "Every 1 seconds";
+    }
 }

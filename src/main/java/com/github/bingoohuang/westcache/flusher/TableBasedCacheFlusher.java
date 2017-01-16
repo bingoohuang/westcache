@@ -1,16 +1,12 @@
 package com.github.bingoohuang.westcache.flusher;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
-import com.github.bingoohuang.westcache.utils.Envs;
-import com.github.bingoohuang.westcache.utils.FastJsons;
-import com.github.bingoohuang.westcache.utils.Keys;
-import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.github.bingoohuang.westcache.utils.*;
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -94,7 +90,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
                                               WestCacheFlusherBean bean,
                                               DirectValueType type);
 
-    @SuppressWarnings("unchecked") @SneakyThrows
+    @SuppressWarnings("unchecked")
     private <T> T readSubDirectValue(final WestCacheOption option,
                                      final WestCacheFlusherBean bean,
                                      String subKey) {
@@ -105,7 +101,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
                 return Optional.fromNullable((Map<String, String>) map);
             }
         };
-        val optional = prefixDirectCache.get(bean.getCacheKey(), loader);
+        val optional = Guavas.cacheGet(prefixDirectCache, bean.getCacheKey(), loader);
         if (!optional.isPresent()) return null;
 
         val json = optional.get().get(subKey);
