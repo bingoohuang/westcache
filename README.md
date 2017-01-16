@@ -246,5 +246,57 @@ public class RedisExpireService {
 }
 ```
 
+## Quartz Scheduler Flusher
+An in-built quartz flusher is supported with name `quartz`, 
+to enable it please add quartz lib to the classpath, like:
+```xml
+<dependency>
+    <groupId>org.quartz-scheduler</groupId>
+    <artifactId>quartz</artifactId>
+    <version>2.2.3</version>
+</dependency>
+```
+
+And then you can use it the @WestCacheable like:
+```java
+@Component
+public static class QuartzService {
+    @WestCacheable( flusher = "quartz",
+            specs = "scheduled=Every 1 second")
+    public long doWhat() {
+        return System.currentTimeMillis();
+    }
+}
+```
+Or in spring context:
+```java
+@Configuration @ComponentScan @WestCacheableScan @WestCacheableEnabled
+public class SpringConfig {
+    @Bean
+    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
+        val creator = new DefaultAdvisorAutoProxyCreator();
+        creator.setProxyTargetClass(true);
+        return creator;
+    }
+
+
+    @Bean(name = "cacheFlushScheduledBean")
+    public String cacheFlushScheduled() {
+        return "Every 1 seconds";
+    }
+}
+
+@Service 
+public class DemoService {
+    @Setter String data;
+
+    @WestCacheable(flusher = "quartz",
+            specs = "scheduledBean=cacheFlushScheduledBean")
+    public long doWhat() {
+        return System.currentTimeMillis();
+    }
+}
+```
+
 ## The source of name as westcache
 Film "West World".
