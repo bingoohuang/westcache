@@ -268,6 +268,18 @@ public static class QuartzService {
     }
 }
 ```
+The scheduled expression can be in format as followings:
+1. `Every 1 minute` 表示每1分钟
+1. `Every 30 minutes` 表示每30分钟
+1. `Every 10 hours` 表示每10小时
+1. `Every 60 seconds` 表示每60秒
+1. `At 03:00` 表示每天凌晨3点
+1. `At ??:40` 表示每小时的第40分钟
+1. `0 20 * * * ?` 表示每小时开始20分钟
+1. `Every 30 minutes from 2016-10-10 to 2017-10-12` 表示从2016年10月10日到2017年10月12日之间的每天凌晨3点
+1. `At 03:00 to 2013-11-01`
+1. `0 20 * * * ? from 2013-10-10 14:00:00`
+
 Or in spring context:
 ```java
 @Configuration @ComponentScan @WestCacheableScan @WestCacheableEnabled
