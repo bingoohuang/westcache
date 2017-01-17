@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.utils;
 
 import com.google.common.cache.Cache;
+import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import lombok.SneakyThrows;
 
@@ -17,6 +18,15 @@ public abstract class Guavas {
             return cache.get(k, callable);
         } catch (ExecutionException e) {
             throw e.getCause();
+        } catch (UncheckedExecutionException e) {
+            throw e.getCause();
+        }
+    }
+
+    @SneakyThrows
+    public static <K, V> V cacheGet(LoadingCache<K, V> cache, K k) {
+        try {
+            return cache.getUnchecked(k);
         } catch (UncheckedExecutionException e) {
             throw e.getCause();
         }

@@ -49,7 +49,7 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
                 val className = classMetadata.getClassName();
                 Class c = Class.forName(className);
 
-                return Anns.isWestCacheAnnotated(c);
+                return Anns.isFastWestCacheAnnotated(c);
             }
         });
     }

@@ -8,19 +8,24 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/4.
  */
 @Component
-public class SpringAppContext implements ApplicationContextAware {
+public class SpringAppContext implements ApplicationContextAware,
+        ApplicationListener<ContextRefreshedEvent> {
     private static ApplicationContext appContext;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         SpringAppContext.appContext = applicationContext;
+    }
 
+    @Override public void onApplicationEvent(ContextRefreshedEvent event) {
         addSpringBeans(WestCacheConfig.class, WestCacheRegistry.configRegistry);
         addSpringBeans(WestCacheFlusher.class, WestCacheRegistry.flusherRegistry);
         addSpringBeans(WestCacheManager.class, WestCacheRegistry.managerRegistry);
@@ -68,4 +73,5 @@ public class SpringAppContext implements ApplicationContextAware {
             registry.register(entry.getKey(), entry.getValue());
         }
     }
+
 }

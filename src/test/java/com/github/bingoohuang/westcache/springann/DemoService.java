@@ -24,8 +24,7 @@ import redis.clients.jedis.JedisCommands;
         return System.currentTimeMillis() + "";
     }
 
-    @WestCacheable(manager = "configExpiring", keyer = "simple",
-            specs = "ttlConfigKey=ttlConfig")
+    @ConfigCache
     public long doTtl() {
         return System.currentTimeMillis();
     }

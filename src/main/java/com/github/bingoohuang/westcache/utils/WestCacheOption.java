@@ -135,7 +135,12 @@ public class WestCacheOption {
             });
 
     public static WestCacheOption parseWestCacheable(Method m) {
-        return optionCache.getUnchecked(m).orNull();
+        return Guavas.cacheGet(optionCache, m).orNull();
+    }
+
+    public static boolean isFastWestCacheable(Method m) {
+        val attrs = Anns.parseWestCacheable(m, WestCacheable.class);
+        return attrs != null;
     }
 
     private static WestCacheOption buildOption(

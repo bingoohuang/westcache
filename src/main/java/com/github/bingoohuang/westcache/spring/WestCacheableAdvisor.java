@@ -15,7 +15,7 @@ public class WestCacheableAdvisor extends AbstractPointcutAdvisor {
     final StaticMethodMatcherPointcut pointcut = new StaticMethodMatcherPointcut() {
         @Override
         public boolean matches(Method method, Class<?> targetClass) {
-            return Anns.isWestCacheAnnotated(targetClass);
+            return Anns.isFastWestCacheAnnotated(targetClass);
         }
     };
 

@@ -148,4 +148,13 @@ public abstract class Anns {
 
         return false;
     }
+
+    public static boolean isFastWestCacheAnnotated(Class c) {
+        for (Method m : c.getMethods()) {
+            val yes = WestCacheOption.isFastWestCacheable(m);
+            if (yes) return true;
+        }
+
+        return false;
+    }
 }
