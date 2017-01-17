@@ -30,7 +30,7 @@ public class RedisCacheManager extends BaseCacheManager {
     }
 
     @AllArgsConstructor
-    private static class RedisWestCache implements WestCache {
+    public static class RedisWestCache implements WestCache {
         String prefix;
 
         public RedisWestCache() {

@@ -17,7 +17,7 @@ public class GuavaCacheManager extends BaseCacheManager {
         super(new GuavaWestCache());
     }
 
-    private static class GuavaWestCache implements WestCache {
+    public static class GuavaWestCache implements WestCache {
         private Cache<String, WestCacheItem> cache
                 = CacheBuilder.newBuilder().build();
 

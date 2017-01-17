@@ -1,5 +1,9 @@
 package com.github.bingoohuang.westcache.spring;
 
+import com.github.bingoohuang.westcache.WestCacheRegistry;
+import com.github.bingoohuang.westcache.base.*;
+import com.github.bingoohuang.westcache.registry.RegistryTemplate;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -16,6 +20,13 @@ public class SpringAppContext implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
         SpringAppContext.appContext = applicationContext;
+
+        addSpringBeans(WestCacheConfig.class, WestCacheRegistry.configRegistry);
+        addSpringBeans(WestCacheFlusher.class, WestCacheRegistry.flusherRegistry);
+        addSpringBeans(WestCacheManager.class, WestCacheRegistry.managerRegistry);
+        addSpringBeans(WestCacheSnapshot.class, WestCacheRegistry.snapshotRegistry);
+        addSpringBeans(WestCacheKeyer.class, WestCacheRegistry.keyerRegistry);
+        addSpringBeans(WestCacheInterceptor.class, WestCacheRegistry.interceptorRegistry);
     }
 
     public static ApplicationContext getAppContext() {
@@ -48,5 +59,13 @@ public class SpringAppContext implements ApplicationContextAware {
         }
 
         return null;
+    }
+
+    public <T> void addSpringBeans(Class<T> type, RegistryTemplate<T> registry) {
+        val beans = appContext.getBeansOfType(type);
+
+        for (val entry : beans.entrySet()) {
+            registry.register(entry.getKey(), entry.getValue());
+        }
     }
 }

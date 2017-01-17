@@ -24,6 +24,12 @@ import redis.clients.jedis.JedisCommands;
         return System.currentTimeMillis() + "";
     }
 
+    @WestCacheable(manager = "configExpiring", keyer = "simple",
+            specs = "ttlConfigKey=ttlConfig")
+    public long doTtl() {
+        return System.currentTimeMillis();
+    }
+
     @Autowired JedisCommands thisRedis;
     @Autowired @Qualifier("that") JedisCommands thatRedis;
 

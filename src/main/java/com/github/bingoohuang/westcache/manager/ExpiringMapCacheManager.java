@@ -25,9 +25,9 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
         super(new ExpiringMapCache());
     }
 
-    private static class ExpiringMapCache implements WestCache {
+    public static class ExpiringMapCache implements WestCache {
         static WestCacheItem lockItem = new WestCacheItem(null);
-        final ExpiringMap<String, WestCacheItem> cache =
+        final protected ExpiringMap<String, WestCacheItem> cache =
                 ExpiringMap.builder()
                         .variableExpiration()
                         .build();
@@ -50,7 +50,7 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
             if (cacheItem2 != null) return cacheItem2;
 
             val cacheItem3 = Envs.execute(callable);
-            putItem(cache, option, cacheKey, cacheItem3);
+            putItem(option, cacheKey, cacheItem3);
 
             return cacheItem3;
         }
@@ -74,31 +74,34 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
         }
 
         @Override
-        public void invalidate(WestCacheOption option, String cacheKey, String version) {
+        public void invalidate(WestCacheOption option,
+                               String cacheKey,
+                               String version) {
             cache.remove(cacheKey);
+        }
+
+        protected void putItem(WestCacheOption option,
+                               String cacheKey,
+                               WestCacheItem cacheItem) {
+            // expireAfterAccess=[duration];expireAfterWrite=[duration];
+            // Durations are represented by an integer,
+            // followed by one of "d", "h", "m", or "s",
+            // representing days, hours, minutes, or seconds respectively.
+            val keyW = "expireAfterWrite";
+            val keyA = "expireAfterAccess";
+            val expireWrite = option.getSpecs().get(keyW);
+            val expireAccess = option.getSpecs().get(keyA);
+            if (isNotBlank(expireWrite)) {
+                val duration = Durations.parse(keyW, expireWrite, SECONDS);
+                cache.put(cacheKey, cacheItem, CREATED, duration, SECONDS);
+            } else if (isNotBlank(expireAccess)) {
+                val duration = Durations.parse(keyA, expireAccess, SECONDS);
+                cache.put(cacheKey, cacheItem, ACCESSED, duration, SECONDS);
+            } else {
+                cache.put(cacheKey, cacheItem);
+            }
         }
     }
 
-    private static void putItem(ExpiringMap<String, WestCacheItem> cache,
-                                WestCacheOption option,
-                                String cacheKey,
-                                WestCacheItem cacheItem) {
-        // expireAfterAccess=[duration];expireAfterWrite=[duration];
-        // Durations are represented by an integer,
-        // followed by one of "d", "h", "m", or "s",
-        // representing days, hours, minutes, or seconds respectively.
-        val keyW = "expireAfterWrite";
-        val keyA = "expireAfterAccess";
-        val expireWrite = option.getSpecs().get(keyW);
-        val expireAccess = option.getSpecs().get(keyA);
-        if (isNotBlank(expireWrite)) {
-            val duration = Durations.parse(keyW, expireWrite, SECONDS);
-            cache.put(cacheKey, cacheItem, CREATED, duration, SECONDS);
-        } else if (isNotBlank(expireAccess)) {
-            val duration = Durations.parse(keyA, expireAccess, SECONDS);
-            cache.put(cacheKey, cacheItem, ACCESSED, duration, SECONDS);
-        } else {
-            cache.put(cacheKey, cacheItem);
-        }
-    }
+
 }

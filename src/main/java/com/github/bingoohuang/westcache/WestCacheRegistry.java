@@ -3,8 +3,8 @@ package com.github.bingoohuang.westcache;
 import com.github.bingoohuang.westcache.base.*;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.ByPassCacheFlusher;
-import com.github.bingoohuang.westcache.flusher.QuartzCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.DiamondCacheFlusher;
+import com.github.bingoohuang.westcache.flusher.QuartzCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.SimpleCacheFlusher;
 import com.github.bingoohuang.westcache.interceptor.ByPassInterceptor;
 import com.github.bingoohuang.westcache.interceptor.RedisInterceptor;
@@ -41,6 +41,8 @@ public abstract class WestCacheRegistry {
         if (Envs.hasEql) flusherRegistry.register("table", new TableCacheFlusher());
         if (Envs.hasQuartz) flusherRegistry.register("quartz", new QuartzCacheFlusher());
     }
+
+
 
     public static void flush(WestCacheOption option,
                              Object bean,

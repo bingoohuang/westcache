@@ -75,4 +75,14 @@ public class DemoServiceTest {
         assertThat(l3).isGreaterThan(l1);
     }
 
+    @Test
+    public void ttlConfig() {
+        long l1 = service.doTtl();
+        long l2 = service.doTtl();
+        assertThat(l1).isEqualTo(l2);
+
+        Envs.sleepMillis(1100);
+        long l3 = service.doTtl();
+        assertThat(l3).isGreaterThan(l1);
+    }
 }
