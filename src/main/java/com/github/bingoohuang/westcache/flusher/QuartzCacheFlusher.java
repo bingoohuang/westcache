@@ -2,11 +2,7 @@ package com.github.bingoohuang.westcache.flusher;
 
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
-import com.github.bingoohuang.westcache.utils.Envs;
-import com.github.bingoohuang.westcache.utils.Guavas;
-import com.github.bingoohuang.westcache.utils.Quartz;
-import com.github.bingoohuang.westcache.utils.ScheduledParser;
-import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.github.bingoohuang.westcache.utils.*;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -57,8 +53,8 @@ public class QuartzCacheFlusher extends ByPassCacheFlusher {
                     }
                 });
 
-                val parsed = new ScheduledParser(scheduled).parse();
-                quartz.scheduleJob(job, parsed.getTrigger());
+                val trigger = new ScheduledParser(scheduled).parse();
+                quartz.scheduleJob(job, trigger);
                 return Pair.of(option, cache);
             }
         });

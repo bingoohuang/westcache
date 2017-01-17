@@ -4,7 +4,9 @@ import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.quartz.ScheduleBuilder;
 import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
 
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -50,7 +52,7 @@ public class ScheduledParser {
      *
      * @return Scheduled parsed result.
      */
-    public Scheduled parse() {
+    public Trigger parse() {
         DateTime fromDate = parseDate(fromPattern, "00:00:00");
         DateTime toDate = parseDate(toPattern, "23:59:59");
         if (fromDate != null && toDate != null && fromDate.isAfterNow()) {
@@ -58,16 +60,25 @@ public class ScheduledParser {
                     "because of from-date is after of to-date");
         }
 
-        Trigger trigger;
+        ScheduleBuilder<? extends Trigger> scheduleBuilder;
         if (StringUtils.startsWithIgnoreCase(schedulerExpr, "Every")) {
-            trigger = parseEveryExpr(schedulerExpr.substring("Every".length()));
+            scheduleBuilder = parseEveryExpr(schedulerExpr.substring("Every".length()));
         } else if (StringUtils.startsWithIgnoreCase(schedulerExpr, "At")) {
-            trigger = parseAtExpr(schedulerExpr.substring("At".length()));
+            scheduleBuilder = parseAtExpr(schedulerExpr.substring("At".length()));
         } else {
-            trigger = parseCron(schedulerExpr);
+            scheduleBuilder = parseCron(schedulerExpr);
         }
 
-        return new Scheduled(fromDate, toDate, trigger);
+        TriggerBuilder<? extends Trigger> triggerBuilder;
+        triggerBuilder = newTrigger().withSchedule(scheduleBuilder);
+        if (fromDate != null && fromDate.isAfterNow()) {
+            triggerBuilder.startAt(fromDate.toDate());
+        }
+        if (toDate != null && toDate.isAfterNow()) {
+            triggerBuilder.endAt(toDate.toDate());
+        }
+
+        return triggerBuilder.build();
     }
 
     private DateTime parseDate(Pattern pattern, String defaultTime) {
@@ -92,16 +103,14 @@ public class ScheduledParser {
         return StringUtils.trim(removed);
     }
 
-    private Trigger parseCron(String schedulerExpr) {
-        return newTrigger()
-                .withSchedule(cronSchedule(schedulerExpr))
-                .build();
+    private ScheduleBuilder<? extends Trigger> parseCron(String schedulerExpr) {
+        return cronSchedule(schedulerExpr);
     }
 
     static Pattern atExprPattern = Pattern.compile(
             "\\s+(\\d\\d|\\?\\?):(\\d\\d)", Pattern.CASE_INSENSITIVE);
 
-    private Trigger parseAtExpr(String atExpr) {
+    private ScheduleBuilder<? extends Trigger> parseAtExpr(String atExpr) {
         Matcher matcher = atExprPattern.matcher(atExpr);
         if (!matcher.find())
             throw new RuntimeException(atExpr + " is not valid");
@@ -117,16 +126,13 @@ public class ScheduledParser {
         int hourOfDay = dateTime.getHourOfDay();
         int minuteOfHour = dateTime.getMinuteOfHour();
 
-
-        return newTrigger()
-                .withSchedule(dailyAtHourAndMinute(hourOfDay, minuteOfHour))
-                .build();
+        return dailyAtHourAndMinute(hourOfDay, minuteOfHour);
     }
 
     static Pattern everyExprPattern = Pattern.compile(
             "\\s+(\\d+)\\s*(h|hour|m|minute|s|second)s?", Pattern.CASE_INSENSITIVE);
 
-    private Trigger parseEveryExpr(String everyExpr) {
+    private ScheduleBuilder<? extends Trigger> parseEveryExpr(String everyExpr) {
         Matcher matcher = everyExprPattern.matcher(everyExpr);
         if (!matcher.find())
             throw new RuntimeException(everyExpr + " is not valid");
@@ -137,11 +143,9 @@ public class ScheduledParser {
         char unit = matcher.group(2).charAt(0);
         TimeUnit timeUnit = parseTimeUnit(unit);
 
-        return newTrigger()
-                .withSchedule(simpleSchedule()
-                        .withIntervalInSeconds((int) timeUnit.toSeconds(num))
-                        .repeatForever())
-                .build();
+        return simpleSchedule()
+                .withIntervalInSeconds((int) timeUnit.toSeconds(num))
+                .repeatForever();
     }
 
     private TimeUnit parseTimeUnit(char unit) {
@@ -158,6 +162,4 @@ public class ScheduledParser {
                 return TimeUnit.SECONDS;
         }
     }
-
-
 }
