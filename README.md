@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/bingoohuang/westcache.svg?branch=master)](https://travis-ci.org/bingoohuang/westcache)
 [![Coverage Status](https://coveralls.io/repos/github/bingoohuang/westcache/badge.svg?branch=master)](https://coveralls.io/github/bingoohuang/westcache?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.bingoohuang/westcache/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/com.github.bingoohuang/westcache/)
+[![License](http://img.shields.io/:license-apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 # westcache
 Java annotation based cache, with convenience for cache flush.
