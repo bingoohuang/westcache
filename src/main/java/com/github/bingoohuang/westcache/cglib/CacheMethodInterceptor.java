@@ -2,7 +2,9 @@ package com.github.bingoohuang.westcache.cglib;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.QuietCloseable;
+import com.github.bingoohuang.westcache.utils.WestCacheConnector;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -32,10 +34,17 @@ public abstract class CacheMethodInterceptor<T> {
                             T methodProxy) {
         val option = WestCacheOption.parseWestCacheable(method);
         if (option == null) return invokeRaw(obj, args, methodProxy);
+        if (connectWestCacheOption(option)) return null;
 
         return cacheGet(option, obj, method, args, methodProxy);
     }
 
+    private boolean connectWestCacheOption(WestCacheOption option) {
+        if (!WestCacheConnector.isThreadLocalOptionTag()) return false;
+
+        WestCacheConnector.setThreadlocal(option);
+        return true;
+    }
 
     private Object cacheGet(final WestCacheOption option,
                             final Object obj,
@@ -43,6 +52,7 @@ public abstract class CacheMethodInterceptor<T> {
                             final Object[] args,
                             final T proxy) {
         val cacheKey = getCacheKey(option, obj, method, args, proxy);
+        if (isConnectedToClearOrNewValue(option, cacheKey)) return null;
 
         val start = System.currentTimeMillis();
         @Cleanup val i = new QuietCloseable() {
@@ -61,6 +71,20 @@ public abstract class CacheMethodInterceptor<T> {
                     }
                 });
         return item.getObject().orNull();
+    }
+
+    private boolean isConnectedToClearOrNewValue(WestCacheOption option,
+                                                 String cacheKey) {
+        if (WestCacheConnector.isThreadLocalEmpty()) return false;
+        if (WestCacheConnector.isThreadLocalOptionTag()) return false;
+
+        option.getManager().invalidate(option, cacheKey, null);
+        if (WestCacheConnector.isThreadLocalClearTag()) return true;
+
+        Optional<Object> newValue = WestCacheConnector.getThreadLocal();
+        option.getManager().put(option, cacheKey, new WestCacheItem(newValue));
+
+        return true;
     }
 
     private void checkNoneAbstractMethod(String cacheKey, Method method) {

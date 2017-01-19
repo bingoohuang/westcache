@@ -13,4 +13,6 @@ public interface WestCacheManager {
     WestCacheItem get(WestCacheOption option, String cacheKey);
 
     void put(WestCacheOption option, String cacheKey, WestCacheItem cacheValue);
+
+    void invalidate(WestCacheOption option, String cacheKey, String version);
 }

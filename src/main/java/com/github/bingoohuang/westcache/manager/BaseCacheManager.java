@@ -101,4 +101,9 @@ public abstract class BaseCacheManager implements WestCacheManager {
                     WestCacheItem cacheValue) {
         westCache.put(option, cacheKey, cacheValue);
     }
+
+    @Override
+    public void invalidate(WestCacheOption option, String cacheKey, String version) {
+        westCache.invalidate(option, cacheKey, version);
+    }
 }

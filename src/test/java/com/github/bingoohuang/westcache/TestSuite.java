@@ -54,6 +54,7 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         QuartzFlusherTest.class,
         ScheduledParserTest.class,
         WestCacheFactoryTest.class,
+        WestCacheConnectorTest.class,
 })
 public class TestSuite {
     @ClassRule

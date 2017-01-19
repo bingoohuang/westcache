@@ -31,5 +31,6 @@ public class MiscTest {
         new WestCacheFactory(){};
         new WestCacheRegistry(){};
         new Guavas(){};
+        new WestCacheConnector() {};
     }
 }

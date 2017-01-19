@@ -1,11 +1,11 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.westcache.utils.WestCacheConnector;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
 import org.junit.Test;
 
-import static com.github.bingoohuang.westcache.utils.WestCacheOption.newBuilder;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -35,7 +35,11 @@ public class RefreshTest {
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(north);
 
-        val option = newBuilder().flusher("simple").build();
+        val option = WestCacheConnector.getWestCacheOption(new Runnable() {
+            @Override public void run() {
+                bean.getHomeAreaWithCache();
+            }
+        });
         WestCacheRegistry.flush(option, bean, "getHomeAreaWithCache");
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(south);
