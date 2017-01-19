@@ -25,6 +25,8 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     @Getter volatile long lastExecuted = -1;
     Cache<String, Optional<Map<String, String>>> prefixDirectCache
             = CacheBuilder.newBuilder().build();
+    private ScheduledExecutorService executorService
+            = Executors.newSingleThreadScheduledExecutor();
 
     @Override
     public boolean isKeyEnabled(WestCacheOption option, String cacheKey) {
@@ -129,8 +131,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         firstCheckBeans(option, cacheKey);
 
         val intervalMillis = option.getConfig().rotateIntervalMillis();
-        val executor = option.getConfig().executorService();
-        scheduledFuture = executor.scheduleAtFixedRate(new Runnable() {
+        scheduledFuture = executorService.scheduleAtFixedRate(new Runnable() {
             @Override public void run() {
                 checkBeans(option, cacheKey);
             }
@@ -147,12 +148,11 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
     private Object futureGet(final WestCacheOption option,
                              final String cacheKey) {
-        Future<Object> future = option.getConfig().executorService()
-                .submit(new Callable<Object>() {
-                    @Override public Object call() throws Exception {
-                        return checkBeans(option, cacheKey);
-                    }
-                });
+        Future<Object> future = executorService.submit(new Callable<Object>() {
+            @Override public Object call() throws Exception {
+                return checkBeans(option, cacheKey);
+            }
+        });
 
         long timeout = option.getConfig().timeoutMillisToSnapshot();
         try {

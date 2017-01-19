@@ -19,11 +19,4 @@ public interface WestCacheConfig {
      * @return timeout millis.
      */
     long timeoutMillisToSnapshot();
-
-    /**
-     * The thread pool for snapshot timeout and rotate checker.
-     *
-     * @return thread pool.
-     */
-    ScheduledExecutorService executorService();
 }

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -64,7 +65,8 @@ public abstract class BaseCacheManager implements WestCacheManager {
     private WestCacheItem trySnapshot(final WestCacheOption option,
                                       final String cacheKey,
                                       final Callable<WestCacheItem> callable) {
-        val future = option.getConfig().executorService().submit(
+        val executorService = Executors.newSingleThreadScheduledExecutor();
+        val future = executorService.submit(
                 new Callable<WestCacheItem>() {
                     @Override public WestCacheItem call() throws Exception {
                         val item = Envs.execute(callable);
