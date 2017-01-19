@@ -31,7 +31,7 @@ public abstract class WestCacheConnector {
         return THREADLOCAL.get();
     }
 
-    public static void setThreadlocal(Object object) {
+    public static void setThreadLocal(Object object) {
         THREADLOCAL.set(Optional.fromNullable(object));
     }
 

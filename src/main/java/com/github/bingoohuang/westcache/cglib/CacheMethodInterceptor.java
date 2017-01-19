@@ -4,7 +4,6 @@ import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.WestCacheConnector;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
-import com.google.common.base.Optional;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -42,7 +41,7 @@ public abstract class CacheMethodInterceptor<T> {
     private boolean connectWestCacheOption(WestCacheOption option) {
         if (!WestCacheConnector.isThreadLocalOptionTag()) return false;
 
-        WestCacheConnector.setThreadlocal(option);
+        WestCacheConnector.setThreadLocal(option);
         return true;
     }
 
@@ -78,11 +77,12 @@ public abstract class CacheMethodInterceptor<T> {
         if (WestCacheConnector.isThreadLocalEmpty()) return false;
         if (WestCacheConnector.isThreadLocalOptionTag()) return false;
 
-        option.getManager().invalidate(option, cacheKey, null);
+        val manager = option.getManager();
+        manager.invalidate(option, cacheKey, null);
         if (WestCacheConnector.isThreadLocalClearTag()) return true;
 
-        Optional<Object> newValue = WestCacheConnector.getThreadLocal();
-        option.getManager().put(option, cacheKey, new WestCacheItem(newValue));
+        val newValue = WestCacheConnector.getThreadLocal();
+        manager.put(option, cacheKey, new WestCacheItem(newValue));
 
         return true;
     }
