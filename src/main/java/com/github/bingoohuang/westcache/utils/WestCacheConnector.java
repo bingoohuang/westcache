@@ -64,11 +64,10 @@ public abstract class WestCacheConnector {
         return (T) cachedValue;
     }
 
-
     /**
      * Get the option for the cache method.
      *
-     * @param ￿￿￿￿runnable Runnable to call cached method.
+     * @param runnable Runnable to call cached method.
      * @return WestCacheOption
      */
     public static WestCacheOption getWestCacheOption(Runnable runnable) {
