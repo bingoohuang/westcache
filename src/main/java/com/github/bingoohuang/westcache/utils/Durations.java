@@ -9,7 +9,7 @@ import static java.lang.String.format;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/2.
  */
 public abstract class Durations {
-    public static long parse(String key, String spec, TimeUnit targetTimeUnit) {
+    public static long parse(String key, String spec) {
         checkArgument(spec != null && !spec.isEmpty(),
                 "value of key %s omitted", key);
         try {
@@ -17,7 +17,7 @@ public abstract class Durations {
             TimeUnit timeUnit = parseTimeUnit(key, spec, lastChar);
 
             long duration = Long.parseLong(spec.substring(0, spec.length() - 1));
-            return targetTimeUnit.convert(duration, timeUnit);
+            return TimeUnit.SECONDS.convert(duration, timeUnit);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(
                     format("key %s value set to %s, must be integer", key, spec));

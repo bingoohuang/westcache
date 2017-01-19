@@ -2,7 +2,6 @@ package com.github.bingoohuang.westcache.manager;
 
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
-import com.github.bingoohuang.westcache.utils.Durations;
 import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
@@ -12,6 +11,8 @@ import net.jodah.expiringmap.ExpiringMap;
 
 import java.util.concurrent.Callable;
 
+import static com.github.bingoohuang.westcache.utils.Durations.parse;
+import static com.github.bingoohuang.westcache.utils.ExpireAfterWrites.parseExpireAfterWrite;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.jodah.expiringmap.ExpirationPolicy.ACCESSED;
 import static net.jodah.expiringmap.ExpirationPolicy.CREATED;
@@ -22,10 +23,10 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 public class ExpiringMapCacheManager extends BaseCacheManager {
     public ExpiringMapCacheManager() {
-        super(new ExpiringMapCache());
+        super(new ExpiringCache());
     }
 
-    public static class ExpiringMapCache implements WestCache {
+    public static class ExpiringCache implements WestCache {
         static WestCacheItem lockItem = new WestCacheItem(null);
         final protected ExpiringMap<String, WestCacheItem> cache =
                 ExpiringMap.builder()
@@ -82,23 +83,21 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
 
         protected void putItem(WestCacheOption option,
                                String cacheKey,
-                               WestCacheItem cacheItem) {
+                               WestCacheItem item) {
             // expireAfterAccess=[duration];expireAfterWrite=[duration];
             // Durations are represented by an integer,
             // followed by one of "d", "h", "m", or "s",
             // representing days, hours, minutes, or seconds respectively.
-            val keyW = "expireAfterWrite";
-            val keyA = "expireAfterAccess";
-            val expireWrite = option.getSpecs().get(keyW);
-            val expireAccess = option.getSpecs().get(keyA);
+            val expireWrite = parseExpireAfterWrite(option, item.orNull());
+            val expireAccess = option.getSpecs().get("expireAfterAccess");
             if (isNotBlank(expireWrite)) {
-                val duration = Durations.parse(keyW, expireWrite, SECONDS);
-                cache.put(cacheKey, cacheItem, CREATED, duration, SECONDS);
+                val duration = parse("expireAfterWrite", expireWrite);
+                cache.put(cacheKey, item, CREATED, duration, SECONDS);
             } else if (isNotBlank(expireAccess)) {
-                val duration = Durations.parse(keyA, expireAccess, SECONDS);
-                cache.put(cacheKey, cacheItem, ACCESSED, duration, SECONDS);
+                val duration = parse("expireAfterAccess", expireAccess);
+                cache.put(cacheKey, item, ACCESSED, duration, SECONDS);
             } else {
-                cache.put(cacheKey, cacheItem);
+                cache.put(cacheKey, item);
             }
         }
     }

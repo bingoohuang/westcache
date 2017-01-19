@@ -31,7 +31,7 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         DiamondFlusherTest.class,
         DiamondManagerTest.class,
         ExceptionTest.class,
-        ExpiringMapCacheManagerTest.class,
+        ExpiringCacheManagerTest.class,
         FileCacheManagerTest.class,
         FirstTest.class,
         FlushSnapshotTest.class,
@@ -55,6 +55,8 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         ScheduledParserTest.class,
         WestCacheFactoryTest.class,
         WestCacheConnectorTest.class,
+        DynamicExpireAfterWriteTest.class,
+        ExpireAfterWritesTest.class,
 })
 public class TestSuite {
     @ClassRule

@@ -21,7 +21,7 @@ import static com.google.common.truth.Truth.assertThat;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/2.
  */
-public class ExpiringMapCacheManagerTest {
+public class ExpiringCacheManagerTest {
     public static class ExpiringDemoService {
         @Setter private long timestamp;
         @Setter private long timestamp3;
@@ -118,7 +118,7 @@ public class ExpiringMapCacheManagerTest {
     @Test @SneakyThrows
     public void bench() {
         Options opt = new OptionsBuilder()
-                .include(ExpiringMapCacheManagerTest.class.getSimpleName())
+                .include(ExpiringCacheManagerTest.class.getSimpleName())
                 .forks(0)
                 .warmupIterations(1)
                 .measurementIterations(1)

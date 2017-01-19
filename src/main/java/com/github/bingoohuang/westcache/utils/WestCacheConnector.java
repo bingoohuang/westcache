@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.google.common.base.Optional;
 import lombok.Cleanup;
 import lombok.val;
@@ -8,31 +9,32 @@ import lombok.val;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/19.
  */
 public abstract class WestCacheConnector {
-    private static final ThreadLocal<Optional<Object>> THREADLOCAL
-            = new InheritableThreadLocal<Optional<Object>>();
-    private static final Object CLEARTAG = new Object();
-    private static final Object OPTIONTAG = new Object();
+    private static final ThreadLocal<Optional<?>> THREAD_LOCAL
+            = new InheritableThreadLocal<Optional<?>>();
 
-    public static boolean isThreadLocalEmpty() {
-        return THREADLOCAL.get() == null;
+    public static boolean isConnectedAndGoon(WestCacheOption option,
+                                             String cacheKey) {
+        Optional<?> optional = THREAD_LOCAL.get();
+        if (optional == null) return true;
+
+        Object tag = optional.orNull();
+        if (tag == ConnectTag.Option) {
+            THREAD_LOCAL.set(Optional.of(option));
+        } else if (tag == ConnectTag.Key) {
+            THREAD_LOCAL.set(Optional.of(cacheKey));
+        } else if (tag == ConnectTag.Clear) {
+            option.getManager().invalidate(option, cacheKey, null);
+        } else {
+            option.getManager().put(option, cacheKey, new WestCacheItem(tag));
+        }
+
+        return false;
     }
 
-    public static boolean isThreadLocalOptionTag() {
-        Optional<Object> optional = THREADLOCAL.get();
-        return optional != null && optional.orNull() == OPTIONTAG;
-    }
-
-    public static boolean isThreadLocalClearTag() {
-        Optional<Object> optional = THREADLOCAL.get();
-        return optional != null && optional.orNull() == CLEARTAG;
-    }
-
-    public static Optional<Object> getThreadLocal() {
-        return THREADLOCAL.get();
-    }
-
-    public static void setThreadLocal(Object object) {
-        THREADLOCAL.set(Optional.fromNullable(object));
+    public enum ConnectTag {
+        Clear,
+        Option,
+        Key
     }
 
     /**
@@ -41,8 +43,29 @@ public abstract class WestCacheConnector {
      * @param runnable Runnable to call cached method.
      */
     public static void clearCache(Runnable runnable) {
-        connectCache(runnable, CLEARTAG);
+        connectCache(runnable, ConnectTag.Clear);
     }
+
+    /**
+     * Get the option for the cache method.
+     *
+     * @param runnable Runnable to call cached method.
+     * @return WestCacheOption
+     */
+    public static WestCacheOption connectOption(Runnable runnable) {
+        return connectCache(runnable, ConnectTag.Option);
+    }
+
+    /**
+     * Get the key for the cache method call.
+     *
+     * @param runnable Runnable to call cached method.
+     * @return cache key.
+     */
+    public static String connectKey(Runnable runnable) {
+        return connectCache(runnable, ConnectTag.Key);
+    }
+
 
     /**
      * Connect the cache with the new cached value.
@@ -53,32 +76,14 @@ public abstract class WestCacheConnector {
      * @return cached value.
      */
     public static <T> T connectCache(Runnable runnable, Object cachedValue) {
-        THREADLOCAL.set(Optional.fromNullable(cachedValue));
+        THREAD_LOCAL.set(Optional.fromNullable(cachedValue));
         @Cleanup val i = new QuietCloseable() {
             @Override public void close() {
-                THREADLOCAL.remove();
+                THREAD_LOCAL.remove();
             }
         };
 
         runnable.run();
-        return (T) cachedValue;
-    }
-
-    /**
-     * Get the option for the cache method.
-     *
-     * @param runnable Runnable to call cached method.
-     * @return WestCacheOption
-     */
-    public static WestCacheOption getWestCacheOption(Runnable runnable) {
-        THREADLOCAL.set(Optional.fromNullable(OPTIONTAG));
-        @Cleanup val i = new QuietCloseable() {
-            @Override public void close() {
-                THREADLOCAL.remove();
-            }
-        };
-
-        runnable.run();
-        return (WestCacheOption) THREADLOCAL.get().orNull();
+        return (T) THREAD_LOCAL.get().orNull();
     }
 }

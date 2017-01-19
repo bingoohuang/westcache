@@ -35,7 +35,7 @@ public class RefreshTest {
         cached = bean.getHomeAreaWithCache();
         assertThat(cached).isEqualTo(north);
 
-        val option = WestCacheConnector.getWestCacheOption(new Runnable() {
+        val option = WestCacheConnector.connectOption(new Runnable() {
             @Override public void run() {
                 bean.getHomeAreaWithCache();
             }

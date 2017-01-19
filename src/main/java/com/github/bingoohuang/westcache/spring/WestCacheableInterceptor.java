@@ -5,8 +5,6 @@ import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.SneakyThrows;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -15,8 +13,6 @@ import java.lang.reflect.Method;
 public class WestCacheableInterceptor
         extends CacheMethodInterceptor<MethodInvocation>
         implements MethodInterceptor {
-    @Autowired ApplicationContext appContext;
-
     @Override
     public Object invoke(final MethodInvocation invocation) {
         return super.intercept(invocation.getThis(),

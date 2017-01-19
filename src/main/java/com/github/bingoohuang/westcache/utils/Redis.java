@@ -15,7 +15,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static com.github.bingoohuang.westcache.utils.Durations.parse;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -92,14 +92,14 @@ public abstract class Redis {
                                    JedisCommands redis,
                                    String redisKey,
                                    WestCacheItem item) {
-        val json = FastJsons.json(item.orNull());
-        val expireKey = "expireAfterWrite";
-        val expireWrite = option.getSpecs().get(expireKey);
-        if (isBlank(expireWrite)) return redis.set(redisKey, json);
+        String expires = ExpireAfterWrites.parseExpireAfterWrite(option, item.orNull());
 
-        val duration = Durations.parse(expireKey, expireWrite, SECONDS);
-        log.info("redis set {}={} in expire {} seconds", redisKey, json, duration);
+        val json = FastJsons.json(item.orNull());
         val result = redis.set(redisKey, json);
+        if (isBlank(expires)) return result;
+
+        val duration = parse("expireAfterWrite", expires);
+        log.info("redis set {}={} in ttl {} seconds", redisKey, json, duration);
         redis.expire(redisKey, (int) duration);
 
         return result;

@@ -3,6 +3,8 @@ package com.github.bingoohuang.westcache.utils;
 import lombok.SneakyThrows;
 import lombok.val;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.concurrent.*;
 
 /**
@@ -53,5 +55,14 @@ public abstract class Envs {
     public static <T> T newInstance(String loaderClass) {
         val clazz = Class.forName(loaderClass);
         return (T) clazz.newInstance();
+    }
+
+    @SneakyThrows
+    public static <T> T invoke(Method m, Object object) {
+        try {
+            return (T) m.invoke(object);
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
+        }
     }
 }
