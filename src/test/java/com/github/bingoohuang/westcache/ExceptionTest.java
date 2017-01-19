@@ -1,6 +1,5 @@
 package com.github.bingoohuang.westcache;
 
-import lombok.val;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,13 +20,31 @@ public class ExceptionTest {
         public String iWillThrowException() {
             throw new MyTxException("bingoo do this");
         }
+
+        @WestCacheable(snapshot = "file")
+        public String iWillThrowExceptionSnapshot() {
+            throw new MyTxException("bingoo do this");
+        }
     }
+
+    static ExService sevice = WestCacheFactory.create(ExService.class);
 
     @Test
     public void iWillThrowException() {
-        val sevice = WestCacheFactory.create(ExService.class);
         try {
             sevice.iWillThrowException();
+        } catch (MyTxException ex) {
+            assertThat(ex.getMessage()).isEqualTo("bingoo do this");
+            return;
+        }
+
+        Assert.fail();
+    }
+
+    @Test
+    public void iWillThrowExceptionSnapshot() {
+        try {
+            sevice.iWillThrowExceptionSnapshot();
         } catch (MyTxException ex) {
             assertThat(ex.getMessage()).isEqualTo("bingoo do this");
             return;

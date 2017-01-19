@@ -3,10 +3,7 @@ package com.github.bingoohuang.westcache.utils;
 import lombok.SneakyThrows;
 import lombok.val;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/11.
@@ -40,7 +37,11 @@ public abstract class Envs {
 
     @SneakyThrows
     public static <T> T futureGet(Future<T> future, long timeout) throws TimeoutException {
-        return future.get(timeout, TimeUnit.MILLISECONDS);
+        try {
+            return future.get(timeout, TimeUnit.MILLISECONDS);
+        } catch (ExecutionException e) {
+            throw e.getCause();
+        }
     }
 
     @SneakyThrows
