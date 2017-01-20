@@ -57,6 +57,7 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         WestCacheConnectorTest.class,
         DynamicExpireAfterWriteTest.class,
         ExpireAfterWritesTest.class,
+        GuavasTest.class,
 })
 public class TestSuite {
     @ClassRule

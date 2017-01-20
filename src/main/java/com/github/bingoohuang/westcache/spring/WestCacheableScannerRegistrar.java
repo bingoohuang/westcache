@@ -1,6 +1,5 @@
 package com.github.bingoohuang.westcache.spring;
 
-
 import lombok.Setter;
 import lombok.val;
 import org.springframework.beans.BeanUtils;
@@ -25,45 +24,55 @@ public class WestCacheableScannerRegistrar
     /**
      * {@inheritDoc}
      */
-    public void registerBeanDefinitions(
-            AnnotationMetadata importingClassMetadata,
-            BeanDefinitionRegistry registry) {
+    public void registerBeanDefinitions(AnnotationMetadata metadata,
+                                        BeanDefinitionRegistry registry) {
         val name = WestCacheableScan.class.getName();
-        val attributes = importingClassMetadata.getAnnotationAttributes(name);
+        val attributes = metadata.getAnnotationAttributes(name);
         val annoAttrs = AnnotationAttributes.fromMap(attributes);
         val scanner = new WestCacheableClassPathScanner(registry);
-
-        if (resourceLoader != null) { // this check is needed in Spring 3.1
-            scanner.setResourceLoader(resourceLoader);
-        }
-
-        Class<? extends BeanNameGenerator> generatorClass;
-        generatorClass = annoAttrs.getClass("nameGenerator");
-        if (!BeanNameGenerator.class.equals(generatorClass)) {
-            scanner.setBeanNameGenerator(BeanUtils.instantiateClass(generatorClass));
-        }
-
-        List<String> basePackages = new ArrayList<String>();
-        for (val pkg : annoAttrs.getStringArray("value")) {
-            if (StringUtils.hasText(pkg)) {
-                basePackages.add(pkg);
-            }
-        }
-        for (val pkg : annoAttrs.getStringArray("basePackages")) {
-            if (StringUtils.hasText(pkg)) {
-                basePackages.add(pkg);
-            }
-        }
-        for (val clazz : annoAttrs.getClassArray("basePackageClasses")) {
-            basePackages.add(ClassUtils.getPackageName(clazz));
-        }
-
-        if (basePackages.isEmpty()) {
-            val className = importingClassMetadata.getClassName();
-            basePackages.add(ClassUtils.getPackageName(className));
-        }
+        setScannerResLoader(scanner);
+        setBeanNameGenerator(annoAttrs, scanner);
+        String[] basePackages = addBasePakcages(metadata, annoAttrs);
 
         scanner.registerFilters();
-        scanner.doScan(StringUtils.toStringArray(basePackages));
+        scanner.doScan(basePackages);
+    }
+
+    private void setScannerResLoader(WestCacheableClassPathScanner scanner) {
+        // this check is needed in Spring 3.1
+        if (resourceLoader != null) scanner.setResourceLoader(resourceLoader);
+    }
+
+    private void setBeanNameGenerator(AnnotationAttributes annoAttrs,
+                                      WestCacheableClassPathScanner scanner) {
+        val generatorClass = annoAttrs.getClass("nameGenerator");
+        if (BeanNameGenerator.class.equals(generatorClass)) return;
+
+        val generator = BeanUtils.instantiateClass(generatorClass);
+        scanner.setBeanNameGenerator((BeanNameGenerator) generator);
+    }
+
+    private String[] addBasePakcages(AnnotationMetadata metadata,
+                                     AnnotationAttributes attrs) {
+        List<String> basePkgs = new ArrayList<String>();
+        addBasePackages(attrs, basePkgs, "value");
+        addBasePackages(attrs, basePkgs, "basePackages");
+        for (val clz : attrs.getClassArray("basePackageClasses")) {
+            basePkgs.add(ClassUtils.getPackageName(clz));
+        }
+
+        if (basePkgs.isEmpty()) {
+            basePkgs.add(ClassUtils.getPackageName(metadata.getClassName()));
+        }
+
+        return StringUtils.toStringArray(basePkgs);
+    }
+
+    private void addBasePackages(AnnotationAttributes annoAttrs,
+                                 List<String> basePackages,
+                                 String attrName) {
+        for (val pkg : annoAttrs.getStringArray(attrName)) {
+            if (StringUtils.hasText(pkg)) basePackages.add(pkg);
+        }
     }
 }
