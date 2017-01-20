@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -61,6 +62,7 @@ public class TableCacheFlusherTest {
         public abstract String specs();
 
         public abstract String specsRedis();
+        public abstract String specsRedis2();
     }
 
     public static TitaService service = WestCacheFactory.create(TitaService.class);
@@ -197,6 +199,18 @@ public class TableCacheFlusherTest {
 
         val r1 = service.specsRedis();
         assertThat(r1).isEqualTo("I am redis body");
-    }
 
+        Helper.disableConfigBean(flusher, bean);
+        try {
+            service.specsRedis();
+
+        } catch (Throwable ex) {
+            assertThat(ex.getMessage()).isEqualTo(
+                    "cache key TableCacheFlusherTest.TitaService.specsRedis " +
+                            "missed executable body in abstract method " +
+                            "com.github.bingoohuang.westcache.TableCacheFlusherTest$TitaService.specsRedis");
+            return;
+        }
+        Assert.fail();
+    }
 }

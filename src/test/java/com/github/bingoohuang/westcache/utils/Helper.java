@@ -66,4 +66,12 @@ public class Helper {
         flusher.getDao().addBean(bean);
         waitFlushRun(flusher, lastExecuted);
     }
+
+
+    public static void disableConfigBean(TableCacheFlusher flusher,
+                                     WestCacheFlusherBean bean) {
+        long lastExecuted = flusher.getLastExecuted();
+        flusher.getDao().disableBean(bean);
+        waitFlushRun(flusher, lastExecuted);
+    }
 }

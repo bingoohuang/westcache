@@ -140,15 +140,6 @@ public abstract class Anns {
         }
     }
 
-    public static boolean isWestCacheAnnotated(Class c) {
-        for (Method m : c.getMethods()) {
-            val option = WestCacheOption.parseWestCacheable(m);
-            if (option != null) return true;
-        }
-
-        return false;
-    }
-
     public static boolean isFastWestCacheAnnotated(Class c) {
         for (Method m : c.getMethods()) {
             val yes = WestCacheOption.isFastWestCacheable(m);

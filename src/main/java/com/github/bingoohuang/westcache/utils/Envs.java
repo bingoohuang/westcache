@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.utils;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,6 +11,7 @@ import java.util.concurrent.*;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/11.
  */
+@Slf4j
 public abstract class Envs {
     public static boolean hasSpring = classExists("org.springframework.context.ApplicationContext");
     public static boolean hasDiamond = classExists("org.n3r.diamond.client.DiamondListener");
@@ -63,6 +65,22 @@ public abstract class Envs {
             return (T) m.invoke(object);
         } catch (InvocationTargetException e) {
             throw e.getCause();
+        }
+    }
+
+    public static <T> T trySnapshot(WestCacheOption option,
+                                    Future<T> future,
+                                    String cacheKey) {
+        val timeout = option.getConfig().timeoutMillisToSnapshot();
+        try {
+            return Envs.futureGet(future, timeout);
+        } catch (TimeoutException ex) {
+            log.info("get cache {} timeout in {} millis," +
+                    " try snapshot", cacheKey, timeout);
+            val result = option.getSnapshot().readSnapshot(option, cacheKey);
+            log.info("got {} snapshot {}", cacheKey,
+                    result != null ? result.getObject() : " non-exist");
+            return result != null ? (T) result : Envs.futureGet(future);
         }
     }
 }

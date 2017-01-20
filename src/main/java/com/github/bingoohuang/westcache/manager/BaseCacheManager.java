@@ -77,17 +77,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
                     }
                 });
 
-        val timeout = option.getConfig().timeoutMillisToSnapshot();
-        try {
-            return Envs.futureGet(future, timeout);
-        } catch (TimeoutException e) {
-            log.info("get cache {} timeout in {} millis," +
-                    " try snapshot", cacheKey, timeout);
-            val result = option.getSnapshot().readSnapshot(option, cacheKey);
-            log.info("got {} snapshot {}", cacheKey,
-                    result != null ? result.getObject() : " non-exist");
-            return result != null ? result : Envs.futureGet(future);
-        }
+        return Envs.trySnapshot(option, future, cacheKey);
     }
 
     @Override

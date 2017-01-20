@@ -54,10 +54,6 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         if (future.isDone()) return;
 
         future.cancel(false);
-        while (!future.isDone()) {
-            Envs.sleepMillis(100L);
-        }
-
         lastExecuted = -1;
     }
 
@@ -67,23 +63,18 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         val bean = findBean(cacheKey);
         if (bean == null) return Optional.absent();
 
-        if (!"direct".equals(bean.getValueType())) {
-            return Optional.absent();
+        Object value = null;
+        if ("direct".equals(bean.getValueType())) {
+            if ("full".equals(bean.getKeyMatch())) {
+                value = readDirectValue(option, bean, DirectValueType.FULL);
+            } else if ("prefix".equals(bean.getKeyMatch())) {
+                int subKeyStart = bean.getCacheKey().length() + 1;
+                val subKey = cacheKey.substring(subKeyStart);
+                value = readSubDirectValue(option, bean, subKey);
+            }
         }
 
-        if ("full".equals(bean.getKeyMatch())) {
-            Object value = readDirectValue(option, bean, DirectValueType.FULL);
-            return Optional.fromNullable(value);
-        }
-
-        if ("prefix".equals(bean.getKeyMatch())) {
-            val subKey = cacheKey.substring(bean.getCacheKey().length() + 1);
-            Object value = readSubDirectValue(option, bean, subKey);
-            return Optional.fromNullable(value);
-        }
-
-        throw new IllegalArgumentException("key match {" + bean.getKeyMatch()
-                + "} is not supported, please use full or prefix");
+        return Optional.fromNullable(value);
     }
 
     protected abstract List<WestCacheFlusherBean> queryAllBeans();
@@ -148,26 +139,14 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
     private Object futureGet(final WestCacheOption option,
                              final String cacheKey) {
-        Future<Object> future = executorService.submit(new Callable<Object>() {
+        val future = executorService.submit(new Callable<Object>() {
             @Override public Object call() throws Exception {
                 return checkBeans(option, cacheKey);
             }
         });
 
-        long timeout = option.getConfig().timeoutMillisToSnapshot();
-        try {
-            return Envs.futureGet(future, timeout);
-        } catch (TimeoutException ex) {
-            log.info("get first check beans {} timeout in " +
-                    "{} millis, try snapshot", cacheKey, timeout);
-            val result = option.getSnapshot().
-                    readSnapshot(option, cacheKey + ".tableflushers");
-            log.info("got {} snapshot {}", cacheKey,
-                    result != null ? result.getObject() : " non-exist");
-            if (result != null) return 1;
-        }
-
-        return Envs.futureGet(future);
+        String tableFlusherKey = cacheKey + ".tableflushers";
+        return Envs.trySnapshot(option, future, tableFlusherKey);
     }
 
     protected int checkBeans(WestCacheOption option, String cacheKey) {
@@ -205,15 +184,12 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         Map<String, String> prefixKeys = Maps.newHashMap();
         Map<String, String> fullKeys = Maps.newHashMap();
         getFlushKeys(flushKeys, prefixKeys, fullKeys);
+        log.debug("flush full keys:{}, prefix keys:{}", fullKeys, prefixKeys);
 
-        log.debug("flush full keys:{}", fullKeys);
-        log.debug("flush prefix keys:{}", prefixKeys);
-
-        for (Map.Entry<String, String> entry : fullKeys.entrySet()) {
+        for (val entry : fullKeys.entrySet()) {
             flush(option, entry.getKey(), entry.getValue());
         }
-
-        for (Map.Entry<String, String> entry : prefixKeys.entrySet()) {
+        for (val entry : prefixKeys.entrySet()) {
             flushPrefix(entry.getKey());
         }
     }
@@ -224,12 +200,16 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         Map<String, WestCacheFlusherBean> flushKeys = Maps.newHashMap();
         for (val bean : table) {
             val found = find(bean, beans);
-            if (found == null ||
-                    found.getValueVersion() != bean.getValueVersion()) {
+            if (isBeanChanged(found, bean)) {
                 flushKeys.put(bean.getCacheKey(), bean);
             }
         }
         return flushKeys;
+    }
+
+    private boolean isBeanChanged(WestCacheFlusherBean found,
+                                  WestCacheFlusherBean old) {
+        return found == null || found.getValueVersion() != old.getValueVersion();
     }
 
     private void getFlushKeys(Map<String, WestCacheFlusherBean> flushKeys,
@@ -255,11 +235,10 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         prefixDirectCache.invalidate(prefixKey);
     }
 
-    protected WestCacheFlusherBean find(WestCacheFlusherBean bean,
+    protected WestCacheFlusherBean find(WestCacheFlusherBean old,
                                         List<WestCacheFlusherBean> beans) {
-        for (val newbean : beans) {
-            if (bean.getCacheKey().equals(newbean.getCacheKey()))
-                return newbean;
+        for (val newone : beans) {
+            if (old.getCacheKey().equals(newone.getCacheKey())) return newone;
         }
         return null;
     }

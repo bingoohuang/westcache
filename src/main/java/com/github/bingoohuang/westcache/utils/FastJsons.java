@@ -7,7 +7,6 @@ import lombok.val;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Collection;
 
 /**
@@ -30,15 +29,13 @@ public abstract class FastJsons {
 
     @SneakyThrows @SuppressWarnings("unchecked")
     public static <T> T parse(String json, Method method) {
-        Class<?> returnType = method.getReturnType();
+        val returnType = method.getReturnType();
+        val genericType = method.getGenericReturnType();
 
-        Type genericReturnType = method.getGenericReturnType();
-
-        boolean isCollectionGeneric =
-                genericReturnType instanceof ParameterizedType
-                        && Collection.class.isAssignableFrom(returnType);
+        boolean isCollectionGeneric = genericType instanceof ParameterizedType
+                && Collection.class.isAssignableFrom(returnType);
         if (isCollectionGeneric) {
-            val pType = (ParameterizedType) genericReturnType;
+            val pType = (ParameterizedType) genericType;
             val itemClass = (Class) pType.getActualTypeArguments()[0];
             return (T) JSON.parseArray(json, itemClass);
         }

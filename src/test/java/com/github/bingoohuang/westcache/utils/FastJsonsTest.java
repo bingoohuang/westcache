@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.alibaba.fastjson.JSONException;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -66,5 +67,18 @@ public class FastJsonsTest {
         List<FastBean> bean = FastJsons.parse("[{\"name\":\"abc\", \"age\":123}]", method);
         assertThat(bean).hasSize(1);
         assertThat(bean.get(0)).isEqualTo(new FastBean("abc", 123));
+    }
+
+    @Test @SneakyThrows
+    public void badJson() {
+        Method method = FastInterface.class.getMethod("string");
+        String bean = FastJsons.parse("[{\"name\":\"abc\", \"age\":123]", method);
+        assertThat(bean).isEqualTo("[{\"name\":\"abc\", \"age\":123]");
+    }
+
+    @Test(expected = JSONException.class) @SneakyThrows
+    public void badJsonBean() {
+        Method method = FastInterface.class.getMethod("bean");
+        FastJsons.parse("{\"name\":\"abc\", \"age\":123", method);
     }
 }

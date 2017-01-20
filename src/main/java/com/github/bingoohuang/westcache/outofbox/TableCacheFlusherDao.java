@@ -17,7 +17,7 @@ public interface TableCacheFlusherDao {
             "  KEY_MATCH     VARCHAR(20) DEFAULT 'full' NOT NULL COMMENT 'full:full match,prefix:prefix match'," +
             "  MATCH_PRI     TINYINT DEFAULT 0          NOT NULL COMMENT 'priority to match in descending way'," +
             "  VALUE_VERSION TINYINT DEFAULT 0          NOT NULL COMMENT 'version of cache, increment it to update cache'," +
-            "  CACHE_STATE   TINYINT DEFAULT 1          NOT NULL COMMENT 'direct json value for the cache'," +
+            "  CACHE_STATE   TINYINT DEFAULT 1          NOT NULL COMMENT '0 disabled 1 enabled'," +
             "  VALUE_TYPE    VARCHAR(20) DEFAULT 'none' NOT NULL COMMENT 'value access type, direct: use direct json in DIRECT_VALUE field'," +
             "  SPECS         VARCHAR(1000)              NULL     COMMENT 'specs for extension'," +
             "  DIRECT_VALUE  TEXT, " +
@@ -40,9 +40,10 @@ public interface TableCacheFlusherDao {
     void addBean(WestCacheFlusherBean bean);
 
     @Sql("UPDATE WESTCACHE_FLUSHER " +
-            "SET KEY_MATCH = #?#, VALUE_VERSION = #?#, VALUE_TYPE = #?#, SPECS = #?# " +
-            "WHERE CACHE_KEY = #?#")
-    void updateBean(WestCacheFlusherBean bean);
+            "SET CACHE_STATE = 0 " +
+            "WHERE CACHE_KEY = #?#" +
+            "AND CACHE_STATE <> 0")
+    void disableBean(WestCacheFlusherBean bean);
 
     @Sql("UPDATE WESTCACHE_FLUSHER SET VALUE_VERSION = VALUE_VERSION + 1," +
             "DIRECT_VALUE = #2# " +
