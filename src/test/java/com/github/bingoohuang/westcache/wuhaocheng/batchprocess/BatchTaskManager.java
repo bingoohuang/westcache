@@ -1,5 +1,7 @@
 package com.github.bingoohuang.westcache.wuhaocheng.batchprocess;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.SettableFuture;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -15,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/20.
  */
 @Slf4j
-public class BatchTaskManager<T, V> {
+public class BatchTaskManager<T, V> implements Runnable {
     final Queue<BatchTask<T, V>> queue;
     final ScheduledExecutorService service;
     final BatchTaskWorker<T, V> batchTaskWorker;
@@ -23,24 +25,21 @@ public class BatchTaskManager<T, V> {
     final int maxWaitItems;
     final int maxBatchNum;
 
-    final Runnable runnable = new Runnable() {
-        @Override public void run() {
-            if (queue.isEmpty()) return;
+    @Override public void run() {
+        if (queue.isEmpty()) return;
 
-            val tasks = new ArrayList<BatchTask<T, V>>(queue.size());
-            while (true) {
-                val task = queue.poll();
-                if (task == null) break;
-                tasks.add(task);
-                if (tasks.size() == maxBatchNum) break;
-            }
+        val tasks = new ArrayList<BatchTask<T, V>>(queue.size());
+        do {
+            val task = queue.poll();
+            if (task == null) break;
 
-            if (tasks.isEmpty()) return;
+            tasks.add(task);
+        } while (tasks.size() != maxBatchNum);
 
-            doBatchWork(tasks);
-        }
-    };
+        if (tasks.isEmpty()) return;
 
+        doBatchWork(tasks);
+    }
 
     public BatchTaskManager(Queue<BatchTask<T, V>> queue,
                             ScheduledExecutorService service,
@@ -53,35 +52,34 @@ public class BatchTaskManager<T, V> {
         this.maxWaitMillis = maxWaitSeconds;
         this.maxWaitItems = maxWaitItems;
         this.maxBatchNum = maxBatchNum;
-        service.scheduleWithFixedDelay(runnable,
+        service.scheduleWithFixedDelay(this,
                 maxWaitMillis, maxWaitMillis, TimeUnit.MILLISECONDS);
     }
 
     public Future<V> enroll(T tokenId) {
-        val settableFuture = SettableFuture.<V>create();
-        queue.add(new BatchTask(tokenId, settableFuture));
-        if (queue.size() > maxWaitItems) {
-            service.execute(runnable);
-        }
+        val future = SettableFuture.<V>create();
+        queue.add(new BatchTask(tokenId, future));
+        if (queue.size() >= maxWaitItems) service.execute(this);
 
-        return settableFuture;
+        return future;
     }
 
     private void doBatchWork(List<BatchTask<T, V>> tasks) {
-        int taskSize = tasks.size();
-        val batchArgs = new ArrayList<T>(taskSize);
-        for (val task : tasks) {
-            batchArgs.add(task.getArg());
-        }
+        val batchArgs = Lists.transform(tasks,
+                new Function<BatchTask<T, V>, T>() {
+                    @Override public T apply(BatchTask<T, V> task) {
+                        return task.getArg();
+                    }
+                });
 
         val results = batchTaskWorker.doBatchTasks(batchArgs);
         int resultsSize = results != null ? results.size() : 0;
-        if (resultsSize != taskSize) {
+        if (resultsSize != tasks.size()) {
             log.warn("result size {} is not same with task size {}",
-                    resultsSize, taskSize);
+                    resultsSize, tasks.size());
         }
 
-        for (int i = 0, ii = taskSize; i < ii; ++i) {
+        for (int i = 0, ii = tasks.size(); i < ii; ++i) {
             V result = i < resultsSize ? results.get(i) : null;
             tasks.get(i).getSettableFuture().set(result);
         }

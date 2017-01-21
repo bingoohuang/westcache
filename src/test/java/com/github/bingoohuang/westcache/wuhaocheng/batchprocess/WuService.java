@@ -8,20 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import static com.github.bingoohuang.westcache.wuhaocheng.batchprocess.BatchTaskManagerBuilder.newBuilder;
+
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/20.
  */
 public class WuService implements BatchTaskWorker<String, String> {
-    BatchTaskManager<String, String> manager = new BatchTaskManagerBuilder()
+    BatchTaskManager<String, String> manager = newBuilder(this)
             .maxWaitItems(3) // 达到3个就开工
             .maxWaitMillis(1000) // 或者累计满1秒钟也开工
             .maxBatchNum(10) // 一批最多10个
-            .build(this);
-
-    @WestCacheable(manager = "expiring", specs = "expireAfterWrite=2s")
-    public Future<String> getToken(String tokenId) {
-        return manager.enroll(tokenId);
-    }
+            .build();
 
     @Override
     public List<String> doBatchTasks(List<String> batchArgs) {
@@ -34,4 +31,10 @@ public class WuService implements BatchTaskWorker<String, String> {
 
         return results;
     }
+
+    @WestCacheable(manager = "expiring", specs = "expireAfterWrite=2s")
+    public Future<String> getToken(String tokenId) {
+        return manager.enroll(tokenId);
+    }
+
 }
