@@ -53,7 +53,12 @@ public abstract class Envs {
 
     @SneakyThrows
     public static <T> T futureGet(Future<T> future) {
-        return future.get();
+        try {
+            return future.get();
+        } catch (ExecutionException e) {
+            log.warn("futureGet error", e);
+            throw e.getCause();
+        }
     }
 
     @SneakyThrows @SuppressWarnings("unchecked")

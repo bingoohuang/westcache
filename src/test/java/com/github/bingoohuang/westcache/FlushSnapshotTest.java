@@ -4,6 +4,7 @@ import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -61,7 +62,7 @@ public class FlushSnapshotTest {
                 .snapshot("file").flusher("simple").config("snapshotTest")
                 .build();
         val cacheKey = keyer.getCacheKey(option, "getHomeAreaWithCache", bean);
-        snapshot.saveSnapshot(option, cacheKey, new WestCacheItem(bigDataXXX));
+        snapshot.saveSnapshot(option, cacheKey, new WestCacheItem(Optional.fromNullable(bigDataXXX), option));
 
 
         bean.setHomeArea(north);

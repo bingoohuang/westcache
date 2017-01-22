@@ -4,6 +4,7 @@ import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import lombok.val;
 import org.n3r.diamond.client.Miner;
 
@@ -26,7 +27,8 @@ public class DiamondCacheManager extends BaseCacheManager {
                                  Callable<WestCacheItem> callable) {
             val json = new Miner().getStone(GROUP, cacheKey);
             val object = FastJsons.parse(json, option.getMethod());
-            return new WestCacheItem(object);
+            val optional = Optional.fromNullable(object);
+            return new WestCacheItem(optional, option);
         }
 
         @Override

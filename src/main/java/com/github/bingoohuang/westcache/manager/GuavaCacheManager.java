@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
  */
 public class GuavaCacheManager extends BaseCacheManager {
     public GuavaCacheManager() {
-        super(new GuavaWestCache());
+        super(new ExpireAfterWritableWestCacheAdaptor(new GuavaWestCache()));
     }
 
     public static class GuavaWestCache implements WestCache {

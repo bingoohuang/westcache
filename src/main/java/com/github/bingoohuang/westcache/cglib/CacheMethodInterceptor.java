@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache.cglib;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -59,8 +60,9 @@ public abstract class CacheMethodInterceptor<T> {
                 new Callable<WestCacheItem>() {
                     @Override public WestCacheItem call() {
                         checkNoneAbstractMethod(cacheKey, method);
-                        Object raw = invokeRaw(obj, args, proxy);
-                        return new WestCacheItem(raw);
+                        val raw = invokeRaw(obj, args, proxy);
+                        val optional = Optional.fromNullable(raw);
+                        return new WestCacheItem(optional, option);
                     }
                 });
         return item.getObject().orNull();

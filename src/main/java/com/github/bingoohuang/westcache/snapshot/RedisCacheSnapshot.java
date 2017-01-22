@@ -5,6 +5,7 @@ import com.github.bingoohuang.westcache.base.WestCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.Redis;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import lombok.val;
 
@@ -35,7 +36,8 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
         if (json == null) return null;
 
         val object = FastJsons.parse(json, option.getMethod());
-        return new WestCacheItem(object);
+        val optional = Optional.fromNullable(object);
+        return new WestCacheItem(optional, option);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import lombok.Cleanup;
 import lombok.val;
 import net.jodah.expiringmap.ExpiringMap;
@@ -12,7 +13,6 @@ import net.jodah.expiringmap.ExpiringMap;
 import java.util.concurrent.Callable;
 
 import static com.github.bingoohuang.westcache.utils.Durations.parse;
-import static com.github.bingoohuang.westcache.utils.ExpireAfterWrites.parseExpireAfterWrite;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.jodah.expiringmap.ExpirationPolicy.ACCESSED;
 import static net.jodah.expiringmap.ExpirationPolicy.CREATED;
@@ -27,7 +27,7 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
     }
 
     public static class ExpiringCache implements WestCache {
-        static WestCacheItem lockItem = new WestCacheItem(null);
+        static WestCacheItem lockItem = new WestCacheItem(Optional.absent(), null);
         final protected ExpiringMap<String, WestCacheItem> cache =
                 ExpiringMap.builder()
                         .variableExpiration()
@@ -88,11 +88,10 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
             // Durations are represented by an integer,
             // followed by one of "d", "h", "m", or "s",
             // representing days, hours, minutes, or seconds respectively.
-            val expireWrite = parseExpireAfterWrite(option, item.orNull());
+            val expireWrite = item.getDurationSeconds();
             val expireAccess = option.getSpecs().get("expireAfterAccess");
-            if (isNotBlank(expireWrite)) {
-                val duration = parse("expireAfterWrite", expireWrite);
-                cache.put(cacheKey, item, CREATED, duration, SECONDS);
+            if (expireWrite != 0) {
+                cache.put(cacheKey, item, CREATED, expireWrite, SECONDS);
             } else if (isNotBlank(expireAccess)) {
                 val duration = parse("expireAfterAccess", expireAccess);
                 cache.put(cacheKey, item, ACCESSED, duration, SECONDS);
@@ -101,6 +100,4 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
             }
         }
     }
-
-
 }

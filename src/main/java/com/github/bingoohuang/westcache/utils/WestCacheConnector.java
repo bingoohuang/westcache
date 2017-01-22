@@ -25,7 +25,8 @@ public abstract class WestCacheConnector {
         } else if (tag == ConnectTag.Clear) {
             option.getManager().invalidate(option, cacheKey, null);
         } else {
-            option.getManager().put(option, cacheKey, new WestCacheItem(tag));
+            option.getManager().put(option, cacheKey,
+                    new WestCacheItem(Optional.fromNullable(tag), option));
         }
 
         return false;

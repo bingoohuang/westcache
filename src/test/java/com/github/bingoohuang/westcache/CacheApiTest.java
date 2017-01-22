@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.val;
@@ -32,7 +33,8 @@ public class CacheApiTest {
                 new Callable<WestCacheItem>() {
                     @Override public WestCacheItem call() throws Exception {
                         Object homeAreaWithCache = getHomeAreaWithCache();
-                        return new WestCacheItem(homeAreaWithCache);
+                        val optional = Optional.fromNullable(homeAreaWithCache);
+                        return new WestCacheItem(optional, option);
                     }
                 });
         assertThat(cache.getObject().orNull()).isEqualTo(north);

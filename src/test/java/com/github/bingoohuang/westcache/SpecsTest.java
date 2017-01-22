@@ -5,6 +5,7 @@ import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.keyer.DefaultKeyer;
 import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
@@ -92,7 +93,7 @@ public class SpecsTest {
         List<String> provinces = Lists.newArrayList("江苏省", "浙江省");
         val fileSnapshot = snapshotRegistry.get("file");
 
-        fileSnapshot.saveSnapshot(null, cacheKey, new WestCacheItem(provinces));
+        fileSnapshot.saveSnapshot(null, cacheKey, new WestCacheItem(Optional.fromNullable(provinces), null));
 
         List<String> otherProvinces = Lists.newArrayList("广东省", "广西省");
         myService.setProvinces(otherProvinces);

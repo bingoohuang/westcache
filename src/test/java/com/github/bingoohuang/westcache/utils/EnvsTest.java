@@ -1,6 +1,8 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.google.common.util.concurrent.SettableFuture;
 import org.junit.Test;
+import org.openjdk.jmh.runner.RunnerException;
 
 import java.io.Closeable;
 
@@ -18,5 +20,12 @@ public class EnvsTest {
     @Test(expected = InstantiationException.class)
     public void bad() {
         Envs.newInstance(Closeable.class.getName());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void futureGetException() {
+        SettableFuture<Object> future = SettableFuture.create();
+        future.setException(new RuntimeException());
+        Envs.futureGet(future);
     }
 }

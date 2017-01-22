@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache.utils;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
+import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +15,6 @@ import redis.clients.jedis.JedisPoolConfig;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
-import static com.github.bingoohuang.westcache.utils.Durations.parse;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/3.
@@ -85,20 +83,20 @@ public abstract class Redis {
         if (jsonValue == null) return null;
 
         val value = FastJsons.parse(jsonValue, option.getMethod());
-        return new WestCacheItem(value);
+        val optional = Optional.fromNullable(value);
+        return new WestCacheItem(optional, option);
     }
 
     public static String expirePut(WestCacheOption option,
                                    JedisCommands redis,
                                    String redisKey,
                                    WestCacheItem item) {
-        String expires = ExpireAfterWrites.parseExpireAfterWrite(option, item.orNull());
+        val duration = item.getDurationSeconds();
 
         val json = FastJsons.json(item.orNull());
         val result = redis.set(redisKey, json);
-        if (isBlank(expires)) return result;
+        if (duration == 0) return result;
 
-        val duration = parse("expireAfterWrite", expires);
         log.info("redis set {}={} in ttl {} seconds", redisKey, json, duration);
         redis.expire(redisKey, (int) duration);
 

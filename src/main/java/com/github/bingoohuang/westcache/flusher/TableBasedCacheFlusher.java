@@ -170,9 +170,10 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         val snapshot = option.getSnapshot();
         if (snapshot == null) return;
 
+        val optional = Optional.<Object>fromNullable(tableRows);
         option.getSnapshot().saveSnapshot(option,
                 cacheKey + ".tableflushers",
-                new WestCacheItem(tableRows));
+                new WestCacheItem(optional, option));
     }
 
     protected void diff(List<WestCacheFlusherBean> table,

@@ -5,6 +5,7 @@ import com.github.bingoohuang.westcache.base.WestCacheKeyer;
 import com.github.bingoohuang.westcache.manager.BaseCacheManager;
 import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -60,7 +61,7 @@ public class ExpiringCacheManagerTest {
         WestCacheKeyer keyer = option.getKeyer();
         String cacheKey = keyer.getCacheKey(option, "cacheThree", service);
 
-        manager.getWestCache().put(null, cacheKey, new WestCacheItem("fuck"));
+        manager.getWestCache().put(null, cacheKey, new WestCacheItem(Optional.of("fuck"), option));
         val cacheValue3 = service.cacheThree();
         assertThat(cacheValue3).isEqualTo("fuck");
 

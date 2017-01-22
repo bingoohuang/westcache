@@ -6,6 +6,7 @@ import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.Snapshots;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.io.Files;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -35,7 +36,8 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
 
         String json = Files.toString(snapshotFile, Charsets.UTF_8);
         Object object = FastJsons.parse(json, option.getMethod());
-        return new WestCacheItem(object);
+        val optional = Optional.fromNullable(object);
+        return new WestCacheItem(optional, option);
     }
 
     @SneakyThrows @Override

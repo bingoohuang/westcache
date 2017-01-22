@@ -7,9 +7,9 @@ import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.Redis;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +37,7 @@ public class RedisCacheManager extends BaseCacheManager {
             this(Redis.PREFIX);
         }
 
-        @Override @SneakyThrows
+        @Override
         public WestCacheItem get(WestCacheOption option,
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
@@ -51,10 +51,11 @@ public class RedisCacheManager extends BaseCacheManager {
             val json = Redis.getRedis(option).get(prefix + cacheKey);
             if (StringUtils.isNotEmpty(json)) {
                 val object = FastJsons.parse(json, option.getMethod());
-                return new WestCacheItem(object);
+                val optional = Optional.fromNullable(object);
+                return new WestCacheItem(optional, option);
             }
 
-            return new WestCacheItem(null);
+            return new WestCacheItem(Optional.absent(), option);
         }
 
         @Override

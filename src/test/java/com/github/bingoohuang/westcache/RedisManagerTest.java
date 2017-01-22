@@ -1,18 +1,15 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
-import com.github.bingoohuang.westcache.base.WestCacheKeyer;
 import com.github.bingoohuang.westcache.manager.RedisCacheManager;
 import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.Redis;
+import com.github.bingoohuang.westcache.utils.WestCacheConnector;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
-import lombok.SneakyThrows;
+import com.google.common.base.Optional;
+import lombok.val;
 import org.junit.Test;
 
-import java.lang.reflect.Method;
-
-import static com.github.bingoohuang.westcache.WestCacheRegistry.keyerRegistry;
-import static com.github.bingoohuang.westcache.utils.WestCacheOption.newBuilder;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -29,18 +26,23 @@ public class RedisManagerTest {
     }
 
     static RedisManagerService service = WestCacheFactory.create(RedisManagerService.class);
-    static WestCacheOption option = newBuilder().manager("redis").keyer("simple")
-            .method(getMethod("getOther"))
-            .build();
 
-    @SneakyThrows
-    private static Method getMethod(String methodName)  {
-        return RedisManagerService.class.getDeclaredMethod(methodName);
-    }
+    static String getOtherCacheKey = WestCacheConnector.connectKey(new Runnable() {
+        @Override public void run() {
+            service.getOther();
+        }
+    });
+    static String getSomethingCacheKey = WestCacheConnector.connectKey(new Runnable() {
+        @Override public void run() {
+            service.getSomething();
+        }
+    });
 
-    static WestCacheKeyer keyer = keyerRegistry.get("simple");
-    static String getOtherCacheKey = keyer.getCacheKey(option, "getOther", service);
-    static String getSomethingCacheKey = keyer.getCacheKey(option, "getSomething", service);
+    static WestCacheOption option = WestCacheConnector.connectOption(new Runnable() {
+        @Override public void run() {
+            service.getOther();
+        }
+    });
 
     @Test
     public void test() {
@@ -63,13 +65,13 @@ public class RedisManagerTest {
 
     @Test
     public void redisPut() {
-        RedisCacheManager manager = new RedisCacheManager(Redis.PREFIX);
-        manager.put(option, getOtherCacheKey, new WestCacheItem("bingoohuang"));
+        val manager = new RedisCacheManager(Redis.PREFIX);
+        manager.put(option, getOtherCacheKey, new WestCacheItem(Optional.of("bingoohuang"), option));
 
         WestCacheItem item = manager.get(option, getOtherCacheKey);
         assertThat(item.orNull()).isEqualTo("bingoohuang");
 
-        manager.getWestCache().invalidate(option, getOtherCacheKey, "0");
+        manager.getWestCache().invalidate(option, getOtherCacheKey, null);
         item = manager.get(option, getSomethingCacheKey);
         assertThat(item.orNull()).isNull();
     }

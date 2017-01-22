@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.utils.Envs;
+import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -93,7 +94,8 @@ public class SnapshotTest {
 
         val snapshot = snapshotRegistry.get("file");
         val cacheKey = serviceClass.getName().replace('$', '.') + ".getBigDataCache";
-        snapshot.saveSnapshot(null, cacheKey, new WestCacheItem(bigDataXXX));
+        Optional<Object> optional = Optional.<Object>fromNullable(bigDataXXX);
+        snapshot.saveSnapshot(null, cacheKey, new WestCacheItem(optional, null));
 
         val service = WestCacheFactory.create(serviceClass);
         service.setBigData(bigDataYYY);

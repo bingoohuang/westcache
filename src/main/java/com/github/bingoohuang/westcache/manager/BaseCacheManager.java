@@ -11,7 +11,6 @@ import lombok.val;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -41,7 +40,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
         val flushCallable = new Callable<WestCacheItem>() {
             @Override public WestCacheItem call() throws Exception {
                 val raw = flusher.getDirectValue(option, cacheKey);
-                if (raw.isPresent()) return new WestCacheItem(raw);
+                if (raw.isPresent()) return new WestCacheItem(raw, option);
 
                 shot.set(false);
                 val interceptor = option.getInterceptor();
