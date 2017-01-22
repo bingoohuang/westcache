@@ -54,11 +54,26 @@ public class BatchClient {
         Future<String> token2 = service.getToken3("token2");
         Future<String> token3 = service.getToken3("token3");
 
+        assertEx(token3, "result is not available");
+    }
+
+    @Test @SneakyThrows
+    public void test4() {
+        Future<String> token1 = service.getToken4("bad");
+        Future<String> token2 = service.getToken4("token2");
+        Future<String> token3 = service.getToken4("token3");
+
+        assertEx(token1, "dingoo here");
+        assertEx(token2, "dingoo here");
+        assertEx(token3, "dingoo here");
+    }
+
+    @SneakyThrows
+    private void assertEx(Future<String> token, String expected) {
         try {
-            token3.get();
+            token.get();
         } catch (ExecutionException ex) {
-            assertThat(ex.getCause().getMessage())
-                    .isEqualTo("result is not available");
+            assertThat(ex.getCause().getMessage()).isEqualTo(expected);
             return;
         }
         Assert.fail();

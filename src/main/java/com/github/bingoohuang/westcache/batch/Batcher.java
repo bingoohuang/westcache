@@ -81,7 +81,13 @@ public class Batcher<T, V> {
                     }
                 });
 
-        val results = batcherJob.doBatchJob(batchArgs);
+        List<V> results = null;
+        Throwable ex = null;
+        try {
+            results = batcherJob.doBatchJob(batchArgs);
+        } catch (Throwable e) {
+            ex = e;
+        }
         int resultsSize = results != null ? results.size() : 0;
         if (resultsSize != tasks.size()) {
             log.error("result size {} is not same with task size {}",
@@ -93,8 +99,9 @@ public class Batcher<T, V> {
             if (i < resultsSize) {
                 future.set(results.get(i));
             } else {
-                val ex = new RuntimeException("result is not available");
-                future.setException(ex);
+                val e = ex != null
+                        ? ex : new RuntimeException("result is not available");
+                future.setException(e);
             }
         }
     }

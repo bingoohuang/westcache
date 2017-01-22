@@ -94,4 +94,21 @@ public class BatchService {
     public Future<String> getToken3(String tokenId) {
         return batcher3.submit(tokenId);
     }
+
+    private Batcher<String, String> batcher4 = BatcherBuilder.newBuilder(
+            new BatcherJob<String, String>() {
+                @Override
+                public List<String> doBatchJob(List<String> batchArgs) {
+                    throw new RuntimeException("dingoo here");
+                }
+            })
+            .maxWaitItems(3) // 达到3个就开工
+            .maxWaitMillis(1000) // 或者累计满1秒钟也开工
+            .maxBatchNum(10) // 一批最多10个
+            .build();
+
+    @WestCacheable(manager = "expiring", specs = "expireAfterWrite=2s")
+    public Future<String> getToken4(String tokenId) {
+        return batcher4.submit(tokenId);
+    }
 }
