@@ -43,7 +43,10 @@ public abstract class Envs {
     public static <T> T futureGet(Future<T> future, long timeout) throws TimeoutException {
         try {
             return future.get(timeout, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            throw e;
         } catch (ExecutionException e) {
+            log.warn("futureGet error", e);
             throw e.getCause();
         }
     }
@@ -64,6 +67,7 @@ public abstract class Envs {
         try {
             return (T) m.invoke(object);
         } catch (InvocationTargetException e) {
+            log.warn("invoke method {} error", m, e);
             throw e.getCause();
         }
     }
@@ -73,7 +77,7 @@ public abstract class Envs {
                                     String cacheKey) {
         val timeout = option.getConfig().timeoutMillisToSnapshot();
         try {
-            return Envs.futureGet(future, timeout);
+            return futureGet(future, timeout);
         } catch (TimeoutException ex) {
             log.info("get cache {} timeout in {} millis," +
                     " try snapshot", cacheKey, timeout);
