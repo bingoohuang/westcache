@@ -86,6 +86,7 @@ public class Batcher<T, V> {
         try {
             results = batcherJob.doBatchJob(batchArgs);
         } catch (Throwable e) {
+            log.error("call doBatchJob err", e);
             ex = e;
         }
         int resultsSize = results != null ? results.size() : 0;
