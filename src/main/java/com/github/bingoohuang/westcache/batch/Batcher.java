@@ -1,0 +1,109 @@
+package com.github.bingoohuang.westcache.batch;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.SettableFuture;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/20.
+ */
+@Slf4j
+public class Batcher<T, V> {
+    final Queue<BatcherBean<T, V>> queue;
+    final ScheduledExecutorService service;
+    final BatcherJob<T, V> batcherJob;
+    final int maxWaitItems;
+    private final Runnable runner;
+
+    public Batcher(final ScheduledExecutorService service,
+                   final BatcherJob<T, V> batcherJob,
+                   final long maxWaitMillis,
+                   final int maxWaitItems,
+                   final int maxBatchNum) {
+        this.queue = new ConcurrentLinkedQueue<BatcherBean<T, V>>();
+        this.service = service;
+        this.batcherJob = batcherJob;
+        this.maxWaitItems = maxWaitItems;
+        this.runner = new Runnable() {
+            @Override public void run() {
+                if (queue.isEmpty()) return;
+
+                val tasks = new ArrayList<BatcherBean<T, V>>(queue.size());
+                do {
+                    val task = queue.poll();
+                    if (task == null) break;
+
+                    tasks.add(task);
+                } while (tasks.size() != maxBatchNum);
+
+                if (tasks.isEmpty()) return;
+
+                doBatchWork(tasks);
+            }
+        };
+        service.scheduleWithFixedDelay(
+                runner, maxWaitMillis, maxWaitMillis, TimeUnit.MILLISECONDS);
+    }
+
+
+    /**
+     * Submit a argument to the batcher.
+     *
+     * @param argument batch argument.
+     * @return future object.
+     */
+    public Future<V> submit(T argument) {
+        val future = SettableFuture.<V>create();
+        queue.add(new BatcherBean(argument, future));
+        if (queue.size() < maxWaitItems) return future;
+
+        service.execute(runner);
+        return future;
+    }
+
+    private void doBatchWork(List<BatcherBean<T, V>> tasks) {
+        val batchArgs = Lists.transform(tasks,
+                new Function<BatcherBean<T, V>, T>() {
+                    @Override public T apply(BatcherBean<T, V> task) {
+                        return task.getArg();
+                    }
+                });
+
+        val results = batcherJob.doBatchJob(batchArgs);
+        int resultsSize = results != null ? results.size() : 0;
+        if (resultsSize != tasks.size()) {
+            log.error("result size {} is not same with task size {}",
+                    resultsSize, tasks.size());
+        }
+
+        for (int i = 0, ii = tasks.size(); i < ii; ++i) {
+            SettableFuture<V> future = tasks.get(i).getFuture();
+            if (i < resultsSize) {
+                future.set(results.get(i));
+            } else {
+                val ex = new RuntimeException("result is not available");
+                future.setException(ex);
+            }
+        }
+    }
+
+    /**
+     * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/22.
+     */
+    @AllArgsConstructor @Getter private static class BatcherBean<T, V> {
+        private final T arg;
+        private final SettableFuture<V> future;
+    }
+}
