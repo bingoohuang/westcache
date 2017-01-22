@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.westcache.batch.BatchTest;
 import com.github.bingoohuang.westcache.peng.BasicDataCacheTest;
 import com.github.bingoohuang.westcache.peng.PengTest;
 import com.github.bingoohuang.westcache.springann.DemoInterfaceTest;
@@ -58,6 +59,7 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         DynamicExpireAfterWriteTest.class,
         ExpireAfterWritesTest.class,
         GuavasTest.class,
+        BatchTest.class,
 })
 public class TestSuite {
     @ClassRule

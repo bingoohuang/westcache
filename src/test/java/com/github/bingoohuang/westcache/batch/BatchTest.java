@@ -14,7 +14,7 @@ import static com.google.common.truth.Truth.assertThat;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/20.
  */
-public class BatchClient {
+public class BatchTest {
     static BatchService service = WestCacheFactory.create(BatchService.class);
 
     @Test @SneakyThrows
