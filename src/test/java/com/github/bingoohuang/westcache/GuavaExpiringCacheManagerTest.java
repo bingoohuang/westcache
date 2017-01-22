@@ -82,7 +82,7 @@ public class GuavaExpiringCacheManagerTest {
         val cacheValue4 = service.cacheWrite();
         assertThat(cacheValue3).isSameAs(cacheValue4);
 
-        Envs.sleepMillis(1000L);
+        Envs.sleepMillis(1100L);
         service.setTimestamp(5L);
         val cacheValue5 = service.cacheWrite();
         assertThat(cacheValue5).isEqualTo("Write@5");
