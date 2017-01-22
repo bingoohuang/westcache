@@ -60,6 +60,7 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         ExpireAfterWritesTest.class,
         GuavasTest.class,
         BatchTest.class,
+        GuavaExpiringCacheManagerTest.class,
 })
 public class TestSuite {
     @ClassRule
