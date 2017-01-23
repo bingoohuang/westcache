@@ -13,6 +13,9 @@ import lombok.val;
 
 import java.io.File;
 
+import static com.github.bingoohuang.westcache.utils.Snapshots.CACHE_HOME;
+import static com.github.bingoohuang.westcache.utils.Snapshots.EXTENSION;
+
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
@@ -24,28 +27,28 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
                              WestCacheItem cacheValue) {
         val json = FastJsons.json(cacheValue.getObject().orNull());
 
-        File snapshotFile = Snapshots.getSnapshotFile(cacheKey);
+        val snapshotFile = Snapshots.getSnapshotFile(cacheKey);
         Files.write(json, snapshotFile, Charsets.UTF_8);
     }
 
-    @Override @SneakyThrows @SuppressWarnings("unchecked")
+    @Override @SneakyThrows
     public WestCacheItem readSnapshot(WestCacheOption option,
                                       String cacheKey) {
-        File snapshotFile = Snapshots.getSnapshotFile(cacheKey);
+        val snapshotFile = Snapshots.getSnapshotFile(cacheKey);
         if (!snapshotFile.exists() || !snapshotFile.isFile()) return null;
 
-        String json = Files.toString(snapshotFile, Charsets.UTF_8);
-        Object object = FastJsons.parse(json, option.getMethod());
+        val json = Files.toString(snapshotFile, Charsets.UTF_8);
+        val object = FastJsons.parse(json, option.getMethod());
         val optional = Optional.fromNullable(object);
         return new WestCacheItem(optional, option);
     }
 
-    @SneakyThrows @Override
+    @Override @SneakyThrows
     public void deleteSnapshot(WestCacheOption option, String cacheKey) {
-        File snapshotFile = Snapshots.getSnapshotFile(cacheKey);
+        val snapshotFile = Snapshots.getSnapshotFile(cacheKey);
         if (!snapshotFile.exists() || !snapshotFile.isFile()) return;
 
-        File tempFile = File.createTempFile(cacheKey, Snapshots.EXTENSION, Snapshots.CACHE_HOME);
+        val tempFile = File.createTempFile(cacheKey, EXTENSION, CACHE_HOME);
         snapshotFile.renameTo(tempFile);
 
         tempFile.delete();

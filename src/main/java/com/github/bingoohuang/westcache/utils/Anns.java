@@ -19,18 +19,18 @@ public abstract class Anns {
             Method method,
             Class<? extends Annotation> annClass) {
         val methodAnn = method.getAnnotation(annClass);
-        val declaringClass = method.getDeclaringClass();
-        val classAnn = declaringClass.getAnnotation(annClass);
+        val declaringClz = method.getDeclaringClass();
+        val classAnn = declaringClz.getAnnotation(annClass);
 
         if (methodAnn != null || classAnn != null) {
-            Map<String, String> methodAttrs = getAllAttrs(methodAnn);
-            Map<String, String> classAttrs = getAllAttrs(classAnn);
+            val methodAttrs = getAllAttrs(methodAnn);
+            val classAttrs = getAllAttrs(classAnn);
             return mergeMap(classAttrs, methodAttrs);
         }
 
         Set<Annotation> setAnns = Sets.newHashSet();
         val annM = searchAnn(setAnns, method.getAnnotations(), annClass);
-        val annC = searchAnn(setAnns, declaringClass.getAnnotations(), annClass);
+        val annC = searchAnn(setAnns, declaringClz.getAnnotations(), annClass);
         if (annM != null || annC != null) {
             return mergeMap(annC, annM);
         }
@@ -77,14 +77,11 @@ public abstract class Anns {
             if (method.getParameterTypes().length > 0) continue;
             if (method.getReturnType() != String.class) continue;
 
-            try {
-                String value = (String) method.invoke(ann);
-                if (StringUtils.isEmpty(value)) continue;
+            Object attr = Envs.invoke(method, ann);
+            String value = String.valueOf(attr);
+            if (StringUtils.isEmpty(value)) continue;
 
-                attrs.put(method.getName(), value);
-            } catch (Exception ex) {
-                // ignore
-            }
+            attrs.put(method.getName(), value);
         }
         return attrs;
     }
@@ -99,45 +96,62 @@ public abstract class Anns {
         setAnns.add(ann);
 
         val annotations = ann.annotationType().getAnnotations();
-        for (val typeAnn : annotations) {
-            if (annClz.isInstance(typeAnn)) {
-                val annAttrs = getAllAttrs(typeAnn);
-                val thisAttrs = getAllAttrs(ann);
-                merge(annAttrs, thisAttrs);
-                return annAttrs;
-            }
-        }
+        val annAttrs = checkCurrentAnn(ann, annClz, annotations);
+        if (annAttrs != null) return annAttrs;
 
+        return checkInheritAnn(setAnns, ann, annClz, annotations);
+    }
+
+    private static Map<String, String> checkInheritAnn(
+            Set<Annotation> setAnns,
+            Annotation ann,
+            Class<?> annClz,
+            Annotation[] annotations) {
         for (val annotation : annotations) {
             val attrs = parseRecursiveAnn(setAnns, annotation, annClz);
-            if (attrs != null) {
-                val thisAttrs = getAllAttrs(ann);
-                merge(attrs, thisAttrs);
-                return attrs;
-            }
+            if (attrs == null) continue;
+
+            val thisAttrs = getAllAttrs(ann);
+            return merge(attrs, thisAttrs);
         }
 
         return null;
     }
 
+    private static Map<String, String> checkCurrentAnn(
+            Annotation ann,
+            Class<?> annClz,
+            Annotation[] annotations) {
+        for (val typeAnn : annotations) {
+            if (!annClz.isInstance(typeAnn)) continue;
+
+            val annAttrs = getAllAttrs(typeAnn);
+            val thisAttrs = getAllAttrs(ann);
+            return merge(annAttrs, thisAttrs);
+        }
+        return null;
+    }
+
     static Joiner.MapJoiner mapJoiner = Joiner.on(';').withKeyValueSeparator('=');
 
-    private static void merge(Map<String, String> firstMap,
-                              Map<String, String> otherMap) {
+    private static Map<String, String> merge(Map<String, String> firstMap,
+                                             Map<String, String> otherMap) {
         String specs1 = firstMap.get("specs");
         String specs2 = otherMap.get("specs");
 
         firstMap.putAll(otherMap);
         if (specs1 != null || specs2 != null) {
-            Map<String, String> specsMap1 = Specs.parseSpecs(specs1);
-            Map<String, String> specsMap2 = Specs.parseSpecs(specs2);
-            Map<String, String> treeMap = Maps.newTreeMap();
+            val specsMap1 = Specs.parseSpecs(specs1);
+            val specsMap2 = Specs.parseSpecs(specs2);
+            val treeMap = Maps.newTreeMap();
             treeMap.putAll(specsMap1);
             treeMap.putAll(specsMap2);
 
             String specsJoin = mapJoiner.join(treeMap);
             firstMap.put("specs", specsJoin);
         }
+
+        return firstMap;
     }
 
     public static boolean isFastWestCacheAnnotated(Class c) {

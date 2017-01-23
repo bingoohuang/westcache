@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.utils;
 
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
@@ -70,8 +71,13 @@ public class ScheduledParserTest {
 
     @Test
     public void everyMinutesFrom() {
-        Trigger trigger = new ScheduledParser("0 20 * * * ? from 2016-10-10").parse();
-        assertThat(trigger.getStartTime()).isAtMost(new Date());
+        DateTimeFormatter dayFormatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+        DateTime tomorrow = DateTime.now().plusDays(1).withTimeAtStartOfDay();
+        String tomorrowStr = tomorrow.toString(dayFormatter);
+
+
+        Trigger trigger = new ScheduledParser("0 20 * * * ? from " + tomorrowStr).parse();
+        assertThat(trigger.getStartTime()).isEqualTo(tomorrow.toDate());
         assertThat(trigger.getEndTime()).isNull();
         assertThat(trigger).isInstanceOf(CronTrigger.class);
         CronTrigger cronTrigger = (CronTrigger) trigger;

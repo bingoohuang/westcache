@@ -18,7 +18,6 @@ import java.util.concurrent.Callable;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/30.
  */
 public class TableCacheFlusher extends TableBasedCacheFlusher {
-    @Getter volatile long lastReadDirectValue;
     @Getter TableCacheFlusherDao dao
             = EqlerFactory.getEqler(TableCacheFlusherDao.class);
 
@@ -30,24 +29,20 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
     protected Object readDirectValue(WestCacheOption option,
                                      WestCacheFlusherBean bean,
                                      DirectValueType type) {
-        lastReadDirectValue = System.currentTimeMillis();
-
         val specs = Specs.parseSpecs(bean.getSpecs());
         val readBy = specs.get("readBy");
-        if ("redis".equals(readBy)) {
-            val key = Redis.PREFIX + bean.getCacheKey();
-            val value = Redis.getRedis(option).get(key);
-            if (StringUtils.isNotBlank(value)) {
-                return FastJsons.parse(value, option.getMethod());
-            }
-        } else if ("loader".equals(readBy)) {
-            val loaderClass = specs.get("loaderClass");
-            if (StringUtils.isNotBlank(loaderClass)) {
-                Callable loader = Envs.newInstance(loaderClass);
-                return Envs.execute(loader);
-            }
-        }
+        val value = readByRedis(option, bean, readBy);
+        if (value != null) return value;
 
+        val loader = readByLoader(specs, readBy);
+        if (loader != null) return loader;
+
+        return readByDirect(option, bean, type);
+    }
+
+    private Object readByDirect(WestCacheOption option,
+                                WestCacheFlusherBean bean,
+                                DirectValueType type) {
         val directJson = dao.getDirectValue(bean.getCacheKey());
         if (StringUtils.isBlank(directJson)) return null;
 
@@ -55,12 +50,33 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
             case FULL:
                 return FastJsons.parse(directJson, option.getMethod());
             case SUB:
-                return FastJsons.parse(directJson,
-                        new TypeReference<Map<String, String>>() {
-                        });
+            default:
+                val typeReference = new TypeReference<Map<String, String>>() {
+                };
+                return FastJsons.parse(directJson, typeReference);
         }
+    }
 
-        return null;
+    private Object readByLoader(Map<String, String> specs, String readBy) {
+        if (!"loader".equals(readBy)) return null;
+
+        val loaderClass = specs.get("loaderClass");
+        if (StringUtils.isBlank(loaderClass)) return null;
+
+        Callable loader = Envs.newInstance(loaderClass);
+        return Envs.execute(loader);
+    }
+
+    private Object readByRedis(WestCacheOption option,
+                               WestCacheFlusherBean bean,
+                               String readBy) {
+        if (!"redis".equals(readBy)) return null;
+
+        val key = Redis.PREFIX + bean.getCacheKey();
+        val value = Redis.getRedis(option).get(key);
+        if (StringUtils.isBlank(value)) return null;
+
+        return FastJsons.parse(value, option.getMethod());
     }
 
 }

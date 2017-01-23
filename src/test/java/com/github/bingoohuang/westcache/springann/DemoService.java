@@ -18,6 +18,11 @@ import redis.clients.jedis.JedisCommands;
         return data;
     }
 
+    @WestCacheable
+    public String doEx() {
+        throw new RuntimeException("i am do exception");
+    }
+
     @WestCacheable(manager = "redis", keyer = "simple",
             specs = "redisBean=that")
     public String doSth() {
@@ -32,10 +37,7 @@ import redis.clients.jedis.JedisCommands;
     @Autowired JedisCommands thisRedis;
     @Autowired @Qualifier("that") JedisCommands thatRedis;
 
-    public void setXxx() {
-        thisRedis.set("xxx", "bingoo");
-        thatRedis.set("yyy", "huang");
-    }
+
 
     @WestCacheable(
             manager = "quartz-manager",

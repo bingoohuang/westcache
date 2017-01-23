@@ -7,6 +7,7 @@ import com.github.bingoohuang.westcache.spring.SpringAppContext;
 import com.github.bingoohuang.westcache.utils.Envs;
 import lombok.val;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -84,5 +85,16 @@ public class DemoServiceTest {
         Envs.sleepMillis(1100);
         long l3 = service.doTtl();
         assertThat(l3).isGreaterThan(l1);
+    }
+
+    @Test
+    public void doEx() {
+        try {
+            service.doEx();
+        }catch (RuntimeException ex) {
+            assertThat(ex.getMessage()).isEqualTo("i am do exception");
+            return;
+        }
+        Assert.fail();
     }
 }

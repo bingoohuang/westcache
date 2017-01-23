@@ -19,7 +19,7 @@ import static com.google.common.truth.Truth.assertThat;
  */
 public class AnnsTest {
     @WestCacheable(config = "default", manager = "default",
-            specs = "s2=v2;s1=v0") interface Interface1 {
+            specs = "s2=v2;s1=v0") public interface Interface1 {
         @WestCacheable(manager = "guava")
         String m1();
 
@@ -52,6 +52,7 @@ public class AnnsTest {
     @WestCacheable(snapshot = "file", key = "abc")
     public @interface AnnCom {
         String sth() default "";
+
         String key() default "";
     }
 
@@ -88,5 +89,42 @@ public class AnnsTest {
 
         WestCacheOption option = WestCacheOption.parseWestCacheable(m);
         assertThat(option.getSpecs()).isEmpty();
+    }
+
+    @Target({ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @WestCacheable(snapshot = "file", key = "abc")
+    public @interface AnnInerit {
+        String key() default "";
+    }
+
+    @Target({ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @AnnInerit
+    public @interface AnnSon {
+        String key() default "";
+    }
+
+    @Target({ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @AnnSon
+    public @interface AnnSon0 {
+        String key() default "";
+    }
+
+
+    public interface InterfaceSon {
+        @AnnSon0(key = "guava")
+        String m1();
+    }
+
+    @Test @SneakyThrows
+    public void testInterfaceSon() {
+        Method m = InterfaceSon.class.getMethod("m1");
+        Map<String, String> attrs = Anns.parseWestCacheable(m, WestCacheable.class);
+        assertThat(attrs).isEqualTo(ImmutableMap.of(
+                "snapshot", "file",
+                "key", "guava"));
+
     }
 }

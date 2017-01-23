@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.simpl.RAMJobStore;
@@ -15,8 +16,7 @@ import java.util.Properties;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/16.
  */
 public class Quartz {
-    @SneakyThrows
-    public Scheduler createQuartzScheduler() {
+    public Scheduler createQuartzScheduler() throws SchedulerException {
         Properties properties = new Properties();
         properties.setProperty("org.quartz.scheduler.skipUpdateCheck", "true");
         properties.setProperty("org.quartz.threadPool.class", SimpleThreadPool.class.getName());
