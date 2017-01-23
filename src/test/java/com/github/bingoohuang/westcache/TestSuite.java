@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache;
 import com.github.bingoohuang.westcache.batch.BatchTest;
 import com.github.bingoohuang.westcache.peng.BasicDataCacheTest;
 import com.github.bingoohuang.westcache.peng.PengTest;
+import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshotTest;
 import com.github.bingoohuang.westcache.springann.DemoInterfaceTest;
 import com.github.bingoohuang.westcache.springann.DemoServiceTest;
 import com.github.bingoohuang.westcache.springxml.ServiceSpringXmlTest;
@@ -61,6 +62,7 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         GuavasTest.class,
         BatchTest.class,
         GuavaExpiringCacheManagerTest.class,
+        FileCacheSnapshotTest.class,
 })
 public class TestSuite {
     @ClassRule
