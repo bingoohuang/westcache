@@ -5,6 +5,7 @@ import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import lombok.Cleanup;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -29,6 +30,7 @@ public abstract class CacheMethodInterceptor<T> {
                                           Object[] args,
                                           T proxy);
 
+    @SneakyThrows
     public Object intercept(Object obj,
                             Method method,
                             Object[] args,
@@ -36,7 +38,12 @@ public abstract class CacheMethodInterceptor<T> {
         val option = WestCacheOption.parseWestCacheable(method);
         if (option == null) return invokeRaw(obj, args, methodProxy);
 
-        return cacheGet(option, obj, method, args, methodProxy);
+        try {
+            return cacheGet(option, obj, method, args, methodProxy);
+        } catch (Throwable ex) {
+            log.error("cache get error", ex);
+            throw ex;
+        }
     }
 
     private Object cacheGet(final WestCacheOption option,
