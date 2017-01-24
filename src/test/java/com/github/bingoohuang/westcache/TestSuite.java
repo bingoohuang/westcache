@@ -63,6 +63,7 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         BatchTest.class,
         GuavaExpiringCacheManagerTest.class,
         FileCacheSnapshotTest.class,
+        RedisTest.class
 })
 public class TestSuite {
     @ClassRule

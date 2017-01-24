@@ -64,7 +64,8 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
         Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
 
         if (beanDefinitions.isEmpty()) {
-            log.warn("No WestCacheable was found in '{}' package. Please check your configuration.",
+            log.warn("No WestCacheable was found in '{}' package. " +
+                            "Please check your configuration.",
                     Arrays.toString(basePackages));
             return beanDefinitions;
         }
@@ -77,7 +78,8 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
 
             // the mapper interface is the original class of the bean
             // but, the actual class of the bean is MapperFactoryBean
-            definition.getPropertyValues().add("targetClass", definition.getBeanClassName());
+            definition.getPropertyValues().add("targetClass",
+                    definition.getBeanClassName());
             definition.setBeanClass(WestCacheableFactoryBean.class);
         }
 
@@ -88,18 +90,23 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
      * {@inheritDoc}
      */
     @Override
-    protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
-        return (beanDefinition.getMetadata().isInterface() && beanDefinition.getMetadata().isIndependent());
+    protected boolean isCandidateComponent(
+            AnnotatedBeanDefinition beanDefinition) {
+        return (beanDefinition.getMetadata().isInterface()
+                && beanDefinition.getMetadata().isIndependent());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected boolean checkCandidate(String beanName, BeanDefinition beanDefinition) throws IllegalStateException {
+    protected boolean checkCandidate(String beanName,
+                                     BeanDefinition beanDefinition)
+            throws IllegalStateException {
         if (super.checkCandidate(beanName, beanDefinition)) return true;
 
-        log.warn("Skipping WestCacheableFactoryBean with name '{}' and '{}' targetClass. " +
+        log.warn("Skipping WestCacheableFactoryBean " +
+                        "with name '{}' and '{}' targetClass. " +
                         "Bean already defined with the same name!",
                 beanName, beanDefinition.getBeanClassName());
         return false;

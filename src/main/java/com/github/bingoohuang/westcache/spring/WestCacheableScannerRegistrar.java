@@ -2,9 +2,7 @@ package com.github.bingoohuang.westcache.spring;
 
 import lombok.Setter;
 import lombok.val;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
@@ -31,7 +29,6 @@ public class WestCacheableScannerRegistrar
         val annoAttrs = AnnotationAttributes.fromMap(attributes);
         val scanner = new WestCacheableClassPathScanner(registry);
         setScannerResLoader(scanner);
-        setBeanNameGenerator(annoAttrs, scanner);
         String[] basePackages = addBasePakcages(metadata, annoAttrs);
 
         scanner.registerFilters();
@@ -43,14 +40,6 @@ public class WestCacheableScannerRegistrar
         if (resourceLoader != null) scanner.setResourceLoader(resourceLoader);
     }
 
-    private void setBeanNameGenerator(AnnotationAttributes annoAttrs,
-                                      WestCacheableClassPathScanner scanner) {
-        val generatorClass = annoAttrs.getClass("nameGenerator");
-        if (BeanNameGenerator.class.equals(generatorClass)) return;
-
-        val generator = BeanUtils.instantiateClass(generatorClass);
-        scanner.setBeanNameGenerator((BeanNameGenerator) generator);
-    }
 
     private String[] addBasePakcages(AnnotationMetadata metadata,
                                      AnnotationAttributes attrs) {
