@@ -4,6 +4,7 @@ import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheKeyer;
 import com.github.bingoohuang.westcache.manager.BaseCacheManager;
 import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
+import com.github.bingoohuang.westcache.utils.WestCacheConnector;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -24,18 +25,18 @@ public class DiamondManagerTest {
     }
 
     static DiamondService service = WestCacheFactory.create(DiamondService.class);
-    static WestCacheKeyer keyer = keyerRegistry.get("default");
-    static WestCacheOption option = newBuilder().manager("diamond")
-            .specs("static.key=yes")
-            .method(DiamondService.class.getDeclaredMethods()[0])
-            .build();
+    static WestCacheOption option = WestCacheConnector.connectOption(new Runnable() {
+        @Override public void run() {
+            service.getBigData();
+        }
+    });
+    static WestCacheKeyer keyer = option.getKeyer();
     static String cacheKey = keyer.getCacheKey(option, "getBigData", service);
     static BaseCacheManager manager = (BaseCacheManager) option.getManager();
 
     @Test @SneakyThrows
     public void test() {
         String content = "Here is Bingoo!" + System.currentTimeMillis();
-
         MockDiamondServer.setConfigInfo(DiamondCacheManager.GROUP, cacheKey, content);
 
         assertThat(service.getBigData()).isEqualTo(content);

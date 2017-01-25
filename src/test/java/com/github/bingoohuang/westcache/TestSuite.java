@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.batch.BatchTest;
+import com.github.bingoohuang.westcache.flusher.DiamondCacheFlusherTest;
 import com.github.bingoohuang.westcache.peng.BasicDataCacheTest;
 import com.github.bingoohuang.westcache.peng.PengTest;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshotTest;
@@ -63,7 +64,8 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         BatchTest.class,
         GuavaExpiringCacheManagerTest.class,
         FileCacheSnapshotTest.class,
-        RedisTest.class
+        RedisTest.class,
+        DiamondCacheFlusherTest.class
 })
 public class TestSuite {
     @ClassRule
