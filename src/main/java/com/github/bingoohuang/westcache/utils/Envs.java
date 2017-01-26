@@ -61,10 +61,14 @@ public abstract class Envs {
         }
     }
 
+    @SneakyThrows
+    public static Class forName(String className) {
+        return Class.forName(className);
+    }
+
     @SneakyThrows @SuppressWarnings("unchecked")
-    public static <T> T newInstance(String loaderClass) {
-        val clazz = Class.forName(loaderClass);
-        return (T) clazz.newInstance();
+    public static <T> T newInstance(String className) {
+        return (T) forName(className).newInstance();
     }
 
     @SneakyThrows

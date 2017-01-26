@@ -2,8 +2,8 @@ package com.github.bingoohuang.westcache.spring;
 
 import com.github.bingoohuang.westcache.WestCacheFactory;
 import com.github.bingoohuang.westcache.utils.Anns;
+import com.github.bingoohuang.westcache.utils.Envs;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.FactoryBean;
@@ -41,15 +41,15 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
             }
         });
         addIncludeFilter(new TypeFilter() {
-            @Override @SneakyThrows
+            @Override
             public boolean match(MetadataReader metadataReader,
                                  MetadataReaderFactory metadataReaderFactory
             ) throws IOException {
                 val classMetadata = metadataReader.getClassMetadata();
                 val className = classMetadata.getClassName();
-                Class c = Class.forName(className);
+                val clazz = Envs.forName(className);
 
-                return Anns.isFastWestCacheAnnotated(c);
+                return Anns.isFastWestCacheAnnotated(clazz);
             }
         });
     }
@@ -94,22 +94,6 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
             AnnotatedBeanDefinition beanDefinition) {
         return (beanDefinition.getMetadata().isInterface()
                 && beanDefinition.getMetadata().isIndependent());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected boolean checkCandidate(String beanName,
-                                     BeanDefinition beanDefinition)
-            throws IllegalStateException {
-        if (super.checkCandidate(beanName, beanDefinition)) return true;
-
-        log.warn("Skipping WestCacheableFactoryBean " +
-                        "with name '{}' and '{}' targetClass. " +
-                        "Bean already defined with the same name!",
-                beanName, beanDefinition.getBeanClassName());
-        return false;
     }
 
 

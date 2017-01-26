@@ -16,6 +16,12 @@ public class EnvsTest {
         assertThat(Envs.classExists("a.b.C")).isFalse();
     }
 
+    @Test(expected = ClassNotFoundException.class)
+    public void classNotFound() {
+        Envs.forName("a.b.C");
+    }
+
+
     @Test(expected = InstantiationException.class)
     public void bad() {
         Envs.newInstance(Closeable.class.getName());

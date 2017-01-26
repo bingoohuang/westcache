@@ -13,7 +13,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import redis.clients.jedis.JedisCommands;
 
-@Configuration @ComponentScan @WestCacheableScan @WestCacheableEnabled
+@Configuration @ComponentScan
+@WestCacheableScan(value = "com.github.bingoohuang.westcache.springann",
+        basePackageClasses = SpringConfig.class)
+@WestCacheableEnabled
 public class SpringConfig {
     @Bean
     public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
