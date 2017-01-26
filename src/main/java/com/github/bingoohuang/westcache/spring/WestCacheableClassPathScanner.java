@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -33,22 +32,16 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
      * those annotated with the annotationClass
      */
     public void registerFilters() {
-        addExcludeFilter(new TypeFilter() {
-            @Override
-            public boolean match(MetadataReader metadataReader,
-                                 MetadataReaderFactory metadataReaderFactory) throws IOException {
-                return !metadataReader.getClassMetadata().isInterface();
-            }
-        });
         addIncludeFilter(new TypeFilter() {
             @Override
             public boolean match(MetadataReader metadataReader,
                                  MetadataReaderFactory metadataReaderFactory
             ) throws IOException {
-                val classMetadata = metadataReader.getClassMetadata();
-                val className = classMetadata.getClassName();
-                val clazz = Envs.forName(className);
+                val metadata = metadataReader.getClassMetadata();
+                if (!metadata.isInterface()) return false;
 
+                val className = metadata.getClassName();
+                val clazz = Envs.forName(className);
                 return Anns.isFastWestCacheAnnotated(clazz);
             }
         });
@@ -72,7 +65,6 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
 
         for (val holder : beanDefinitions) {
             val definition = (GenericBeanDefinition) holder.getBeanDefinition();
-
             log.debug("Creating WestCacheableFactoryBean with name '{}' and '{}'",
                     holder.getBeanName(), definition.getBeanClassName());
 
