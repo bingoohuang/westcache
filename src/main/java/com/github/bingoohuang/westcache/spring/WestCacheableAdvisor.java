@@ -12,15 +12,15 @@ import java.lang.reflect.Method;
 
 @Component
 public class WestCacheableAdvisor extends AbstractPointcutAdvisor {
-    final StaticMethodMatcherPointcut pointcut = new StaticMethodMatcherPointcut() {
-        @Override
-        public boolean matches(Method method, Class<?> targetClass) {
-            return Anns.isFastWestCacheAnnotated(targetClass);
-        }
-    };
+    private final StaticMethodMatcherPointcut pointcut =
+            new StaticMethodMatcherPointcut() {
+                @Override
+                public boolean matches(Method method, Class<?> targetClass) {
+                    return Anns.isFastWestCacheAnnotated(targetClass);
+                }
+            };
 
-    @Autowired
-    WestCacheableInterceptor interceptor;
+    @Autowired WestCacheableInterceptor interceptor;
 
     @Override
     public Pointcut getPointcut() {

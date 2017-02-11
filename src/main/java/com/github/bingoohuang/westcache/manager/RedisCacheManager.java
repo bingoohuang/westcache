@@ -91,7 +91,7 @@ public class RedisCacheManager extends BaseCacheManager {
             }; // free lock automatically
 
             val versionKey = prefix + "version:" + cacheKey;
-            val versionRedis = redis.get(versionKey);
+            String versionRedis = redis.get(versionKey);
             if (version.equals(versionRedis)) return;
 
             redis.del(redisKey);

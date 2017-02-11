@@ -1,12 +1,12 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.github.bingoohuang.westcache.base.WestCacheException;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.quartz.ScheduleBuilder;
 import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -22,10 +22,10 @@ import static org.quartz.TriggerBuilder.newTrigger;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/16.
  */
 public class ScheduledParser {
-    static Pattern fromPattern = Pattern.compile(
+    private static final Pattern FROM_PATTERN = Pattern.compile(
             "\\bfrom\\b\\s*(\\d\\d\\d\\d-\\d\\d-\\d\\d)( \\d\\d:\\d\\d:\\d\\d)?",
             Pattern.CASE_INSENSITIVE);
-    static Pattern toPattern = Pattern.compile(
+    private static final Pattern TO_PATTERN = Pattern.compile(
             "\\bto\\b\\s*(\\d\\d\\d\\d-\\d\\d-\\d\\d)( \\d\\d:\\d\\d:\\d\\d)?",
             Pattern.CASE_INSENSITIVE);
     private String schedulerExpr;
@@ -53,24 +53,15 @@ public class ScheduledParser {
      * @return Scheduled parsed result.
      */
     public Trigger parse() {
-        DateTime fromDate = parseDate(fromPattern, "00:00:00");
-        DateTime toDate = parseDate(toPattern, "23:59:59");
+        DateTime fromDate = parseDate(FROM_PATTERN, "00:00:00");
+        DateTime toDate = parseDate(TO_PATTERN, "23:59:59");
         if (fromDate != null && toDate != null && fromDate.isAfterNow()) {
-            throw new RuntimeException("scheduler expression is not valid " +
+            throw new WestCacheException("scheduler expression is not valid " +
                     "because of from-date is after of to-date");
         }
 
-        ScheduleBuilder<? extends Trigger> scheduleBuilder;
-        if (StringUtils.startsWithIgnoreCase(schedulerExpr, "Every")) {
-            scheduleBuilder = parseEveryExpr(schedulerExpr.substring("Every".length()));
-        } else if (StringUtils.startsWithIgnoreCase(schedulerExpr, "At")) {
-            scheduleBuilder = parseAtExpr(schedulerExpr.substring("At".length()));
-        } else {
-            scheduleBuilder = parseCron(schedulerExpr);
-        }
-
-        TriggerBuilder<? extends Trigger> triggerBuilder;
-        triggerBuilder = newTrigger().withSchedule(scheduleBuilder);
+        val scheduleBuilder = createScheduleBuilder();
+        val triggerBuilder = newTrigger().withSchedule(scheduleBuilder);
         if (fromDate != null && fromDate.isAfterNow()) {
             triggerBuilder.startAt(fromDate.toDate());
         }
@@ -79,6 +70,16 @@ public class ScheduledParser {
         }
 
         return triggerBuilder.build();
+    }
+
+    private ScheduleBuilder<? extends Trigger> createScheduleBuilder() {
+        if (StringUtils.startsWithIgnoreCase(schedulerExpr, "Every")) {
+            return parseEveryExpr(schedulerExpr.substring("Every".length()));
+        } else if (StringUtils.startsWithIgnoreCase(schedulerExpr, "At")) {
+            return parseAtExpr(schedulerExpr.substring("At".length()));
+        } else {
+            return parseCron(schedulerExpr);
+        }
     }
 
     private DateTime parseDate(Pattern pattern, String defaultTime) {
@@ -107,11 +108,11 @@ public class ScheduledParser {
         return cronSchedule(schedulerExpr);
     }
 
-    static Pattern atExprPattern = Pattern.compile(
+    private static final Pattern AT_EXPR_PATTERN = Pattern.compile(
             "\\s+(\\d\\d|\\?\\?):(\\d\\d)", Pattern.CASE_INSENSITIVE);
 
     private ScheduleBuilder<? extends Trigger> parseAtExpr(String atExpr) {
-        Matcher matcher = atExprPattern.matcher(atExpr);
+        Matcher matcher = AT_EXPR_PATTERN.matcher(atExpr);
         if (!matcher.find())
             throw new RuntimeException(atExpr + " is not valid");
 
@@ -129,16 +130,15 @@ public class ScheduledParser {
         return dailyAtHourAndMinute(hourOfDay, minuteOfHour);
     }
 
-    static Pattern everyExprPattern = Pattern.compile(
+    private static final Pattern EVERY_EXPR_PATTERN = Pattern.compile(
             "\\s+(\\d+)\\s*(h|hour|m|minute|s|second)s?", Pattern.CASE_INSENSITIVE);
 
     private ScheduleBuilder<? extends Trigger> parseEveryExpr(String everyExpr) {
-        Matcher matcher = everyExprPattern.matcher(everyExpr);
-        if (!matcher.find())
-            throw new RuntimeException(everyExpr + " is not valid");
+        Matcher matcher = EVERY_EXPR_PATTERN.matcher(everyExpr);
+        if (!matcher.find()) throw new WestCacheException(everyExpr + " is not valid");
 
         int num = Integer.parseInt(matcher.group(1));
-        if (num <= 0) throw new RuntimeException(everyExpr + " is not valid");
+        if (num <= 0) throw new WestCacheException(everyExpr + " is not valid");
 
         char unit = matcher.group(2).charAt(0);
         TimeUnit timeUnit = parseTimeUnit(unit);

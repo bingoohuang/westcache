@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.registry;
 
+import com.github.bingoohuang.westcache.base.WestCacheException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
@@ -11,7 +12,7 @@ public class RegistryTemplate<T> {
 
     public void register(String name, T object) {
         T cached = registry.getIfPresent(name);
-        if (cached != null) throw new RuntimeException(
+        if (cached != null) throw new WestCacheException(
                 "registry name " + name + " already exists");
 
         registry.put(name, object);

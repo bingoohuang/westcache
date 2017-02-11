@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.cglib;
 
+import com.github.bingoohuang.westcache.base.WestCacheException;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
@@ -81,6 +82,6 @@ public abstract class CacheMethodInterceptor<T> {
         val msg = "cache key " + cacheKey + " missed executable body "
                 + "in abstract method " + method.getDeclaringClass().getName()
                 + "." + method.getName();
-        throw new RuntimeException(msg);
+        throw new WestCacheException(msg);
     }
 }

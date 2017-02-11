@@ -22,24 +22,20 @@ public class WestCacheableScannerRegistrar
     /**
      * {@inheritDoc}
      */
+    @Override
     public void registerBeanDefinitions(AnnotationMetadata metadata,
                                         BeanDefinitionRegistry registry) {
         val name = WestCacheableScan.class.getName();
         val attributes = metadata.getAnnotationAttributes(name);
         val annoAttrs = AnnotationAttributes.fromMap(attributes);
         val scanner = new WestCacheableClassPathScanner(registry);
-        setScannerResLoader(scanner);
+        // this check is needed in Spring 3.1
+        if (resourceLoader != null) scanner.setResourceLoader(resourceLoader);
         String[] basePackages = addBasePakcages(metadata, annoAttrs);
 
         scanner.registerFilters();
         scanner.doScan(basePackages);
     }
-
-    private void setScannerResLoader(WestCacheableClassPathScanner scanner) {
-        // this check is needed in Spring 3.1
-        if (resourceLoader != null) scanner.setResourceLoader(resourceLoader);
-    }
-
 
     private String[] addBasePakcages(AnnotationMetadata metadata,
                                      AnnotationAttributes attrs) {

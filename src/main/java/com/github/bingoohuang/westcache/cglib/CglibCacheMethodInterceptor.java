@@ -19,15 +19,7 @@ public class CglibCacheMethodInterceptor
         implements MethodInterceptor {
     private Object target;
 
-    @Override
-    public Object intercept(Object obj,
-                            Method method,
-                            Object[] args,
-                            MethodProxy methodProxy) {
-        return super.intercept(obj, method, args, methodProxy);
-    }
-
-    @SneakyThrows
+    @Override @SneakyThrows
     protected Object invokeRaw(Object obj,
                                Object[] args,
                                MethodProxy methodProxy) {

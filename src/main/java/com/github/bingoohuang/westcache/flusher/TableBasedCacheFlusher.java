@@ -19,6 +19,7 @@ import java.util.concurrent.*;
  */
 @Slf4j
 public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
+    public static final String PREFIX = "prefix";
     volatile List<WestCacheFlusherBean> tableRows;
     volatile ScheduledFuture<?> scheduledFuture;
 
@@ -67,7 +68,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         if ("direct".equals(bean.getValueType())) {
             if ("full".equals(bean.getKeyMatch())) {
                 value = readDirectValue(option, bean, DirectValueType.FULL);
-            } else if ("prefix".equals(bean.getKeyMatch())) {
+            } else if (PREFIX.equals(bean.getKeyMatch())) {
                 int subKeyStart = bean.getCacheKey().length() + 1;
                 val subKey = cacheKey.substring(subKeyStart);
                 value = readSubDirectValue(option, bean, subKey);
@@ -110,7 +111,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         }
 
         for (val bean : tableRows) {
-            if (!"prefix".equals(bean.getKeyMatch())) continue;
+            if (!PREFIX.equals(bean.getKeyMatch())) continue;
             if (Keys.isPrefix(cacheKey, bean.getCacheKey())) return bean;
         }
 
@@ -224,7 +225,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
             }
 
             for (val bean : flushKeys.values()) {
-                if (!"prefix".equals(bean.getKeyMatch())) continue;
+                if (!PREFIX.equals(bean.getKeyMatch())) continue;
                 if (!Keys.isPrefix(key, bean.getCacheKey())) continue;
 
                 fullKeys.put(key, "" + bean.getValueVersion());

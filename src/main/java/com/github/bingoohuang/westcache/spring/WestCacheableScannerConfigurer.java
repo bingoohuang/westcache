@@ -23,17 +23,18 @@ public class WestCacheableScannerConfigurer
     @Setter private ApplicationContext applicationContext;
     @Setter private String beanName;
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         notNull(this.basePackage, "Property 'basePackage' is required");
     }
 
-    public void postProcessBeanFactory(
-            ConfigurableListableBeanFactory beanFactory) {
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
         // left intentionally blank
     }
 
-    public void postProcessBeanDefinitionRegistry(
-            BeanDefinitionRegistry registry) throws BeansException {
+    @Override
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)  {
         val scanner = new WestCacheableClassPathScanner(registry);
         scanner.setResourceLoader(this.applicationContext);
         scanner.registerFilters();

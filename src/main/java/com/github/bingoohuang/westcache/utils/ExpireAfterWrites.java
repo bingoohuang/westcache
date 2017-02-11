@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache.utils;
 
 import com.github.bingoohuang.westcache.base.ExpireAfterWritable;
 import com.github.bingoohuang.westcache.base.ExpireAfterWrite;
+import com.github.bingoohuang.westcache.base.WestCacheException;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -41,7 +42,7 @@ public abstract class ExpireAfterWrites {
 
             if (isNormalStringMethodWithoutArgs(m)) return m;
 
-            throw new RuntimeException("method "
+            throw new WestCacheException("method "
                     + m.getDeclaringClass().getSimpleName()
                     + "." + m.getName() + " is invalid for @"
                     + annClass.getSimpleName());

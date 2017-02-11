@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.outofbox;
 
+import com.github.bingoohuang.westcache.base.WestCacheException;
 import com.github.bingoohuang.westcache.keyer.SimpleKeyer;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Splitter;
@@ -10,8 +11,8 @@ import org.n3r.diamond.client.Miner;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/30.
  */
 public class PackageLimitedKeyer extends SimpleKeyer {
-    public final static String GROUP = "west.cache.packagelimit";
-    public final static String DATAID = "packages";
+    public static final String GROUP = "west.cache.packagelimit";
+    public static final String DATAID = "packages";
 
     private static Splitter splitter = Splitter.onPattern("[\r\n;\\s]")
             .omitEmptyStrings().trimResults();
@@ -32,7 +33,6 @@ public class PackageLimitedKeyer extends SimpleKeyer {
     }
 
     private void reportInvalidPackage(String packageName) {
-        throw new RuntimeException(packageName
-                + " is not allowed for the cache key");
+        throw new WestCacheException(packageName + " is not allowed for the cache key");
     }
 }

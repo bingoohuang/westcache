@@ -93,7 +93,8 @@ public class WestCacheOption {
             if (object != null) return;
 
             String key = name.isEmpty() ? "default" : name;
-            throw new RuntimeException(attr + " " + key + " is not registered, " +
+            throw new WestCacheException(
+                    attr + " " + key + " is not registered, " +
                     "please check your config or dependencies");
         }
 
@@ -143,8 +144,7 @@ public class WestCacheOption {
         return attrs != null;
     }
 
-    private static WestCacheOption buildOption(
-            Map<String, String> attrs, Method m) {
+    private static WestCacheOption buildOption(Map<String, String> attrs, Method m) {
         return WestCacheOption.newBuilder()
                 .flusher(getAttr(attrs, "flusher"))
                 .manager(getAttr(attrs, "manager"))
@@ -163,14 +163,12 @@ public class WestCacheOption {
         val specs = Specs.parseSpecs(specsStr);
 
         Anns.removeAttrs(attrs, "flusher", "manager",
-                "snapshot", "config", "interceptor",
-                "keyer", "key", "specs");
+                "snapshot", "config", "interceptor", "keyer", "key", "specs");
         specs.putAll(attrs);
         return specs;
     }
 
-    private static String getAttr(Map<String, String> attrs,
-                                  String attrName) {
+    private static String getAttr(Map<String, String> attrs, String attrName) {
         String attr = attrs.get(attrName);
         return attr == null ? "" : attr;
     }

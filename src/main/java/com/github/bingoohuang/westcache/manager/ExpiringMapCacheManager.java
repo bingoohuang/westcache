@@ -28,7 +28,7 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
 
     public static class ExpiringCache implements WestCache {
         static WestCacheItem lockItem = new WestCacheItem(Optional.absent(), null);
-        final protected ExpiringMap<String, WestCacheItem> cache =
+        protected final ExpiringMap<String, WestCacheItem> cache =
                 ExpiringMap.builder()
                         .variableExpiration()
                         .build();
@@ -84,10 +84,12 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
         protected void putItem(WestCacheOption option,
                                String cacheKey,
                                WestCacheItem item) {
-            // expireAfterAccess=[duration];expireAfterWrite=[duration];
-            // Durations are represented by an integer,
-            // followed by one of "d", "h", "m", or "s",
-            // representing days, hours, minutes, or seconds respectively.
+            /*
+             expireAfterAccess=[duration];expireAfterWrite=[duration];
+             Durations are represented by an integer,
+             followed by one of "d", "h", "m", or "s",
+             representing days, hours, minutes, or seconds respectively.
+             */
             val expireWrite = item.getDurationSeconds();
             val expireAccess = option.getSpecs().get("expireAfterAccess");
             if (expireWrite != 0) {

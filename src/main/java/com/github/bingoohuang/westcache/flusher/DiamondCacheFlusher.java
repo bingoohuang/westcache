@@ -13,7 +13,7 @@ import org.n3r.diamond.client.DiamondStone;
  */
 @Slf4j
 public class DiamondCacheFlusher extends SimpleCacheFlusher {
-    public final static String GROUP = "west.cache.flushers";
+    public static final String GROUP = "west.cache.flushers";
 
     @Override
     public boolean register(final WestCacheOption option,
