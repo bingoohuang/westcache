@@ -20,7 +20,7 @@ import static com.google.common.truth.Truth.assertThat;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/6.
  */
 public class PengTest {
-    static TableCacheFlusher flusher = Helper.setupTableFlusherForTest();
+    private static final TableCacheFlusher flusher = Helper.setupTableFlusherForTest();
 
     @BeforeClass
     public static void beforeClass() {
@@ -32,8 +32,7 @@ public class PengTest {
         flusher.cancelRotateChecker();
     }
 
-
-    public static PengService service = WestCacheFactory.create(PengService.class);
+    public static final PengService service = WestCacheFactory.create(PengService.class);
 
     @Test
     public void getCitiesJSON() {
@@ -83,7 +82,7 @@ public class PengTest {
         try {
             service.getCities("33");
         } catch (WestCacheException ex) {
-            assertThat(ex.toString()).contains("RuntimeException: " +
+            assertThat(ex.toString()).contains(
                     "cache key PengService.getCities_33 missed executable body " +
                     "in abstract method com.github.bingoohuang.westcache.peng.PengService.getCities");
             return;
