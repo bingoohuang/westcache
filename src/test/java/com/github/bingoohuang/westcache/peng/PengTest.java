@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.peng;
 
 import com.github.bingoohuang.westcache.WestCacheFactory;
+import com.github.bingoohuang.westcache.base.WestCacheException;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import com.github.bingoohuang.westcache.utils.Helper;
@@ -81,7 +82,7 @@ public class PengTest {
     private void getCitiesNoDirectValue() {
         try {
             service.getCities("33");
-        } catch (RuntimeException ex) {
+        } catch (WestCacheException ex) {
             assertThat(ex.toString()).contains("RuntimeException: " +
                     "cache key PengService.getCities_33 missed executable body " +
                     "in abstract method com.github.bingoohuang.westcache.peng.PengService.getCities");
