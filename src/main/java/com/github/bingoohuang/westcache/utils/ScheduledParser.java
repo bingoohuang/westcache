@@ -34,7 +34,7 @@ public class ScheduledParser {
     public ScheduledParser(String schedulerExpr) {
         this.schedulerExpr = StringUtils.trim(schedulerExpr);
         if (StringUtils.isBlank(this.schedulerExpr))
-            throw new RuntimeException("scheduler expression can not be blank");
+            throw new WestCacheException("scheduler expression can not be blank");
     }
 
     /**
@@ -113,8 +113,7 @@ public class ScheduledParser {
 
     private ScheduleBuilder<? extends Trigger> parseAtExpr(String atExpr) {
         Matcher matcher = AT_EXPR_PATTERN.matcher(atExpr);
-        if (!matcher.find())
-            throw new RuntimeException(atExpr + " is not valid");
+        if (!matcher.find()) throw new WestCacheException(atExpr + " is not valid");
 
         if (matcher.group(1).equals("??")) {
             String cronExpression = "0 " + matcher.group(2) + " * * * ?";

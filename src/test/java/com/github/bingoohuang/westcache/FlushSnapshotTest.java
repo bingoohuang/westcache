@@ -35,7 +35,7 @@ public class FlushSnapshotTest {
 
     @BeforeClass
     public static void beforeClass() {
-        configRegistry.register("snapshotTest",
+        REGISTRY_TEMPLATE.register("snapshotTest",
                 new DefaultWestCacheConfig() {
                     @Override public long timeoutMillisToSnapshot() {
                         return 100L;
@@ -45,7 +45,7 @@ public class FlushSnapshotTest {
 
     @AfterClass
     public static void afterClass() {
-        configRegistry.deregister("snapshotTest");
+        REGISTRY_TEMPLATE.deregister("snapshotTest");
     }
 
     String north = "NORTH", south = "SOUTH";
@@ -56,8 +56,8 @@ public class FlushSnapshotTest {
 
         val bigDataXXX = "BigData.XXX";
 
-        val snapshot = snapshotRegistry.get("file");
-        val keyer = keyerRegistry.get("default");
+        val snapshot = SNAPSHOT_REGISTRY.get("file");
+        val keyer = KEYER_REGISTRY.get("default");
         val option = WestCacheOption.newBuilder()
                 .snapshot("file").flusher("simple").config("snapshotTest")
                 .build();

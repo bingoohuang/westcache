@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.keyerRegistry;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.KEYER_REGISTRY;
 import static com.github.bingoohuang.westcache.utils.WestCacheOption.newBuilder;
 import static com.google.common.truth.Truth.assertThat;
 
@@ -24,7 +24,7 @@ public class DemoInterfaceTest {
 
     @Test @SneakyThrows
     public void test() {
-        val keyer = keyerRegistry.get("default");
+        val keyer = KEYER_REGISTRY.get("default");
         val option = newBuilder().manager("diamond").specs("static.key=yes").build();
         val cacheKey = keyer.getCacheKey(option, "getBigData", service);
         String content = "Here is Bingoo!" + System.currentTimeMillis();

@@ -6,8 +6,8 @@ import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.Test;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.flusherRegistry;
-import static com.github.bingoohuang.westcache.WestCacheRegistry.keyerRegistry;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.FLUSHER_REGISTRY;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.KEYER_REGISTRY;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -33,13 +33,13 @@ public class DiamondFlusherTest {
         service.setContent("111222");
         assertThat(service.getCachedContent()).isSameAs("XXXyyy");
 
-        val keyer = keyerRegistry.get("default");
+        val keyer = KEYER_REGISTRY.get("default");
         val option = WestCacheOption.newBuilder()
                 .flusher("diamond").specs("static.key=yes")
                 .build();
         val cacheKey = keyer.getCacheKey(option, "getCachedContent", service);
 
-        val flusher = flusherRegistry.get("diamond");
+        val flusher = FLUSHER_REGISTRY.get("diamond");
         flusher.flush(option, cacheKey, "");
         assertThat(service.getCachedContent()).isSameAs("111222");
     }

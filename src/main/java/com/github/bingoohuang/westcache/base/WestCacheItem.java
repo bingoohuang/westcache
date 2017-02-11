@@ -13,11 +13,11 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/29.
  */
 public class WestCacheItem {
-    private final Optional<?> optional;
+    private final Optional optional;
     @Getter private final long durationSeconds;
     private final long expiredAt;
 
-    public WestCacheItem(Optional<?> optional, WestCacheOption option) {
+    public WestCacheItem(Optional optional, WestCacheOption option) {
         this.optional = optional;
         val expireWrite = parseExpireAfterWrite(option, optional.orNull());
         if (isBlank(expireWrite)) {
@@ -31,13 +31,12 @@ public class WestCacheItem {
         this.expiredAt = System.currentTimeMillis() + duration * 1000;
     }
 
-    public Optional<?> getObject() {
+    public Optional getObject() {
         return optional;
     }
 
     public Object orNull() {
-        Optional<?> object = getObject();
-        return object == null ? null : object.orNull();
+        return optional == null ? null : optional.orNull();
     }
 
     public boolean isPresent() {

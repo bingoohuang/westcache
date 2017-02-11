@@ -38,52 +38,52 @@ public class WestCacheOption {
 
 
     public static class Builder {
-        WestCacheFlusher flusher = flusherRegistry.get("");
-        WestCacheManager manager = managerRegistry.get("");
-        WestCacheSnapshot snapshot = snapshotRegistry.get("");
-        WestCacheConfig config = configRegistry.get("");
-        WestCacheInterceptor interceptor = interceptorRegistry.get("");
-        WestCacheKeyer keyer = keyerRegistry.get("");
+        WestCacheFlusher flusher = FLUSHER_REGISTRY.get("");
+        WestCacheManager manager = MANAGER_REGISTRY.get("");
+        WestCacheSnapshot snapshot = SNAPSHOT_REGISTRY.get("");
+        WestCacheConfig config = REGISTRY_TEMPLATE.get("");
+        WestCacheInterceptor interceptor = INTERCEPTOR_REGISTRY.get("");
+        WestCacheKeyer keyer = KEYER_REGISTRY.get("");
         String key = "";
         Map<String, String> specs = Maps.newHashMap();
         Method method;
 
         public Builder flusher(String flusherName) {
-            this.flusher = flusherRegistry.get(flusherName);
+            this.flusher = FLUSHER_REGISTRY.get(flusherName);
             checkNotNull(this.flusher, flusherName, "flusher");
 
             return this;
         }
 
         public Builder manager(String managerName) {
-            this.manager = managerRegistry.get(managerName);
+            this.manager = MANAGER_REGISTRY.get(managerName);
             checkNotNull(this.manager, managerName, "manager");
 
             return this;
         }
 
         public Builder snapshot(String snapshotName) {
-            this.snapshot = snapshotRegistry.get(snapshotName);
+            this.snapshot = SNAPSHOT_REGISTRY.get(snapshotName);
 
             return this;
         }
 
         public Builder config(String configName) {
-            this.config = configRegistry.get(configName);
+            this.config = REGISTRY_TEMPLATE.get(configName);
             checkNotNull(this.config, configName, "config");
 
             return this;
         }
 
         public Builder interceptor(String interceptorName) {
-            this.interceptor = interceptorRegistry.get(interceptorName);
+            this.interceptor = INTERCEPTOR_REGISTRY.get(interceptorName);
             checkNotNull(this.interceptor, interceptorName, "interceptor");
 
             return this;
         }
 
         public Builder keyer(String keyerName) {
-            this.keyer = keyerRegistry.get(keyerName);
+            this.keyer = KEYER_REGISTRY.get(keyerName);
             checkNotNull(this.keyer, keyerName, "keyer");
 
             return this;

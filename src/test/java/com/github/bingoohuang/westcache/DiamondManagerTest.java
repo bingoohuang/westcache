@@ -7,12 +7,9 @@ import com.github.bingoohuang.westcache.manager.DiamondCacheManager;
 import com.github.bingoohuang.westcache.utils.WestCacheConnector;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.SneakyThrows;
-import lombok.val;
 import org.junit.Test;
 import org.n3r.diamond.client.impl.MockDiamondServer;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.keyerRegistry;
-import static com.github.bingoohuang.westcache.utils.WestCacheOption.newBuilder;
 import static com.google.common.truth.Truth.assertThat;
 
 /**

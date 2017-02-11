@@ -14,7 +14,7 @@ import java.util.concurrent.Callable;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/25.
  */
 public class DiamondCacheManager extends BaseCacheManager {
-    public final static String GROUP = "west.cache.manager";
+    public static final String GROUP = "west.cache.manager";
 
     public DiamondCacheManager() {
         super(new DiamondWestCache());

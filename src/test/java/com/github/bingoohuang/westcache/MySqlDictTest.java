@@ -22,7 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.flusherRegistry;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.FLUSHER_REGISTRY;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -66,7 +66,7 @@ public class MySqlDictTest {
     //    static DictDao dictDao = EqlerFactory.getEqler(DictDao.class);
     static ScheduledExecutorService scheduledExecutor;
     static volatile long updateCheckTime;
-    static WestCacheFlusher flusher = flusherRegistry.get("simple");
+    static WestCacheFlusher flusher = FLUSHER_REGISTRY.get("simple");
     private ScheduledFuture<?> scheduledFuture;
 
     @Capturing DictDao anyDictDao;

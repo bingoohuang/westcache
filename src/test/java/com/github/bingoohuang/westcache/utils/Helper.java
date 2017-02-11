@@ -6,8 +6,8 @@ import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.configRegistry;
-import static com.github.bingoohuang.westcache.WestCacheRegistry.flusherRegistry;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.REGISTRY_TEMPLATE;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.FLUSHER_REGISTRY;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/6.
@@ -15,12 +15,12 @@ import static com.github.bingoohuang.westcache.WestCacheRegistry.flusherRegistry
 @UtilityClass
 public class Helper {
     public TableCacheFlusher setupTableFlusherForTest() {
-        val flusher = (TableCacheFlusher) flusherRegistry.get("table");
+        val flusher = (TableCacheFlusher) FLUSHER_REGISTRY.get("table");
         flusher.cancelRotateChecker();
         flusher.getDao().setup();
 
-        configRegistry.deregister("default");
-        configRegistry.register("default", new DefaultWestCacheConfig() {
+        REGISTRY_TEMPLATE.deregister("default");
+        REGISTRY_TEMPLATE.register("default", new DefaultWestCacheConfig() {
             @Override public long rotateIntervalMillis() {
                 return 500;
             }

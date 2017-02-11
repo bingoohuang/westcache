@@ -26,12 +26,12 @@ public class SpringAppContext implements ApplicationContextAware,
     }
 
     @Override public void onApplicationEvent(ContextRefreshedEvent event) {
-        addSpringBeans(WestCacheConfig.class, WestCacheRegistry.configRegistry);
-        addSpringBeans(WestCacheFlusher.class, WestCacheRegistry.flusherRegistry);
-        addSpringBeans(WestCacheManager.class, WestCacheRegistry.managerRegistry);
-        addSpringBeans(WestCacheSnapshot.class, WestCacheRegistry.snapshotRegistry);
-        addSpringBeans(WestCacheKeyer.class, WestCacheRegistry.keyerRegistry);
-        addSpringBeans(WestCacheInterceptor.class, WestCacheRegistry.interceptorRegistry);
+        addSpringBeans(WestCacheConfig.class, WestCacheRegistry.REGISTRY_TEMPLATE);
+        addSpringBeans(WestCacheFlusher.class, WestCacheRegistry.FLUSHER_REGISTRY);
+        addSpringBeans(WestCacheManager.class, WestCacheRegistry.MANAGER_REGISTRY);
+        addSpringBeans(WestCacheSnapshot.class, WestCacheRegistry.SNAPSHOT_REGISTRY);
+        addSpringBeans(WestCacheKeyer.class, WestCacheRegistry.KEYER_REGISTRY);
+        addSpringBeans(WestCacheInterceptor.class, WestCacheRegistry.INTERCEPTOR_REGISTRY);
     }
 
     public static ApplicationContext getAppContext() {

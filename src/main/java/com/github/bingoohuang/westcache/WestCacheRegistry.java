@@ -24,24 +24,23 @@ import lombok.val;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
  */
 public abstract class WestCacheRegistry {
-    public final static RegistryTemplate<WestCacheConfig> configRegistry
+    public static final RegistryTemplate<WestCacheConfig> REGISTRY_TEMPLATE
             = new RegistryTemplate<WestCacheConfig>();
 
     static {
-        configRegistry.register("default", new DefaultWestCacheConfig());
+        REGISTRY_TEMPLATE.register("default", new DefaultWestCacheConfig());
     }
 
-    public final static RegistryTemplate<WestCacheFlusher> flusherRegistry
+    public static final RegistryTemplate<WestCacheFlusher> FLUSHER_REGISTRY
             = new RegistryTemplate<WestCacheFlusher>();
 
     static {
-        flusherRegistry.register("default", new ByPassCacheFlusher());
-        flusherRegistry.register("simple", new SimpleCacheFlusher());
-        if (Envs.HAS_DIAMOND) flusherRegistry.register("diamond", new DiamondCacheFlusher());
-        if (Envs.HAS_EQL) flusherRegistry.register("table", new TableCacheFlusher());
-        if (Envs.HAS_QUARTZ) flusherRegistry.register("quartz", new QuartzCacheFlusher());
+        FLUSHER_REGISTRY.register("default", new ByPassCacheFlusher());
+        FLUSHER_REGISTRY.register("simple", new SimpleCacheFlusher());
+        if (Envs.HAS_DIAMOND) FLUSHER_REGISTRY.register("diamond", new DiamondCacheFlusher());
+        if (Envs.HAS_EQL) FLUSHER_REGISTRY.register("table", new TableCacheFlusher());
+        if (Envs.HAS_QUARTZ) FLUSHER_REGISTRY.register("quartz", new QuartzCacheFlusher());
     }
-
 
 
     public static void flush(WestCacheOption option,
@@ -53,39 +52,39 @@ public abstract class WestCacheRegistry {
         option.getFlusher().flush(option, cacheKey, "");
     }
 
-    public final static RegistryTemplate<WestCacheManager> managerRegistry
+    public static final RegistryTemplate<WestCacheManager> MANAGER_REGISTRY
             = new RegistryTemplate<WestCacheManager>();
 
     static {
-        managerRegistry.register("default", new GuavaCacheManager());
-        managerRegistry.register("file", new FileCacheManager());
-        if (Envs.HAS_DIAMOND) managerRegistry.register("diamond", new DiamondCacheManager());
-        if (Envs.HAS_EXPIRING) managerRegistry.register("expiring", new ExpiringMapCacheManager());
-        if (Envs.HAS_JEDIS) managerRegistry.register("redis", new RedisCacheManager());
+        MANAGER_REGISTRY.register("default", new GuavaCacheManager());
+        MANAGER_REGISTRY.register("file", new FileCacheManager());
+        if (Envs.HAS_DIAMOND) MANAGER_REGISTRY.register("diamond", new DiamondCacheManager());
+        if (Envs.HAS_EXPIRING) MANAGER_REGISTRY.register("expiring", new ExpiringMapCacheManager());
+        if (Envs.HAS_JEDIS) MANAGER_REGISTRY.register("redis", new RedisCacheManager());
     }
 
-    public final static RegistryTemplate<WestCacheSnapshot> snapshotRegistry
+    public static final RegistryTemplate<WestCacheSnapshot> SNAPSHOT_REGISTRY
             = new RegistryTemplate<WestCacheSnapshot>();
 
     static {
-        snapshotRegistry.register("file", new FileCacheSnapshot());
-        if (Envs.HAS_JEDIS) snapshotRegistry.register("redis", new RedisCacheSnapshot());
+        SNAPSHOT_REGISTRY.register("file", new FileCacheSnapshot());
+        if (Envs.HAS_JEDIS) SNAPSHOT_REGISTRY.register("redis", new RedisCacheSnapshot());
     }
 
-    public final static RegistryTemplate<WestCacheKeyer> keyerRegistry
+    public static final RegistryTemplate<WestCacheKeyer> KEYER_REGISTRY
             = new RegistryTemplate<WestCacheKeyer>();
 
     static {
-        keyerRegistry.register("default", new DefaultKeyer());
-        keyerRegistry.register("simple", new SimpleKeyer());
-        if (Envs.HAS_DIAMOND) keyerRegistry.register("packagelimit", new PackageLimitedKeyer());
+        KEYER_REGISTRY.register("default", new DefaultKeyer());
+        KEYER_REGISTRY.register("simple", new SimpleKeyer());
+        if (Envs.HAS_DIAMOND) KEYER_REGISTRY.register("packagelimit", new PackageLimitedKeyer());
     }
 
-    public final static RegistryTemplate<WestCacheInterceptor> interceptorRegistry
+    public static final RegistryTemplate<WestCacheInterceptor> INTERCEPTOR_REGISTRY
             = new RegistryTemplate<WestCacheInterceptor>();
 
     static {
-        interceptorRegistry.register("default", new ByPassInterceptor());
-        if (Envs.HAS_JEDIS) interceptorRegistry.register("redis", new RedisInterceptor());
+        INTERCEPTOR_REGISTRY.register("default", new ByPassInterceptor());
+        if (Envs.HAS_JEDIS) INTERCEPTOR_REGISTRY.register("redis", new RedisInterceptor());
     }
 }

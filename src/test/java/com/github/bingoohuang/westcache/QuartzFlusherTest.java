@@ -8,8 +8,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.flusherRegistry;
-import static com.github.bingoohuang.westcache.WestCacheRegistry.managerRegistry;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.FLUSHER_REGISTRY;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.MANAGER_REGISTRY;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
@@ -35,17 +35,17 @@ public class QuartzFlusherTest {
 
     @BeforeClass
     public static void beforeClass() {
-        managerRegistry.register("quartz-manager", new GuavaCacheManager());
-        flusherRegistry.register("quartz-flusher", new QuartzCacheFlusher());
+        MANAGER_REGISTRY.register("quartz-manager", new GuavaCacheManager());
+        FLUSHER_REGISTRY.register("quartz-flusher", new QuartzCacheFlusher());
     }
 
     @AfterClass
     public static void afterClass() {
-        val flusher = (QuartzCacheFlusher) flusherRegistry.get("quartz-flusher");
+        val flusher = (QuartzCacheFlusher) FLUSHER_REGISTRY.get("quartz-flusher");
         flusher.stopQuartz();
 
-        managerRegistry.deregister("quartz-manager");
-        flusherRegistry.deregister("quartz-flusher");
+        MANAGER_REGISTRY.deregister("quartz-manager");
+        FLUSHER_REGISTRY.deregister("quartz-flusher");
     }
 
     @Test
