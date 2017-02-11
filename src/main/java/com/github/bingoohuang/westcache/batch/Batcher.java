@@ -74,18 +74,17 @@ public class Batcher<T, V> {
     }
 
     private void doBatchWork(List<BatcherBean<T, V>> tasks) {
-        val batchArgs = Lists.transform(tasks,
-                new Function<BatcherBean<T, V>, T>() {
+        val batchArgs = Lists.transform(tasks, new Function<BatcherBean<T, V>, T>() {
                     @Override public T apply(BatcherBean<T, V> task) {
                         return task.getArg();
                     }
                 });
 
         List<V> results = null;
-        Throwable ex = null;
+        Exception ex = null;
         try {
             results = batcherJob.doBatchJob(batchArgs);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("call doBatchJob err", e);
             ex = e;
         }
@@ -96,13 +95,11 @@ public class Batcher<T, V> {
         }
 
         for (int i = 0, ii = tasks.size(); i < ii; ++i) {
-            SettableFuture<V> future = tasks.get(i).getFuture();
+            val future = tasks.get(i).getFuture();
             if (i < resultsSize) {
                 future.set(results.get(i));
             } else {
-                val e = ex != null
-                        ? ex : new RuntimeException("result is not available");
-                future.setException(e);
+                future.setException(ex != null ? ex : new RuntimeException("result is not available"));
             }
         }
     }

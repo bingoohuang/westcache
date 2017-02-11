@@ -218,7 +218,8 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
                               Map<String, String> fullKeys) {
         for (val key : getRegistry().asMap().keySet()) {
             if (flushKeys.containsKey(key)) {
-                fullKeys.put(key, "" + flushKeys.get(key).getValueVersion());
+                int valueVersion = flushKeys.get(key).getValueVersion();
+                fullKeys.put(key, Integer.toString(valueVersion));
                 continue;
             }
 

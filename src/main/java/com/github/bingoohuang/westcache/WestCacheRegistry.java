@@ -37,9 +37,9 @@ public abstract class WestCacheRegistry {
     static {
         flusherRegistry.register("default", new ByPassCacheFlusher());
         flusherRegistry.register("simple", new SimpleCacheFlusher());
-        if (Envs.hasDiamond) flusherRegistry.register("diamond", new DiamondCacheFlusher());
-        if (Envs.hasEql) flusherRegistry.register("table", new TableCacheFlusher());
-        if (Envs.hasQuartz) flusherRegistry.register("quartz", new QuartzCacheFlusher());
+        if (Envs.HAS_DIAMOND) flusherRegistry.register("diamond", new DiamondCacheFlusher());
+        if (Envs.HAS_EQL) flusherRegistry.register("table", new TableCacheFlusher());
+        if (Envs.HAS_QUARTZ) flusherRegistry.register("quartz", new QuartzCacheFlusher());
     }
 
 
@@ -59,9 +59,9 @@ public abstract class WestCacheRegistry {
     static {
         managerRegistry.register("default", new GuavaCacheManager());
         managerRegistry.register("file", new FileCacheManager());
-        if (Envs.hasDiamond) managerRegistry.register("diamond", new DiamondCacheManager());
-        if (Envs.hasExpiring) managerRegistry.register("expiring", new ExpiringMapCacheManager());
-        if (Envs.hasJedis) managerRegistry.register("redis", new RedisCacheManager());
+        if (Envs.HAS_DIAMOND) managerRegistry.register("diamond", new DiamondCacheManager());
+        if (Envs.HAS_EXPIRING) managerRegistry.register("expiring", new ExpiringMapCacheManager());
+        if (Envs.HAS_JEDIS) managerRegistry.register("redis", new RedisCacheManager());
     }
 
     public final static RegistryTemplate<WestCacheSnapshot> snapshotRegistry
@@ -69,7 +69,7 @@ public abstract class WestCacheRegistry {
 
     static {
         snapshotRegistry.register("file", new FileCacheSnapshot());
-        if (Envs.hasJedis) snapshotRegistry.register("redis", new RedisCacheSnapshot());
+        if (Envs.HAS_JEDIS) snapshotRegistry.register("redis", new RedisCacheSnapshot());
     }
 
     public final static RegistryTemplate<WestCacheKeyer> keyerRegistry
@@ -78,7 +78,7 @@ public abstract class WestCacheRegistry {
     static {
         keyerRegistry.register("default", new DefaultKeyer());
         keyerRegistry.register("simple", new SimpleKeyer());
-        if (Envs.hasDiamond) keyerRegistry.register("packagelimit", new PackageLimitedKeyer());
+        if (Envs.HAS_DIAMOND) keyerRegistry.register("packagelimit", new PackageLimitedKeyer());
     }
 
     public final static RegistryTemplate<WestCacheInterceptor> interceptorRegistry
@@ -86,6 +86,6 @@ public abstract class WestCacheRegistry {
 
     static {
         interceptorRegistry.register("default", new ByPassInterceptor());
-        if (Envs.hasJedis) interceptorRegistry.register("redis", new RedisInterceptor());
+        if (Envs.HAS_JEDIS) interceptorRegistry.register("redis", new RedisInterceptor());
     }
 }

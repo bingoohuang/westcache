@@ -40,7 +40,7 @@ public abstract class CacheMethodInterceptor<T> {
 
         try {
             return cacheGet(option, obj, method, args, methodProxy);
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             log.error("cache get error", ex);
             throw ex;
         }

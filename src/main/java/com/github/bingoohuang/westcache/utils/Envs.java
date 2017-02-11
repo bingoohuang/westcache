@@ -13,12 +13,12 @@ import java.util.concurrent.*;
  */
 @Slf4j
 public abstract class Envs {
-    public static boolean hasSpring = classExists("org.springframework.context.ApplicationContext");
-    public static boolean hasDiamond = classExists("org.n3r.diamond.client.DiamondListener");
-    public static boolean hasExpiring = classExists("net.jodah.expiringmap.ExpiringMap");
-    public static boolean hasJedis = classExists("redis.clients.jedis.JedisCommands");
-    public static boolean hasEql = classExists("org.n3r.eql.eqler.EqlerFactory");
-    public static boolean hasQuartz = classExists("org.quartz.JobDetail");
+    public static final boolean HAS_SPRING = classExists("org.springframework.context.ApplicationContext");
+    public static final boolean HAS_DIAMOND = classExists("org.n3r.diamond.client.DiamondListener");
+    public static final boolean HAS_EXPIRING = classExists("net.jodah.expiringmap.ExpiringMap");
+    public static final boolean HAS_JEDIS = classExists("redis.clients.jedis.JedisCommands");
+    public static final boolean HAS_EQL = classExists("org.n3r.eql.eqler.EqlerFactory");
+    public static final boolean HAS_QUARTZ = classExists("org.quartz.JobDetail");
 
     public static boolean classExists(String className) {
         try {
