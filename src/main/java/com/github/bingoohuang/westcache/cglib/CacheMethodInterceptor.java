@@ -37,7 +37,8 @@ public abstract class CacheMethodInterceptor<T> {
                             Object[] args,
                             T methodProxy) {
         val option = WestCacheOption.parseWestCacheable(method);
-        if (option == null) return invokeRaw(obj, args, methodProxy);
+        if (option == null)
+            return invokeRaw(obj, args, methodProxy);
 
         try {
             return cacheGet(option, obj, method, args, methodProxy);
@@ -53,7 +54,8 @@ public abstract class CacheMethodInterceptor<T> {
                             final Object[] args,
                             final T proxy) {
         val cacheKey = getCacheKey(option, obj, method, args, proxy);
-        if (!isConnectedAndGoon(option, cacheKey)) return null;
+        if (!isConnectedAndGoon(option, cacheKey))
+            return null;
 
         val start = System.currentTimeMillis();
         @Cleanup val i = new QuietCloseable() {

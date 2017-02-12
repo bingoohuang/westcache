@@ -84,7 +84,8 @@ public class ScheduledParser {
 
     private DateTime parseDate(Pattern pattern, String defaultTime) {
         Matcher matcher = pattern.matcher(schedulerExpr);
-        if (!matcher.find()) return null;
+        if (!matcher.find())
+            return null;
 
         schedulerExpr = removeFound(schedulerExpr, matcher);
 
@@ -134,10 +135,12 @@ public class ScheduledParser {
 
     private ScheduleBuilder<? extends Trigger> parseEveryExpr(String everyExpr) {
         Matcher matcher = EVERY_EXPR_PATTERN.matcher(everyExpr);
-        if (!matcher.find()) throw new WestCacheException(everyExpr + " is not valid");
+        if (!matcher.find())
+            throw new WestCacheException(everyExpr + " is not valid");
 
         int num = Integer.parseInt(matcher.group(1));
-        if (num <= 0) throw new WestCacheException(everyExpr + " is not valid");
+        if (num <= 0)
+            throw new WestCacheException(everyExpr + " is not valid");
 
         char unit = matcher.group(2).charAt(0);
         TimeUnit timeUnit = parseTimeUnit(unit);

@@ -27,8 +27,8 @@ public abstract class WestCacheFactory {
      */
     @SneakyThrows @SuppressWarnings("unchecked")
     public static <T> T create(Class<T> targetClass) {
-        val wccClass = WestCacheCglib.class.isAssignableFrom(targetClass);
-        if (wccClass) return targetClass.newInstance();
+        if (WestCacheCglib.class.isAssignableFrom(targetClass))
+            return targetClass.newInstance();
 
         return (T) (targetClass.isInterface()
                 ? Cglibs.proxy(Object.class, INTERCEPTOR, targetClass, WestCacheCglib.class)
@@ -45,9 +45,11 @@ public abstract class WestCacheFactory {
      */
     @SuppressWarnings("unchecked")
     public static <T> T create(T target) {
-        if (target instanceof WestCacheCglib) return target;
+        if (target instanceof WestCacheCglib)
+            return target;
 
         val interceptor = new CglibCacheMethodInterceptor(target);
-        return (T) Cglibs.proxy(target.getClass(), interceptor, WestCacheCglib.class);
+        Class<?> targetClass = target.getClass();
+        return (T) Cglibs.proxy(targetClass, interceptor, WestCacheCglib.class);
     }
 }
