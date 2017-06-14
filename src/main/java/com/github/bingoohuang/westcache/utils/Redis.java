@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
 import com.google.common.base.Optional;
@@ -83,6 +84,8 @@ public abstract class Redis {
         if (jsonValue == null) return null;
 
         val value = FastJsons.parse(jsonValue, option.getMethod(), true);
+        if (value == null && !"null".equals(jsonValue)) return null;
+
         val optional = Optional.fromNullable(value);
         return new WestCacheItem(optional, option);
     }
