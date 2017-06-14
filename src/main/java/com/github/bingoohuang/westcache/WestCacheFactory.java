@@ -4,13 +4,15 @@ import com.github.bingoohuang.westcache.cglib.CglibCacheMethodInterceptor;
 import com.github.bingoohuang.westcache.cglib.Cglibs;
 import com.github.bingoohuang.westcache.cglib.WestCacheCglib;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/21.
  */
-public abstract class WestCacheFactory {
+@UtilityClass
+public class WestCacheFactory {
     private static final CglibCacheMethodInterceptor INTERCEPTOR = new CglibCacheMethodInterceptor();
 
     /**

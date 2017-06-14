@@ -96,7 +96,7 @@ public class RedisManagerExpireTest {
     }
 
     @SneakyThrows
-    private void runThreads(final int methodIndex)  {
+    private void runThreads(final int methodIndex) {
         val cdl = new CountDownLatch(COUNT);
         Runnable runnable = new Runnable() {
             @Override @SneakyThrows public void run() {

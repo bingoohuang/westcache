@@ -27,15 +27,17 @@ public abstract class WestCacheRegistry {
     public static final RegistryTemplate<WestCacheConfig> REGISTRY_TEMPLATE
             = new RegistryTemplate<WestCacheConfig>();
 
+    public static final String DEFAULT = "default";
+
     static {
-        REGISTRY_TEMPLATE.register("default", new DefaultWestCacheConfig());
+        REGISTRY_TEMPLATE.register(DEFAULT, new DefaultWestCacheConfig());
     }
 
     public static final RegistryTemplate<WestCacheFlusher> FLUSHER_REGISTRY
             = new RegistryTemplate<WestCacheFlusher>();
 
     static {
-        FLUSHER_REGISTRY.register("default", new ByPassCacheFlusher());
+        FLUSHER_REGISTRY.register(DEFAULT, new ByPassCacheFlusher());
         FLUSHER_REGISTRY.register("simple", new SimpleCacheFlusher());
         if (Envs.HAS_DIAMOND) FLUSHER_REGISTRY.register("diamond", new DiamondCacheFlusher());
         if (Envs.HAS_EQL) FLUSHER_REGISTRY.register("table", new TableCacheFlusher());
@@ -56,7 +58,7 @@ public abstract class WestCacheRegistry {
             = new RegistryTemplate<WestCacheManager>();
 
     static {
-        MANAGER_REGISTRY.register("default", new GuavaCacheManager());
+        MANAGER_REGISTRY.register(DEFAULT, new GuavaCacheManager());
         MANAGER_REGISTRY.register("file", new FileCacheManager());
         if (Envs.HAS_DIAMOND) MANAGER_REGISTRY.register("diamond", new DiamondCacheManager());
         if (Envs.HAS_EXPIRING) MANAGER_REGISTRY.register("expiring", new ExpiringMapCacheManager());
@@ -75,7 +77,7 @@ public abstract class WestCacheRegistry {
             = new RegistryTemplate<WestCacheKeyer>();
 
     static {
-        KEYER_REGISTRY.register("default", new DefaultKeyer());
+        KEYER_REGISTRY.register(DEFAULT, new DefaultKeyer());
         KEYER_REGISTRY.register("simple", new SimpleKeyer());
         if (Envs.HAS_DIAMOND) KEYER_REGISTRY.register("packagelimit", new PackageLimitedKeyer());
     }
@@ -84,7 +86,7 @@ public abstract class WestCacheRegistry {
             = new RegistryTemplate<WestCacheInterceptor>();
 
     static {
-        INTERCEPTOR_REGISTRY.register("default", new ByPassInterceptor());
+        INTERCEPTOR_REGISTRY.register(DEFAULT, new ByPassInterceptor());
         if (Envs.HAS_JEDIS) INTERCEPTOR_REGISTRY.register("redis", new RedisInterceptor());
     }
 }

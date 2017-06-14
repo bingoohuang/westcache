@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -11,8 +12,8 @@ import java.lang.reflect.Method;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/29.
  */
-@Slf4j
-public abstract class FastJsons {
+@Slf4j @UtilityClass
+public class FastJsons {
     public static String json(Object obj) {
         return JSON.toJSONString(obj);
     }

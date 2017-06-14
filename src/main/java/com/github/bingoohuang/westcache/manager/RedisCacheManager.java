@@ -64,7 +64,7 @@ public class RedisCacheManager extends BaseCacheManager {
                         WestCacheItem cacheValue) {
             val redis = Redis.getRedis(option);
             val key = prefix + cacheKey;
-            Redis.expirePut(option, redis, key, cacheValue);
+            Redis.expirePut(redis, key, cacheValue);
         }
 
         @Override

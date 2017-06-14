@@ -91,7 +91,7 @@ public class DemoServiceTest {
     public void doEx() {
         try {
             service.doEx();
-        }catch (RuntimeException ex) {
+        } catch (RuntimeException ex) {
             assertThat(ex.getMessage()).isEqualTo("i am do exception");
             return;
         }

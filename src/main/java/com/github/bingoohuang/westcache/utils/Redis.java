@@ -1,11 +1,11 @@
 package com.github.bingoohuang.westcache.utils;
 
-import com.alibaba.fastjson.JSON;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
 import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
@@ -20,8 +20,8 @@ import java.lang.reflect.Proxy;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/3.
  */
-@Slf4j
-public abstract class Redis {
+@Slf4j @UtilityClass
+public class Redis {
     public static final String PREFIX = "westcache:";
     private static JedisCommands jedis = createtJedisCommands(
             "127.0.0.1", 6379, 10);
@@ -90,8 +90,7 @@ public abstract class Redis {
         return new WestCacheItem(optional, option);
     }
 
-    public static String expirePut(WestCacheOption option,
-                                   JedisCommands redis,
+    public static String expirePut(JedisCommands redis,
                                    String redisKey,
                                    WestCacheItem item) {
         val duration = item.getDurationSeconds();

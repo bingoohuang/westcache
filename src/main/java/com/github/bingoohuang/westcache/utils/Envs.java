@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.utils;
 
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -11,8 +12,8 @@ import java.util.concurrent.*;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/11.
  */
-@Slf4j
-public abstract class Envs {
+@Slf4j @UtilityClass
+public class Envs {
     public static final boolean HAS_SPRING = classExists("org.springframework.context.ApplicationContext");
     public static final boolean HAS_DIAMOND = classExists("org.n3r.diamond.client.DiamondListener");
     public static final boolean HAS_EXPIRING = classExists("net.jodah.expiringmap.ExpiringMap");

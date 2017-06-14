@@ -1,12 +1,14 @@
 package com.github.bingoohuang.westcache.cglib;
 
+import lombok.experimental.UtilityClass;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
-public abstract class Cglibs {
+@UtilityClass
+public class Cglibs {
     /**
      * proxied object class will be like
      * com.github.bingoohuang.westcache.RefreshTest$FlushBean$$EnhancerByCGLIB$$8b0b1c89
@@ -35,8 +37,8 @@ public abstract class Cglibs {
      * @return proxied object.
      */
     public static Object proxy(Class<?> superClass,
-                        MethodInterceptor interceptor,
-                        Class<?>... interfaces) {
+                               MethodInterceptor interceptor,
+                               Class<?>... interfaces) {
         return Enhancer.create(superClass, interfaces, interceptor);
     }
 }

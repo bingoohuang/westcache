@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
  */
 @Data @AllArgsConstructor @NoArgsConstructor
 public class WestCacheFlusherBean {
-    private String cacheKey, keyMatch;
+    private String cacheKey;
+    private String keyMatch;
     private int valueVersion;
     private String valueType;
     private String specs;

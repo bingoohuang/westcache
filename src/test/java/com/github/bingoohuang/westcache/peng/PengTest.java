@@ -84,7 +84,7 @@ public class PengTest {
         } catch (WestCacheException ex) {
             assertThat(ex.toString()).contains(
                     "cache key PengService.getCities_33 missed executable body " +
-                    "in abstract method com.github.bingoohuang.westcache.peng.PengService.getCities");
+                            "in abstract method com.github.bingoohuang.westcache.peng.PengService.getCities");
             return;
         }
         Assert.fail();

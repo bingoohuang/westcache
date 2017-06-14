@@ -1,9 +1,7 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.cglib.Cglibs;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.ByPassCacheFlusher;
-import com.github.bingoohuang.westcache.utils.*;
 import lombok.val;
 import org.junit.Test;
 
@@ -18,20 +16,5 @@ public class MiscTest {
 
         val config = new DefaultWestCacheConfig();
         config.rotateIntervalMillis();
-
-        new Anns(){};
-        new Durations(){};
-        new Envs(){};
-        new FastJsons(){};
-        new Keys(){};
-        new Redis(){};
-        new Snapshots(){};
-        new Specs(){};
-        new Cglibs(){};
-        new WestCacheFactory(){};
-        new WestCacheRegistry(){};
-        new Guavas(){};
-        new WestCacheConnector() {};
-        new ExpireAfterWrites(){};
     }
 }

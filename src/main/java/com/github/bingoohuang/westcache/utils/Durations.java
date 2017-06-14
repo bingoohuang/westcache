@@ -1,5 +1,7 @@
 package com.github.bingoohuang.westcache.utils;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -8,7 +10,8 @@ import static java.lang.String.format;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/2.
  */
-public abstract class Durations {
+@UtilityClass
+public class Durations {
     public static long parse(String key, String spec) {
         checkArgument(spec != null && !spec.isEmpty(),
                 "value of key %s omitted", key);

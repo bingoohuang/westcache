@@ -1,12 +1,14 @@
 package com.github.bingoohuang.westcache.utils;
 
 import com.github.bingoohuang.westcache.cglib.Cglibs;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/30.
  */
-public abstract class Keys {
+@UtilityClass
+public class Keys {
     public static String joinArgs(Object[] args) {
         val argsPart = new StringBuilder();
 

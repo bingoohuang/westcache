@@ -2,7 +2,6 @@ package com.github.bingoohuang.westcache.spring;
 
 import lombok.Setter;
 import lombok.val;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -34,7 +33,7 @@ public class WestCacheableScannerConfigurer
     }
 
     @Override
-    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)  {
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
         val scanner = new WestCacheableClassPathScanner(registry);
         scanner.setResourceLoader(this.applicationContext);
         scanner.registerFilters();

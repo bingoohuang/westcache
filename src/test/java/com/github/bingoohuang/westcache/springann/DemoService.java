@@ -38,7 +38,6 @@ import redis.clients.jedis.JedisCommands;
     @Autowired @Qualifier("that") JedisCommands thatRedis;
 
 
-
     @WestCacheable(
             manager = "quartz-manager",
             flusher = "quartz-flusher",

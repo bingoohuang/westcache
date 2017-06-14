@@ -81,15 +81,15 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
             cache.remove(cacheKey);
         }
 
+        /**
+         * expireAfterAccess=[duration];expireAfterWrite=[duration];
+         * Durations are represented by an integer,
+         * followed by one of "d", "h", "m", or "s",
+         * representing days, hours, minutes, or seconds respectively.
+         */
         protected void putItem(WestCacheOption option,
                                String cacheKey,
                                WestCacheItem item) {
-            /*
-             expireAfterAccess=[duration];expireAfterWrite=[duration];
-             Durations are represented by an integer,
-             followed by one of "d", "h", "m", or "s",
-             representing days, hours, minutes, or seconds respectively.
-             */
             val expireWrite = item.getDurationSeconds();
             val expireAccess = option.getSpecs().get("expireAfterAccess");
             if (expireWrite != 0) {

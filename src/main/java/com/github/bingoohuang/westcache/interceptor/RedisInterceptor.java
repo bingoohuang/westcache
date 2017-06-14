@@ -42,7 +42,7 @@ public class RedisInterceptor implements WestCacheInterceptor {
         if (item2 != null) return item2;
 
         val item = Envs.execute(callable);
-        Redis.expirePut(option, redis, redisKey, item);
+        Redis.expirePut(redis, redisKey, item);
 
         return item;
     }

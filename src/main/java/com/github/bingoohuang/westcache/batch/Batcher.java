@@ -75,10 +75,10 @@ public class Batcher<T, V> {
 
     private void doBatchWork(List<BatcherBean<T, V>> tasks) {
         val batchArgs = Lists.transform(tasks, new Function<BatcherBean<T, V>, T>() {
-                    @Override public T apply(BatcherBean<T, V> task) {
-                        return task.getArg();
-                    }
-                });
+            @Override public T apply(BatcherBean<T, V> task) {
+                return task.getArg();
+            }
+        });
 
         List<V> results = null;
         Exception ex = null;

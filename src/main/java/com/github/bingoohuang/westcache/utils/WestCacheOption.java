@@ -22,6 +22,11 @@ import static com.github.bingoohuang.westcache.WestCacheRegistry.*;
  */
 @Value @AllArgsConstructor
 public class WestCacheOption {
+    public static final String FLUSHER_NAME = "flusher";
+    public static final String MANAGER_NAME = "manager";
+    public static final String CONFIG_NAME = "config";
+    public static final String INTERCEPTOR_NAME = "interceptor";
+    public static final String KEYER_NAME = "keyer";
     @Getter private final WestCacheFlusher flusher;
     @Getter private final WestCacheManager manager;
     @Getter private final WestCacheSnapshot snapshot;
@@ -50,14 +55,14 @@ public class WestCacheOption {
 
         public Builder flusher(String flusherName) {
             this.flusher = FLUSHER_REGISTRY.get(flusherName);
-            checkNotNull(this.flusher, flusherName, "flusher");
+            checkNotNull(this.flusher, flusherName, FLUSHER_NAME);
 
             return this;
         }
 
         public Builder manager(String managerName) {
             this.manager = MANAGER_REGISTRY.get(managerName);
-            checkNotNull(this.manager, managerName, "manager");
+            checkNotNull(this.manager, managerName, MANAGER_NAME);
 
             return this;
         }
@@ -70,21 +75,21 @@ public class WestCacheOption {
 
         public Builder config(String configName) {
             this.config = REGISTRY_TEMPLATE.get(configName);
-            checkNotNull(this.config, configName, "config");
+            checkNotNull(this.config, configName, CONFIG_NAME);
 
             return this;
         }
 
         public Builder interceptor(String interceptorName) {
             this.interceptor = INTERCEPTOR_REGISTRY.get(interceptorName);
-            checkNotNull(this.interceptor, interceptorName, "interceptor");
+            checkNotNull(this.interceptor, interceptorName, INTERCEPTOR_NAME);
 
             return this;
         }
 
         public Builder keyer(String keyerName) {
             this.keyer = KEYER_REGISTRY.get(keyerName);
-            checkNotNull(this.keyer, keyerName, "keyer");
+            checkNotNull(this.keyer, keyerName, KEYER_NAME);
 
             return this;
         }
@@ -92,10 +97,10 @@ public class WestCacheOption {
         private void checkNotNull(Object object, String name, String attr) {
             if (object != null) return;
 
-            String key = name.isEmpty() ? "default" : name;
+            val newName = name.isEmpty() ? "default" : name;
             throw new WestCacheException(
-                    attr + " " + key + " is not registered, " +
-                    "please check your config or dependencies");
+                    attr + " " + newName + " is not registered, " +
+                            "please check your config or dependencies");
         }
 
         public Builder key(String key) {
@@ -146,12 +151,12 @@ public class WestCacheOption {
 
     private static WestCacheOption buildOption(Map<String, String> attrs, Method m) {
         return WestCacheOption.newBuilder()
-                .flusher(getAttr(attrs, "flusher"))
-                .manager(getAttr(attrs, "manager"))
+                .flusher(getAttr(attrs, FLUSHER_NAME))
+                .manager(getAttr(attrs, MANAGER_NAME))
                 .snapshot(getAttr(attrs, "snapshot"))
-                .config(getAttr(attrs, "config"))
-                .interceptor(getAttr(attrs, "interceptor"))
-                .keyer(getAttr(attrs, "keyer"))
+                .config(getAttr(attrs, CONFIG_NAME))
+                .interceptor(getAttr(attrs, INTERCEPTOR_NAME))
+                .keyer(getAttr(attrs, KEYER_NAME))
                 .key(getAttr(attrs, "key"))
                 .specs(parseSpecs(attrs))
                 .method(m)
@@ -162,8 +167,8 @@ public class WestCacheOption {
         String specsStr = attrs.get("specs");
         val specs = Specs.parseSpecs(specsStr);
 
-        Anns.removeAttrs(attrs, "flusher", "manager",
-                "snapshot", "config", "interceptor", "keyer", "key", "specs");
+        Anns.removeAttrs(attrs, FLUSHER_NAME, MANAGER_NAME,
+                "snapshot", CONFIG_NAME, INTERCEPTOR_NAME, KEYER_NAME, "key", "specs");
         specs.putAll(attrs);
         return specs;
     }

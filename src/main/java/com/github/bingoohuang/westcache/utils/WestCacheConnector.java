@@ -18,11 +18,11 @@ public abstract class WestCacheConnector {
         if (optional == null) return true;
 
         Object tag = optional.orNull();
-        if (tag == ConnectTag.Option) {
+        if (tag == ConnectTag.OPTION) {
             THREAD_LOCAL.set(Optional.of(option));
-        } else if (tag == ConnectTag.Key) {
+        } else if (tag == ConnectTag.KEY) {
             THREAD_LOCAL.set(Optional.of(cacheKey));
-        } else if (tag == ConnectTag.Clear) {
+        } else if (tag == ConnectTag.CLEAR) {
             option.getManager().invalidate(option, cacheKey, null);
         } else {
             option.getManager().put(option, cacheKey,
@@ -33,18 +33,18 @@ public abstract class WestCacheConnector {
     }
 
     public enum ConnectTag {
-        Clear,
-        Option,
-        Key
+        CLEAR,
+        OPTION,
+        KEY
     }
 
     /**
-     * Clear the cache related to callable.
+     * CLEAR the cache related to callable.
      *
      * @param runnable Runnable to call cached method.
      */
     public static void clearCache(Runnable runnable) {
-        connectCache(runnable, ConnectTag.Clear);
+        connectCache(runnable, ConnectTag.CLEAR);
     }
 
     /**
@@ -54,7 +54,7 @@ public abstract class WestCacheConnector {
      * @return WestCacheOption
      */
     public static WestCacheOption connectOption(Runnable runnable) {
-        return connectCache(runnable, ConnectTag.Option);
+        return connectCache(runnable, ConnectTag.OPTION);
     }
 
     /**
@@ -64,7 +64,7 @@ public abstract class WestCacheConnector {
      * @return cache key.
      */
     public static String connectKey(Runnable runnable) {
-        return connectCache(runnable, ConnectTag.Key);
+        return connectCache(runnable, ConnectTag.KEY);
     }
 
 

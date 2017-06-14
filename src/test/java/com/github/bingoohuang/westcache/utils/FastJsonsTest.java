@@ -69,6 +69,7 @@ public class FastJsonsTest {
         String str = FastJsons.parse("\"abc\"", method, true);
         assertThat(str).isEqualTo("abc");
     }
+
     @Test @SneakyThrows
     public void stringPure() {
         Method method = FastInterface.class.getMethod("string");

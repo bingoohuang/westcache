@@ -13,14 +13,14 @@ public class WestCacheFactoryTest {
     public void badCreate() {
         try {
             WestCacheFactory.create(XyzClass.class);
-        }catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             assertThat(ex.getMessage()).isEqualTo("Superclass has no null constructors but no arguments were given");
             return;
         }
         Assert.fail();
     }
 
-    public static class XyzClass{
+    public static class XyzClass {
         public XyzClass(String sth) {
         }
     }

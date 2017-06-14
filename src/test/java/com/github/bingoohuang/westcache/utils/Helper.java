@@ -6,8 +6,8 @@ import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.REGISTRY_TEMPLATE;
 import static com.github.bingoohuang.westcache.WestCacheRegistry.FLUSHER_REGISTRY;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.REGISTRY_TEMPLATE;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/6.
@@ -69,7 +69,7 @@ public class Helper {
 
 
     public static void disableConfigBean(TableCacheFlusher flusher,
-                                     WestCacheFlusherBean bean) {
+                                         WestCacheFlusherBean bean) {
         long lastExecuted = flusher.getLastExecuted();
         flusher.getDao().disableBean(bean);
         waitFlushRun(flusher, lastExecuted);

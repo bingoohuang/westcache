@@ -20,8 +20,8 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import static com.github.bingoohuang.westcache.WestCacheRegistry.REGISTRY_TEMPLATE;
 import static com.github.bingoohuang.westcache.WestCacheRegistry.FLUSHER_REGISTRY;
+import static com.github.bingoohuang.westcache.WestCacheRegistry.REGISTRY_TEMPLATE;
 import static com.github.bingoohuang.westcache.outofbox.PackageLimitedKeyer.DATAID;
 import static com.github.bingoohuang.westcache.outofbox.PackageLimitedKeyer.GROUP;
 import static com.google.common.truth.Truth.assertThat;

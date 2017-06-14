@@ -114,7 +114,9 @@ public class ScheduledParser {
 
     private ScheduleBuilder<? extends Trigger> parseAtExpr(String atExpr) {
         Matcher matcher = AT_EXPR_PATTERN.matcher(atExpr);
-        if (!matcher.find()) throw new WestCacheException(atExpr + " is not valid");
+        if (!matcher.find()) {
+            throwException(atExpr);
+        }
 
         if (matcher.group(1).equals("??")) {
             String cronExpression = "0 " + matcher.group(2) + " * * * ?";
@@ -136,11 +138,11 @@ public class ScheduledParser {
     private ScheduleBuilder<? extends Trigger> parseEveryExpr(String everyExpr) {
         Matcher matcher = EVERY_EXPR_PATTERN.matcher(everyExpr);
         if (!matcher.find())
-            throw new WestCacheException(everyExpr + " is not valid");
+            return throwException(everyExpr);
 
         int num = Integer.parseInt(matcher.group(1));
         if (num <= 0)
-            throw new WestCacheException(everyExpr + " is not valid");
+            throwException(everyExpr);
 
         char unit = matcher.group(2).charAt(0);
         TimeUnit timeUnit = parseTimeUnit(unit);
@@ -148,6 +150,10 @@ public class ScheduledParser {
         return simpleSchedule()
                 .withIntervalInSeconds((int) timeUnit.toSeconds(num))
                 .repeatForever();
+    }
+
+    private ScheduleBuilder<? extends Trigger> throwException(String everyExpr) {
+        throw new WestCacheException(everyExpr + " is not valid");
     }
 
     private TimeUnit parseTimeUnit(char unit) {

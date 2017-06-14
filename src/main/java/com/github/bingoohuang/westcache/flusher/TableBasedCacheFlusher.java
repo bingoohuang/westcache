@@ -225,8 +225,8 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
             }
 
             for (val bean : flushKeys.values()) {
-                if (!PREFIX.equals(bean.getKeyMatch())) continue;
-                if (!Keys.isPrefix(key, bean.getCacheKey())) continue;
+                if (!PREFIX.equals(bean.getKeyMatch())
+                        || !Keys.isPrefix(key, bean.getCacheKey())) continue;
 
                 fullKeys.put(key, "" + bean.getValueVersion());
                 prefixKeys.put(bean.getCacheKey(), "" + bean.getValueVersion());

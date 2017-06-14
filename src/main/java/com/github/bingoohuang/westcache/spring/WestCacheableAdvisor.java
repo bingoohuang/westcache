@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 
 @Component
 public class WestCacheableAdvisor extends AbstractPointcutAdvisor {
-    private final StaticMethodMatcherPointcut pointcut =
+    final transient StaticMethodMatcherPointcut pointcut =
             new StaticMethodMatcherPointcut() {
                 @Override
                 public boolean matches(Method method, Class<?> targetClass) {
@@ -20,7 +20,7 @@ public class WestCacheableAdvisor extends AbstractPointcutAdvisor {
                 }
             };
 
-    @Autowired WestCacheableInterceptor interceptor;
+    @Autowired transient WestCacheableInterceptor interceptor;
 
     @Override
     public Pointcut getPointcut() {
@@ -31,5 +31,7 @@ public class WestCacheableAdvisor extends AbstractPointcutAdvisor {
     public Advice getAdvice() {
         return this.interceptor;
     }
+
+
 }
 

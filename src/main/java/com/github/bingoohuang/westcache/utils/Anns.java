@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache.utils;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,7 +15,11 @@ import java.util.Set;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
-public abstract class Anns {
+@UtilityClass
+public class Anns {
+
+    public static final String SPECS = "specs";
+
     static Map<String, String> parseWestCacheable(
             Method method,
             Class<? extends Annotation> annClass) {
@@ -74,14 +79,14 @@ public abstract class Anns {
         if (ann == null) return attrs;
 
         for (val method : ann.annotationType().getDeclaredMethods()) {
-            if (method.getParameterTypes().length > 0) continue;
-            if (method.getReturnType() != String.class) continue;
+            if (method.getParameterTypes().length > 0
+                    || method.getReturnType() != String.class) continue;
 
             Object attr = Envs.invoke(method, ann);
             String value = String.valueOf(attr);
-            if (StringUtils.isEmpty(value)) continue;
-
-            attrs.put(method.getName(), value);
+            if (StringUtils.isNotEmpty(value)) {
+                attrs.put(method.getName(), value);
+            }
         }
         return attrs;
     }
@@ -136,8 +141,8 @@ public abstract class Anns {
 
     private static Map<String, String> merge(Map<String, String> firstMap,
                                              Map<String, String> otherMap) {
-        String specs1 = firstMap.get("specs");
-        String specs2 = otherMap.get("specs");
+        String specs1 = firstMap.get(SPECS);
+        String specs2 = otherMap.get(SPECS);
 
         firstMap.putAll(otherMap);
         if (specs1 != null || specs2 != null) {
@@ -148,7 +153,7 @@ public abstract class Anns {
             treeMap.putAll(specsMap2);
 
             String specsJoin = mapJoiner.join(treeMap);
-            firstMap.put("specs", specsJoin);
+            firstMap.put(SPECS, specsJoin);
         }
 
         return firstMap;

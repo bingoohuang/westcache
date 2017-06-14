@@ -62,6 +62,7 @@ public class TableCacheFlusherTest {
         public abstract String specs();
 
         public abstract String specsRedis();
+
         public abstract String specsRedis2();
     }
 

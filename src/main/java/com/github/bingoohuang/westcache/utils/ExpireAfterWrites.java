@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache.utils;
 import com.github.bingoohuang.westcache.base.ExpireAfterWritable;
 import com.github.bingoohuang.westcache.base.ExpireAfterWrite;
 import com.github.bingoohuang.westcache.base.WestCacheException;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -14,8 +15,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/19.
  */
-@Slf4j
-public abstract class ExpireAfterWrites {
+@Slf4j @UtilityClass
+public class ExpireAfterWrites {
     public static String parseExpireAfterWrite(WestCacheOption option, Object obj) {
         if (option == null) return null;
 
@@ -52,10 +53,9 @@ public abstract class ExpireAfterWrites {
     }
 
     private static boolean isNormalStringMethodWithoutArgs(Method method) {
-        if (Modifier.isStatic(method.getModifiers())) return false;
-        if (!Modifier.isPublic(method.getModifiers())) return false;
-        if (method.getParameterTypes().length != 0) return false;
-        if (method.getReturnType() != String.class) return false;
-        return true;
+        return !Modifier.isStatic(method.getModifiers())
+                && Modifier.isPublic(method.getModifiers())
+                && method.getParameterTypes().length == 0
+                && method.getReturnType() == String.class;
     }
 }
