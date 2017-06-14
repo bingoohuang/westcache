@@ -314,3 +314,7 @@ public class DemoService {
 
 ## The source of name as westcache
 Film "West World".
+
+## Build scripts
+1. `mvn clean install sonar:sonar -Dsonar.organization=bingoohuang-github -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=a7fe683637d6e1f54e194817cc36e78936d4fe61`
+
