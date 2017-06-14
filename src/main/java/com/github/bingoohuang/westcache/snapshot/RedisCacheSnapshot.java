@@ -35,7 +35,7 @@ public class RedisCacheSnapshot implements WestCacheSnapshot {
         val json = Redis.getRedis(option).get(prefix + cacheKey);
         if (json == null) return null;
 
-        val object = FastJsons.parse(json, option.getMethod());
+        val object = FastJsons.parse(json, option.getMethod(), true);
         val optional = Optional.fromNullable(object);
         return new WestCacheItem(optional, option);
     }

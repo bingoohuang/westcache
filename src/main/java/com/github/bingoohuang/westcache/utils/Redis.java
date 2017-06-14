@@ -82,7 +82,7 @@ public abstract class Redis {
         val jsonValue = redis.get(redisKey);
         if (jsonValue == null) return null;
 
-        val value = FastJsons.parse(jsonValue, option.getMethod());
+        val value = FastJsons.parse(jsonValue, option.getMethod(), true);
         val optional = Optional.fromNullable(value);
         return new WestCacheItem(optional, option);
     }

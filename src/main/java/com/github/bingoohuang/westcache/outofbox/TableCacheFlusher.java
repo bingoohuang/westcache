@@ -48,7 +48,7 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
 
         switch (type) {
             case FULL:
-                return FastJsons.parse(directJson, option.getMethod());
+                return FastJsons.parse(directJson, option.getMethod(), true);
             case SUB:
             default:
                 val typeReference = new TypeReference<Map<String, String>>() {
@@ -76,7 +76,7 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
         val value = Redis.getRedis(option).get(key);
         if (StringUtils.isBlank(value)) return null;
 
-        return FastJsons.parse(value, option.getMethod());
+        return FastJsons.parse(value, option.getMethod(), true);
     }
 
 }

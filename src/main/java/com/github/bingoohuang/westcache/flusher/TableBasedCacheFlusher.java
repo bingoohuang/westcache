@@ -101,7 +101,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         val json = optional.get().get(subKey);
         if (json == null) return null;
 
-        return FastJsons.parse(json, option.getMethod());
+        return FastJsons.parse(json, option.getMethod(), true);
     }
 
     protected WestCacheFlusherBean findBean(String cacheKey) {

@@ -50,7 +50,7 @@ public class RedisCacheManager extends BaseCacheManager {
                                           String cacheKey) {
             val json = Redis.getRedis(option).get(prefix + cacheKey);
             if (StringUtils.isNotEmpty(json)) {
-                val object = FastJsons.parse(json, option.getMethod());
+                val object = FastJsons.parse(json, option.getMethod(), true);
                 val optional = Optional.fromNullable(object);
                 return new WestCacheItem(optional, option);
             }

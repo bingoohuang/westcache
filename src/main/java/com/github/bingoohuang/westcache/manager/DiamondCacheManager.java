@@ -26,7 +26,7 @@ public class DiamondCacheManager extends BaseCacheManager {
                                  String cacheKey,
                                  Callable<WestCacheItem> callable) {
             val json = new Miner().getStone(GROUP, cacheKey);
-            val object = FastJsons.parse(json, option.getMethod());
+            val object = FastJsons.parse(json, option.getMethod(), true);
             val optional = Optional.fromNullable(object);
             return new WestCacheItem(optional, option);
         }

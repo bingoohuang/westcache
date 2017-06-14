@@ -38,7 +38,7 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
         if (!snapshotFile.exists() || !snapshotFile.isFile()) return null;
 
         val json = Files.toString(snapshotFile, Charsets.UTF_8);
-        val object = FastJsons.parse(json, option.getMethod());
+        val object = FastJsons.parse(json, option.getMethod(), true);
         val optional = Optional.fromNullable(object);
         return new WestCacheItem(optional, option);
     }

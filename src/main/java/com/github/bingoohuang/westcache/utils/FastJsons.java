@@ -3,15 +3,15 @@ package com.github.bingoohuang.westcache.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/29.
  */
+@Slf4j
 public abstract class FastJsons {
     public static String json(Object obj) {
         return JSON.toJSONString(obj);
@@ -28,22 +28,16 @@ public abstract class FastJsons {
     }
 
     @SneakyThrows @SuppressWarnings("unchecked")
-    public static <T> T parse(String json, Method method) {
-        val returnType = method.getReturnType();
+    public static <T> T parse(String json, Method method, boolean silent) {
         val genericType = method.getGenericReturnType();
 
-        boolean isCollectionGeneric = genericType instanceof ParameterizedType
-                && Collection.class.isAssignableFrom(returnType);
-        if (isCollectionGeneric) {
-            val pType = (ParameterizedType) genericType;
-            val itemClass = (Class) pType.getActualTypeArguments()[0];
-            return (T) JSON.parseArray(json, itemClass);
-        }
-
         try {
-            return (T) parse(json, returnType);
+            return (T) JSON.parseObject(json, genericType);
         } catch (Exception ex) {
-            if (returnType == String.class) return (T) json;
+            if (silent) {
+                log.warn("parse json json {} for method {} error", json, method, ex);
+                return genericType == String.class ? (T) json : null;
+            }
             throw ex;
         }
     }
@@ -52,4 +46,6 @@ public abstract class FastJsons {
     public static <T> T parse(String json, TypeReference typeReference) {
         return (T) JSON.parseObject(json, typeReference);
     }
+
+
 }
