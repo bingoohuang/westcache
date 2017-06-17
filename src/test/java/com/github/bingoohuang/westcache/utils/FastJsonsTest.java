@@ -2,6 +2,7 @@ package com.github.bingoohuang.westcache.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.parser.deserializer.ExtraProcessor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
@@ -111,5 +112,36 @@ public class FastJsonsTest {
     public void badJsonBean() {
         Method method = FastInterface.class.getMethod("bean");
         FastJsons.parse("{\"name\":\"abc\", \"age\":123", method, false);
+    }
+
+
+    public static ExtraProcessor extraKeyProcessor = new ExtraProcessor() {
+        @Override public void processExtra(Object object, String key, Object value) {
+            throw new UnsupportedKeyException(key);
+        }
+    };
+
+    // 使用ExtraProcessor 处理多余字段
+    // https://github.com/alibaba/fastjson/wiki/ParseProcess
+    // https://github.com/alibaba/fastjson/wiki/ExtraProcessable
+    public static <T> T parseObject(String json, Class<T> clazz) {
+        return JSON.parseObject(json, clazz, extraKeyProcessor);
+    }
+
+    @Data
+    public static class BeanBean {
+        private String a;
+    }
+
+    @Test(expected = JSONException.class)
+    public void extraKeyTest() {
+        String json = "{\"a\":\"123\",\"b\":\"456\"}";
+        parseObject(json, BeanBean.class);
+    }
+
+    private static class UnsupportedKeyException extends RuntimeException {
+        public UnsupportedKeyException(String key) {
+            super("Unsupported key " + key);
+        }
     }
 }
