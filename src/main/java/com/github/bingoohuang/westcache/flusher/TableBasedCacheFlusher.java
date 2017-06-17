@@ -20,6 +20,8 @@ import java.util.concurrent.*;
 @Slf4j
 public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     public static final String PREFIX = "prefix";
+    public static final String REGEX = "regex";
+
     volatile List<WestCacheFlusherBean> tableRows;
     volatile ScheduledFuture<?> scheduledFuture;
 
@@ -105,14 +107,42 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     }
 
     protected WestCacheFlusherBean findBean(String cacheKey) {
+        WestCacheFlusherBean bean;
+
+        bean = findBeanByFullKey(cacheKey);
+        if (bean != null) return bean;
+
+        bean = findBeanByPrefix(cacheKey);
+        if (bean != null) return bean;
+
+        bean = findBeanByRegex(cacheKey);
+        if (bean != null) return bean;
+
+        return null;
+    }
+
+    private WestCacheFlusherBean findBeanByRegex(String cacheKey) {
         for (val bean : tableRows) {
-            if (!"full".equals(bean.getKeyMatch())) continue;
-            if (bean.getCacheKey().equals(cacheKey)) return bean;
+            if (REGEX.equals(bean.getKeyMatch())
+                    && Keys.matchRegex(cacheKey, bean.getCacheKey())) return bean;
         }
 
+        return null;
+    }
+
+    private WestCacheFlusherBean findBeanByPrefix(String cacheKey) {
         for (val bean : tableRows) {
-            if (!PREFIX.equals(bean.getKeyMatch())) continue;
-            if (Keys.isPrefix(cacheKey, bean.getCacheKey())) return bean;
+            if (PREFIX.equals(bean.getKeyMatch())
+                    && Keys.isPrefix(cacheKey, bean.getCacheKey())) return bean;
+        }
+
+        return null;
+    }
+
+    private WestCacheFlusherBean findBeanByFullKey(String cacheKey) {
+        for (val bean : tableRows) {
+            if ("full".equals(bean.getKeyMatch())
+                    && bean.getCacheKey().equals(cacheKey)) return bean;
         }
 
         return null;

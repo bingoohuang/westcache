@@ -21,7 +21,8 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
     @Getter TableCacheFlusherDao dao
             = EqlerFactory.getEqler(TableCacheFlusherDao.class);
 
-    @Override protected List<WestCacheFlusherBean> queryAllBeans() {
+    @Override
+    protected List<WestCacheFlusherBean> queryAllBeans() {
         return dao.selectAllBeans();
     }
 

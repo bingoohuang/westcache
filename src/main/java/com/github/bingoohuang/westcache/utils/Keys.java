@@ -2,12 +2,15 @@ package com.github.bingoohuang.westcache.utils;
 
 import com.github.bingoohuang.westcache.cglib.Cglibs;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+
+import java.util.regex.PatternSyntaxException;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/30.
  */
-@UtilityClass
+@UtilityClass @Slf4j
 public class Keys {
     public static String joinArgs(Object[] args) {
         val argsPart = new StringBuilder();
@@ -25,6 +28,15 @@ public class Keys {
         int lastDotPos = className.lastIndexOf('.');
         if (lastDotPos == -1) return className;
         return className.substring(lastDotPos + 1);
+    }
+
+    public static boolean matchRegex(String str, String regex) {
+        try {
+            return str.matches(regex);
+        } catch (PatternSyntaxException e) {
+            log.error("regex syntax error : {}", regex);
+            return false;
+        }
     }
 
     public static boolean isPrefix(String str, String prefix) {
@@ -45,4 +57,5 @@ public class Keys {
         val dottedClassName = simpleClassName.replace('$', '.');
         return dottedClassName + "." + methodName;
     }
+
 }
