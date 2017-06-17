@@ -3,6 +3,7 @@ package com.github.bingoohuang.westcache.cglib;
 import com.github.bingoohuang.westcache.base.WestCacheException;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.QuietCloseable;
+import com.github.bingoohuang.westcache.utils.WestCacheConnector;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import lombok.Cleanup;
@@ -13,8 +14,6 @@ import lombok.val;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.Callable;
-
-import static com.github.bingoohuang.westcache.utils.WestCacheConnector.isConnectedAndGoon;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/25.
@@ -54,7 +53,7 @@ public abstract class CacheMethodInterceptor<T> {
                             final Object[] args,
                             final T proxy) {
         val cacheKey = getCacheKey(option, obj, method, args, proxy);
-        if (!isConnectedAndGoon(option, cacheKey))
+        if (WestCacheConnector.isConnectedAndGoon(option, cacheKey))
             return null;
 
         val start = System.currentTimeMillis();

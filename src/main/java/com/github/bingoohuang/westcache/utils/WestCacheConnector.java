@@ -12,10 +12,11 @@ public abstract class WestCacheConnector {
     private static final ThreadLocal<Optional<?>> THREAD_LOCAL
             = new InheritableThreadLocal<Optional<?>>();
 
-    public static boolean isConnectedAndGoon(WestCacheOption option,
-                                             String cacheKey) {
+    public static boolean isConnectedAndGoon(
+            WestCacheOption option, String cacheKey
+    ) {
         Optional<?> optional = THREAD_LOCAL.get();
-        if (optional == null) return true;
+        if (optional == null) return false;
 
         Object tag = optional.orNull();
         if (tag == ConnectTag.OPTION) {
@@ -29,7 +30,7 @@ public abstract class WestCacheConnector {
                     new WestCacheItem(Optional.fromNullable(tag), option));
         }
 
-        return false;
+        return true;
     }
 
     public enum ConnectTag {
