@@ -23,7 +23,7 @@ import java.lang.reflect.Proxy;
 @Slf4j @UtilityClass
 public class Redis {
     public static final String PREFIX = "westcache:";
-    private static JedisCommands jedis = createtJedisCommands(
+    private static JedisCommands jedis = createJedisCommands(
             "127.0.0.1", 6379, 10);
 
     public static void setJedis(JedisCommands settedJedis) {
@@ -50,7 +50,7 @@ public class Redis {
         return jedis;
     }
 
-    public static JedisCommands createtJedisCommands(
+    public static JedisCommands createJedisCommands(
             String host, int port, int maxTotal) {
         val poolConfig = new JedisPoolConfig();
         poolConfig.setMaxTotal(maxTotal);

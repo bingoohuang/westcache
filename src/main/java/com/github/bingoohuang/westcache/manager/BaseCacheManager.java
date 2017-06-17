@@ -4,11 +4,15 @@ import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheManager;
 import com.github.bingoohuang.westcache.utils.Envs;
+import com.github.bingoohuang.westcache.utils.MethodProvider;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import com.google.common.base.Optional;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
+import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,6 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Slf4j
 public abstract class BaseCacheManager implements WestCacheManager {
+    private long startupTime = System.currentTimeMillis();
+
     @Getter private WestCache westCache;
 
     public BaseCacheManager(WestCache westCache) {
@@ -50,15 +56,49 @@ public abstract class BaseCacheManager implements WestCacheManager {
 
         val wrapCallable = new Callable<WestCacheItem>() {
             @Override public WestCacheItem call() throws Exception {
-                return option.getSnapshot() == null ? Envs.execute(flushCallable)
+                return option.getSnapshot() == null
+                        ? Envs.execute(flushCallable)
                         : trySnapshot(option, cacheKey, flushCallable);
             }
         };
+
+        checkStartupTime(option, cacheKey);
+
         val item = westCache.get(option, cacheKey, wrapCallable);
         log.debug("cache key {} shot result {} ", cacheKey,
                 shot.get() ? "bingo" : "misfired");
 
         return item;
+    }
+
+    Method longMethod;
+    {
+        init();
+    }
+
+    @SneakyThrows
+    private void init() {
+        longMethod = MethodProvider.class.getMethod("longMethod");
+    }
+
+    private void checkStartupTime(WestCacheOption option, String cacheKey) {
+        if (!"true".equals(option.getSpecs().get("restartInvalidate"))) {
+            return;
+        }
+
+        val startupTimeKey = "startupTime:" + cacheKey;
+        val originalMethod = option.getMethod();
+
+        option.setMethod(longMethod);
+        val timeItem = westCache.getIfPresent(option, startupTimeKey);
+        option.setMethod(originalMethod);
+
+        if (timeItem.isPresent() && (Long) timeItem.orNull() >= startupTime) {
+            return;
+        }
+
+        westCache.invalidate(option, cacheKey, "");
+        westCache.put(option, startupTimeKey, new WestCacheItem(Optional.of(startupTime), option));
     }
 
     private WestCacheItem trySnapshot(final WestCacheOption option,
@@ -85,9 +125,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
     }
 
     @Override
-    public void put(WestCacheOption option,
-                    String cacheKey,
-                    WestCacheItem cacheValue) {
+    public void put(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
         westCache.put(option, cacheKey, cacheValue);
     }
 

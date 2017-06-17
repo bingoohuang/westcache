@@ -26,13 +26,13 @@ public class SpringConfig {
 
     @Bean @Primary
     public JedisCommands thisJedisCommands() {
-        return Redis.createtJedisCommands(
+        return Redis.createJedisCommands(
                 "127.0.0.1", EmbeddedRedis.port1, 10);
     }
 
     @Bean(name = "that")
     public JedisCommands thatJedisCommands() {
-        return Redis.createtJedisCommands(
+        return Redis.createJedisCommands(
                 "127.0.0.1", EmbeddedRedis.port2, 10);
     }
 

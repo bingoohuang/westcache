@@ -65,7 +65,8 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         GuavaExpiringCacheManagerTest.class,
         FileCacheSnapshotTest.class,
         RedisTest.class,
-        DiamondCacheFlusherTest.class
+        DiamondCacheFlusherTest.class,
+        RedisManagerCheckStartupTimeTest.class,
 })
 public class TestSuite {
     @ClassRule

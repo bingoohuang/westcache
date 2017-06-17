@@ -17,7 +17,7 @@ import redis.clients.jedis.JedisCommands;
 public class PengConfig {
     @Bean(name = "singleRedis")
     public JedisCommands singleRedis() {
-        return Redis.createtJedisCommands(
+        return Redis.createJedisCommands(
                 "127.0.0.1", EmbeddedRedis.port1, 10);
     }
 

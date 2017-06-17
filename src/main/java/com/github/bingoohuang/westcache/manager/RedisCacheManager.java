@@ -38,16 +38,12 @@ public class RedisCacheManager extends BaseCacheManager {
         }
 
         @Override
-        public WestCacheItem get(WestCacheOption option,
-                                 String cacheKey,
-                                 Callable<WestCacheItem> callable) {
-            RedisInterceptor interceptor = new RedisInterceptor();
-            return interceptor.intercept(option, cacheKey, callable);
+        public WestCacheItem get(WestCacheOption option, String cacheKey, Callable<WestCacheItem> callable) {
+            return new RedisInterceptor().intercept(option, cacheKey, callable);
         }
 
         @Override
-        public WestCacheItem getIfPresent(WestCacheOption option,
-                                          String cacheKey) {
+        public WestCacheItem getIfPresent(WestCacheOption option, String cacheKey) {
             val json = Redis.getRedis(option).get(prefix + cacheKey);
             if (StringUtils.isNotEmpty(json)) {
                 val object = FastJsons.parse(json, option.getMethod(), true);
@@ -59,18 +55,14 @@ public class RedisCacheManager extends BaseCacheManager {
         }
 
         @Override
-        public void put(WestCacheOption option,
-                        String cacheKey,
-                        WestCacheItem cacheValue) {
+        public void put(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
             val redis = Redis.getRedis(option);
             val key = prefix + cacheKey;
             Redis.expirePut(redis, key, cacheValue);
         }
 
         @Override
-        public void invalidate(WestCacheOption option,
-                               String cacheKey,
-                               String version) {
+        public void invalidate(WestCacheOption option, String cacheKey, String version) {
             val redis = Redis.getRedis(option);
 
             val redisKey = prefix + cacheKey;

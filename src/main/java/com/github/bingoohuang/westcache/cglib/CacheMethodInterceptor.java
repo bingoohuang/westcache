@@ -20,21 +20,12 @@ import java.util.concurrent.Callable;
  */
 @Slf4j
 public abstract class CacheMethodInterceptor<T> {
-    protected abstract Object invokeRaw(Object obj,
-                                        Object[] args,
-                                        T methodProxy);
+    protected abstract Object invokeRaw(Object obj, Object[] args, T methodProxy);
 
-    protected abstract String getCacheKey(WestCacheOption option,
-                                          Object obj,
-                                          Method method,
-                                          Object[] args,
-                                          T proxy);
+    protected abstract String getCacheKey(WestCacheOption option, Object obj, Method method, Object[] args, T proxy);
 
     @SneakyThrows
-    public Object intercept(Object obj,
-                            Method method,
-                            Object[] args,
-                            T methodProxy) {
+    public Object intercept(Object obj, Method method, Object[] args, T methodProxy) {
         val option = WestCacheOption.parseWestCacheable(method);
         if (option == null)
             return invokeRaw(obj, args, methodProxy);

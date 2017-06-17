@@ -7,10 +7,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Value;
-import lombok.val;
+import lombok.*;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -20,13 +17,14 @@ import static com.github.bingoohuang.westcache.WestCacheRegistry.*;
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
  */
-@Value @AllArgsConstructor
+@AllArgsConstructor
 public class WestCacheOption {
     public static final String FLUSHER_NAME = "flusher";
     public static final String MANAGER_NAME = "manager";
     public static final String CONFIG_NAME = "config";
     public static final String INTERCEPTOR_NAME = "interceptor";
     public static final String KEYER_NAME = "keyer";
+
     @Getter private final WestCacheFlusher flusher;
     @Getter private final WestCacheManager manager;
     @Getter private final WestCacheSnapshot snapshot;
@@ -35,12 +33,11 @@ public class WestCacheOption {
     @Getter private final WestCacheKeyer keyer;
     @Getter private final String key;
     @Getter private final Map<String, String> specs;
-    @Getter private final Method method;
+    @Getter @Setter private Method method;
 
     public static Builder newBuilder() {
         return new Builder();
     }
-
 
     public static class Builder {
         WestCacheFlusher flusher = FLUSHER_REGISTRY.get("");
