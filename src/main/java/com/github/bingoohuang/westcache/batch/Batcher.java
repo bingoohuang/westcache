@@ -88,12 +88,16 @@ public class Batcher<T, V> {
             log.error("call doBatchJob err", e);
             ex = e;
         }
+
         int resultsSize = results != null ? results.size() : 0;
         if (resultsSize != tasks.size()) {
-            log.error("result size {} is not same with task size {}",
-                    resultsSize, tasks.size());
+            log.error("result size {} is not same with task size {}", resultsSize, tasks.size());
         }
 
+        futuresSet(tasks, results, ex, resultsSize);
+    }
+
+    private void futuresSet(List<BatcherBean<T, V>> tasks, List<V> results, Exception ex, int resultsSize) {
         for (int i = 0, ii = tasks.size(); i < ii; ++i) {
             val future = tasks.get(i).getFuture();
             if (i < resultsSize) {

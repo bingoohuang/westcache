@@ -25,6 +25,12 @@ public abstract class BaseCacheManager implements WestCacheManager {
     private long startupTime = System.currentTimeMillis();
 
     @Getter private WestCache westCache;
+    private Method longMethod = init();
+
+    @SneakyThrows
+    private Method init() {
+        return MethodProvider.class.getMethod("longMethod");
+    }
 
     public BaseCacheManager(WestCache westCache) {
         this.westCache = westCache;
@@ -69,16 +75,6 @@ public abstract class BaseCacheManager implements WestCacheManager {
                 shot.get() ? "bingo" : "misfired");
 
         return item;
-    }
-
-    Method longMethod;
-    {
-        init();
-    }
-
-    @SneakyThrows
-    private void init() {
-        longMethod = MethodProvider.class.getMethod("longMethod");
     }
 
     private void checkStartupTime(WestCacheOption option, String cacheKey) {

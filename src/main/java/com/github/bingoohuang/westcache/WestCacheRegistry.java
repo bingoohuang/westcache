@@ -18,16 +18,19 @@ import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
 import com.github.bingoohuang.westcache.snapshot.RedisCacheSnapshot;
 import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
+import lombok.experimental.UtilityClass;
 import lombok.val;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/23.
  */
-public abstract class WestCacheRegistry {
+@UtilityClass
+public class WestCacheRegistry {
     public static final RegistryTemplate<WestCacheConfig> REGISTRY_TEMPLATE
             = new RegistryTemplate<WestCacheConfig>();
 
     public static final String DEFAULT = "default";
+    public static final String REDIS = "redis";
 
     static {
         REGISTRY_TEMPLATE.register(DEFAULT, new DefaultWestCacheConfig());
@@ -62,7 +65,7 @@ public abstract class WestCacheRegistry {
         MANAGER_REGISTRY.register("file", new FileCacheManager());
         if (Envs.HAS_DIAMOND) MANAGER_REGISTRY.register("diamond", new DiamondCacheManager());
         if (Envs.HAS_EXPIRING) MANAGER_REGISTRY.register("expiring", new ExpiringMapCacheManager());
-        if (Envs.HAS_JEDIS) MANAGER_REGISTRY.register("redis", new RedisCacheManager());
+        if (Envs.HAS_JEDIS) MANAGER_REGISTRY.register(REDIS, new RedisCacheManager());
     }
 
     public static final RegistryTemplate<WestCacheSnapshot> SNAPSHOT_REGISTRY
@@ -70,7 +73,7 @@ public abstract class WestCacheRegistry {
 
     static {
         SNAPSHOT_REGISTRY.register("file", new FileCacheSnapshot());
-        if (Envs.HAS_JEDIS) SNAPSHOT_REGISTRY.register("redis", new RedisCacheSnapshot());
+        if (Envs.HAS_JEDIS) SNAPSHOT_REGISTRY.register(REDIS, new RedisCacheSnapshot());
     }
 
     public static final RegistryTemplate<WestCacheKeyer> KEYER_REGISTRY
@@ -85,8 +88,10 @@ public abstract class WestCacheRegistry {
     public static final RegistryTemplate<WestCacheInterceptor> INTERCEPTOR_REGISTRY
             = new RegistryTemplate<WestCacheInterceptor>();
 
+
+
     static {
         INTERCEPTOR_REGISTRY.register(DEFAULT, new ByPassInterceptor());
-        if (Envs.HAS_JEDIS) INTERCEPTOR_REGISTRY.register("redis", new RedisInterceptor());
+        if (Envs.HAS_JEDIS) INTERCEPTOR_REGISTRY.register(REDIS, new RedisInterceptor());
     }
 }

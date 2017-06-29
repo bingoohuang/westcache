@@ -97,10 +97,10 @@ public class Redis {
 
         val json = FastJsons.json(item.orNull());
         val result = redis.set(redisKey, json);
-        if (duration == 0) return result;
-
-        log.info("redis set {}={} in ttl {} seconds", redisKey, json, duration);
-        redis.expire(redisKey, (int) duration);
+        if (duration > 0) {
+            log.info("redis set {}={} in ttl {} seconds", redisKey, json, duration);
+            redis.expire(redisKey, (int) duration);
+        }
 
         return result;
     }

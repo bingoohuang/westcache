@@ -21,6 +21,7 @@ import java.util.concurrent.*;
 public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     public static final String PREFIX = "prefix";
     public static final String REGEX = "regex";
+    public static final String FULL = "full";
 
     volatile List<WestCacheFlusherBean> tableRows;
     volatile ScheduledFuture<?> scheduledFuture;
@@ -141,7 +142,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
     private WestCacheFlusherBean findBeanByFullKey(String cacheKey) {
         for (val bean : tableRows) {
-            if ("full".equals(bean.getKeyMatch())
+            if (FULL.equals(bean.getKeyMatch())
                     && bean.getCacheKey().equals(cacheKey)) return bean;
         }
 
