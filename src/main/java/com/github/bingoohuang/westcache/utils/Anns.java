@@ -79,9 +79,6 @@ public class Anns {
         if (ann == null) return attrs;
 
         for (val method : ann.annotationType().getDeclaredMethods()) {
-            if (method.getParameterTypes().length > 0
-                    || method.getReturnType() != String.class) continue;
-
             Object attr = Envs.invoke(method, ann);
             String value = String.valueOf(attr);
             if (StringUtils.isNotEmpty(value)) {
