@@ -82,12 +82,9 @@ public abstract class BaseCacheManager implements WestCacheManager {
             return;
         }
 
+        val cloneOption = new WestCacheOption.Builder().clone(option).method(longMethod).build();
         val startupTimeKey = "startupTime:" + cacheKey;
-        val originalMethod = option.getMethod();
-
-        option.setMethod(longMethod);
-        val timeItem = westCache.getIfPresent(option, startupTimeKey);
-        option.setMethod(originalMethod);
+        val timeItem = westCache.getIfPresent(cloneOption, startupTimeKey);
 
         if (timeItem.isPresent() && (Long) timeItem.orNull() >= startupTime) {
             return;

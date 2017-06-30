@@ -7,7 +7,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.val;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -33,7 +35,7 @@ public class WestCacheOption {
     @Getter private final WestCacheKeyer keyer;
     @Getter private final String key;
     @Getter private final Map<String, String> specs;
-    @Getter @Setter private Method method;
+    @Getter private final Method method;
 
     public static Builder newBuilder() {
         return new Builder();
@@ -117,6 +119,19 @@ public class WestCacheOption {
 
         public Builder method(Method method) {
             this.method = method;
+            return this;
+        }
+
+        public Builder clone(WestCacheOption option) {
+            this.flusher = option.flusher;
+            this.manager = option.manager;
+            this.snapshot = option.snapshot;
+            this.config = option.config;
+            this.interceptor = option.interceptor;
+            this.keyer = option.keyer;
+            this.key = option.key;
+            this.specs = option.specs;
+            this.method = option.method;
             return this;
         }
 
