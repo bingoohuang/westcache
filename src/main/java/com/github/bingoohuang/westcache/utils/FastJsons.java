@@ -2,10 +2,13 @@ package com.github.bingoohuang.westcache.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.parser.ParserConfig;
+import com.alibaba.fastjson.serializer.SerializeConfig;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.joda.time.DateTime;
 
 import java.lang.reflect.Method;
 
@@ -14,6 +17,11 @@ import java.lang.reflect.Method;
  */
 @Slf4j @UtilityClass
 public class FastJsons {
+    static {
+        SerializeConfig.getGlobalInstance().put(DateTime.class, new JsonJodaSerializer());
+        ParserConfig.getGlobalInstance().putDeserializer(DateTime.class, new JsonJodaDeserializer());
+    }
+
     public static String json(Object obj) {
         return JSON.toJSONString(obj);
     }
@@ -36,7 +44,7 @@ public class FastJsons {
             return (T) JSON.parseObject(json, genericType);
         } catch (Exception ex) {
             if (silent) {
-                log.warn("parse json json {} for method {} error", json, method, ex);
+                log.warn("parse json {} for method {} error", json, method, ex);
                 return genericType == String.class ? (T) json : null;
             }
             throw ex;
@@ -47,6 +55,4 @@ public class FastJsons {
     public static <T> T parse(String json, TypeReference typeReference) {
         return (T) JSON.parseObject(json, typeReference);
     }
-
-
 }
