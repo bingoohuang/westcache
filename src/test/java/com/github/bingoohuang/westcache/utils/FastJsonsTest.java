@@ -5,10 +5,9 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.parser.deserializer.ExtraProcessor;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.*;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -21,6 +20,25 @@ import static com.google.common.truth.Truth.assertThat;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/5.
  */
 public class FastJsonsTest {
+    @Data @AllArgsConstructor @NoArgsConstructor
+    public static class JodaBean {
+        private DateTime updateTime;
+    }
+
+    @Test
+    public void testJodaTime() {
+        val jodaBean = new JodaBean();
+        val timeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        val updateTime = timeFormatter.parseDateTime("2017-07-27 15:46:00");
+        jodaBean.setUpdateTime(updateTime);
+
+        val json = FastJsons.json(jodaBean);
+        assertThat(json).isEqualTo("{\"updateTime\":" + updateTime.getMillis() + "}");
+
+        val jodaBean2 = FastJsons.parse(json, JodaBean.class);
+        assertThat(jodaBean).isEqualTo(jodaBean2);
+    }
+
     @Data @AllArgsConstructor @NoArgsConstructor
     public static class FastBean {
         private String name;
