@@ -43,11 +43,11 @@ public class FastJsons {
         try {
             return (T) JSON.parseObject(json, genericType);
         } catch (Exception ex) {
-            if (silent) {
-                log.warn("parse json {} for method {} error", json, method, ex);
-                return genericType == String.class ? (T) json : null;
-            }
-            throw ex;
+            log.error("parse json for method cache error, method:{}, json:{}", method, json, ex);
+
+            if (!silent) throw ex;
+
+            return genericType == String.class ? (T) json : null;
         }
     }
 
