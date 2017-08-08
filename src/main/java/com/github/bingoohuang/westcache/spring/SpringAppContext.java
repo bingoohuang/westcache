@@ -6,18 +6,16 @@ import com.github.bingoohuang.westcache.registry.RegistryTemplate;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/4.
  */
 @Component
-public class SpringAppContext implements ApplicationContextAware,
-        ApplicationListener<ContextRefreshedEvent> {
+public class SpringAppContext implements ApplicationContextAware, SmartInitializingSingleton {
     private static ApplicationContext appContext;
 
     @Override
@@ -25,7 +23,7 @@ public class SpringAppContext implements ApplicationContextAware,
         SpringAppContext.appContext = applicationContext;
     }
 
-    @Override public void onApplicationEvent(ContextRefreshedEvent event) {
+    @Override public void afterSingletonsInstantiated() {
         addSpringBeans(WestCacheConfig.class, WestCacheRegistry.REGISTRY_TEMPLATE);
         addSpringBeans(WestCacheFlusher.class, WestCacheRegistry.FLUSHER_REGISTRY);
         addSpringBeans(WestCacheManager.class, WestCacheRegistry.MANAGER_REGISTRY);
