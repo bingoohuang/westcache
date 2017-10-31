@@ -6,6 +6,7 @@ import java.lang.annotation.*;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/21.
  */
 @Documented
+@Inherited
 @Target({ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WestCacheable {
