@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache;
 
 import com.github.bingoohuang.westcache.batch.BatchTest;
+import com.github.bingoohuang.westcache.eqler.EqlerCacheableTest;
 import com.github.bingoohuang.westcache.flusher.DiamondCacheFlusherTest;
 import com.github.bingoohuang.westcache.peng.BasicDataCacheTest;
 import com.github.bingoohuang.westcache.peng.PengTest;
@@ -67,6 +68,7 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         RedisTest.class,
         DiamondCacheFlusherTest.class,
         RedisManagerCheckStartupTimeTest.class,
+        EqlerCacheableTest.class,
 })
 public class TestSuite {
     @ClassRule
