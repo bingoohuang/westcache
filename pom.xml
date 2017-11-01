@@ -249,7 +249,11 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--<plugin>
+            <!--
+            mvn install -DskipTests -Dgpg.skip
+            mvn release:perform -Darguments=-Dgpg.passphrase=myverysupersecretpassphrase
+            -->
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <version>1.6</version>
@@ -262,7 +266,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
         </plugins>
 
         <pluginManagement>

@@ -4,7 +4,7 @@ import lombok.val;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class Methods {
@@ -12,7 +12,7 @@ public class Methods {
      * Gets an array of all methods in a class hierarchy walking up to parent classes
      */
     public static Set<Method> getAllMethodsInHierarchy(Method method) {
-        val allMethods = new HashSet<Method>();
+        val allMethods = new LinkedHashSet<Method>();
         return getAllMethodsInHierarchy(allMethods, method.getDeclaringClass(), method);
     }
 

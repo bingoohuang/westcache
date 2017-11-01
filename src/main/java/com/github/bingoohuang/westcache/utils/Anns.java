@@ -20,24 +20,27 @@ public class Anns {
 
     public static final String SPECS = "specs";
 
-    static Map<String, String> parseWestCacheable(
-            Method method,
+    public static Map<String, String> parseWestCacheable(
+            Method methodInvoked,
             Class<? extends Annotation> annClass) {
-        val methodAnn = method.getAnnotation(annClass);
-        val declaringClz = method.getDeclaringClass();
-        val classAnn = declaringClz.getAnnotation(annClass);
+        val methodsInHierarchy = Methods.getAllMethodsInHierarchy(methodInvoked);
+        for (val method : methodsInHierarchy) {
+            val methodAnn = method.getAnnotation(annClass);
+            val declaringClz = method.getDeclaringClass();
+            val classAnn = declaringClz.getAnnotation(annClass);
 
-        if (methodAnn != null || classAnn != null) {
-            val methodAttrs = getAllAttrs(methodAnn);
-            val classAttrs = getAllAttrs(classAnn);
-            return mergeMap(classAttrs, methodAttrs);
-        }
+            if (methodAnn != null || classAnn != null) {
+                val methodAttrs = getAllAttrs(methodAnn);
+                val classAttrs = getAllAttrs(classAnn);
+                return mergeMap(classAttrs, methodAttrs);
+            }
 
-        Set<Annotation> setAnns = Sets.newHashSet();
-        val annM = searchAnn(setAnns, method.getAnnotations(), annClass);
-        val annC = searchAnn(setAnns, declaringClz.getAnnotations(), annClass);
-        if (annM != null || annC != null) {
-            return mergeMap(annC, annM);
+            val setAnns = Sets.<Annotation>newHashSet();
+            val annM = searchAnn(setAnns, method.getAnnotations(), annClass);
+            val annC = searchAnn(setAnns, declaringClz.getAnnotations(), annClass);
+            if (annM != null || annC != null) {
+                return mergeMap(annC, annM);
+            }
         }
 
         return null;
@@ -156,9 +159,9 @@ public class Anns {
         return firstMap;
     }
 
-    public static boolean isFastWestCacheAnnotated(Class c) {
-        for (Method m : c.getMethods()) {
-            val yes = WestCacheOption.isFastWestCacheable(m);
+    public static boolean isFastWestCacheAnnotated(Class clazz) {
+        for (val method : clazz.getMethods()) {
+            val yes = WestCacheOption.isFastWestCacheable(method);
             if (yes) return true;
         }
 
