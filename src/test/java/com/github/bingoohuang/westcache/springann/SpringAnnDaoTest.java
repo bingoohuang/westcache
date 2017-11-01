@@ -1,27 +1,26 @@
-package com.github.bingoohuang.westcache.eqler;
+package com.github.bingoohuang.westcache.springann;
 
 import com.github.bingoohuang.westcache.MySqlDictTest.CacheDictBean;
-import com.github.bingoohuang.westcache.WestCacheFactory;
-import com.github.bingoohuang.westcache.springann.SpringAnnDao;
 import com.github.bingoohuang.westcache.utils.WestCacheConnector;
 import com.google.common.collect.Lists;
 import lombok.experimental.var;
-import lombok.val;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
-import org.n3r.eql.eqler.EqlerFactory;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.google.common.truth.Truth.assertThat;
 
-public class EqlerCacheableTest {
-    static SpringAnnDao someDao;
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {SpringConfig.class})
+public class SpringAnnDaoTest {
+    @Autowired SpringAnnDao someDao;
 
-    @BeforeClass
-    public static void beforeClass() {
-        val dao = EqlerFactory.getEqler(SpringAnnDao.class);
-        dao.setup();
-
-        someDao = WestCacheFactory.create(dao);
+    @Before
+    public void before() {
+        someDao.setup();
     }
 
     @Test

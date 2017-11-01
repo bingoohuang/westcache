@@ -20,6 +20,16 @@ public class Anns {
 
     public static final String SPECS = "specs";
 
+    public static boolean hasAnnotationInHierarchy(Class<? extends Annotation> annotationClass, Class<?> clazz) {
+        if (clazz.isAnnotationPresent(annotationClass)) return true;
+
+        for (val interfaceClass : clazz.getInterfaces()) {
+            if (interfaceClass.isAnnotationPresent(annotationClass)) return true;
+        }
+
+        return clazz.getSuperclass() != null && hasAnnotationInHierarchy(annotationClass, clazz.getSuperclass());
+    }
+
     public static Map<String, String> parseWestCacheable(
             Method methodInvoked,
             Class<? extends Annotation> annClass) {

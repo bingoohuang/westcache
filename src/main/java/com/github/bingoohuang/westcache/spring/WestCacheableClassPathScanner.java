@@ -6,6 +6,8 @@ import com.github.bingoohuang.westcache.utils.Envs;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.n3r.eql.eqler.annotations.Eqler;
+import org.n3r.eql.eqler.annotations.EqlerConfig;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.TypeFilter;
 
 import java.io.IOException;
@@ -32,6 +35,11 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
      * those annotated with the annotationClass
      */
     public void registerFilters() {
+        if (Envs.classExists("org.n3r.eql.eqler.annotations.Eqler")) {
+            addExcludeFilter(new AnnotationTypeFilter(Eqler.class));
+            addExcludeFilter(new AnnotationTypeFilter(EqlerConfig.class));
+        }
+
         addIncludeFilter(new TypeFilter() {
             @Override
             public boolean match(MetadataReader metadataReader,
@@ -45,6 +53,7 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
                 return Anns.isFastWestCacheAnnotated(clazz);
             }
         });
+
     }
 
     /**
@@ -70,8 +79,7 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
 
             // the mapper interface is the original class of the bean
             // but, the actual class of the bean is MapperFactoryBean
-            definition.getPropertyValues().add("targetClass",
-                    definition.getBeanClassName());
+            definition.getPropertyValues().add("targetClass", definition.getBeanClassName());
             definition.setBeanClass(WestCacheableFactoryBean.class);
         }
 
