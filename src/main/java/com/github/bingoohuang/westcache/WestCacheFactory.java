@@ -51,7 +51,6 @@ public class WestCacheFactory {
             return target;
 
         val interceptor = new CglibCacheMethodInterceptor(target);
-        val targetClass = target.getClass();
-        return (T) Cglibs.proxy(targetClass, interceptor, WestCacheCglib.class);
+        return (T) Cglibs.proxy(target.getClass(), interceptor, WestCacheCglib.class);
     }
 }

@@ -8,6 +8,7 @@ import com.github.bingoohuang.westcache.peng.PengTest;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshotTest;
 import com.github.bingoohuang.westcache.springann.DemoInterfaceTest;
 import com.github.bingoohuang.westcache.springann.DemoServiceTest;
+import com.github.bingoohuang.westcache.springann.SpringAnnDaoTest;
 import com.github.bingoohuang.westcache.springxml.ServiceSpringXmlTest;
 import com.github.bingoohuang.westcache.utils.*;
 import org.junit.ClassRule;
@@ -69,6 +70,7 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         DiamondCacheFlusherTest.class,
         RedisManagerCheckStartupTimeTest.class,
         EqlerCacheableTest.class,
+        SpringAnnDaoTest.class,
 })
 public class TestSuite {
     @ClassRule

@@ -46,8 +46,7 @@ public class BatcherBuilder<T, V> {
 
     public Batcher<T, V> build() {
         createServiceIfNotSet();
-        return new Batcher(service, batcherJob, maxWaitMillis,
-                maxWaitItems, maxBatchNum);
+        return new Batcher(service, batcherJob, maxWaitMillis, maxWaitItems, maxBatchNum);
     }
 
     private void createServiceIfNotSet() {

@@ -1,8 +1,11 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.github.bingoohuang.westcache.WestCacheable;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import lombok.AllArgsConstructor;
+import lombok.Value;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +20,6 @@ import java.util.Set;
  */
 @UtilityClass
 public class Anns {
-
     public static final String SPECS = "specs";
 
     public static boolean hasAnnotationInHierarchy(Class<? extends Annotation> annotationClass, Class<?> clazz) {
@@ -30,9 +32,13 @@ public class Anns {
         return clazz.getSuperclass() != null && hasAnnotationInHierarchy(annotationClass, clazz.getSuperclass());
     }
 
-    public static Map<String, String> parseWestCacheable(
-            Method methodInvoked,
-            Class<? extends Annotation> annClass) {
+    @Value @AllArgsConstructor
+    public static class MethodAndAnnotationAttributes {
+        private Method method;
+        private Map<String, String> annotationAttributes;
+    }
+
+    public static MethodAndAnnotationAttributes parseWestCacheable(Method methodInvoked, Class<? extends Annotation> annClass) {
         val methodsInHierarchy = Methods.getAllMethodsInHierarchy(methodInvoked);
         for (val method : methodsInHierarchy) {
             val methodAnn = method.getAnnotation(annClass);
@@ -42,14 +48,16 @@ public class Anns {
             if (methodAnn != null || classAnn != null) {
                 val methodAttrs = getAllAttrs(methodAnn);
                 val classAttrs = getAllAttrs(classAnn);
-                return mergeMap(classAttrs, methodAttrs);
+                val mergeMap = mergeMap(classAttrs, methodAttrs);
+                return new MethodAndAnnotationAttributes(method, mergeMap);
             }
 
             val setAnns = Sets.<Annotation>newHashSet();
             val annM = searchAnn(setAnns, method.getAnnotations(), annClass);
             val annC = searchAnn(setAnns, declaringClz.getAnnotations(), annClass);
             if (annM != null || annC != null) {
-                return mergeMap(annC, annM);
+                val mergeMap = mergeMap(annC, annM);
+                return new MethodAndAnnotationAttributes(method, mergeMap);
             }
         }
 
@@ -171,8 +179,8 @@ public class Anns {
 
     public static boolean isFastWestCacheAnnotated(Class clazz) {
         for (val method : clazz.getMethods()) {
-            val yes = WestCacheOption.isFastWestCacheable(method);
-            if (yes) return true;
+            val attrs = parseWestCacheable(method, WestCacheable.class);
+            if (attrs != null) return true;
         }
 
         return false;

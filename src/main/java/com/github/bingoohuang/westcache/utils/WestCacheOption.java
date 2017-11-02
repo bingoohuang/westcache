@@ -145,20 +145,18 @@ public class WestCacheOption {
             = CacheBuilder.newBuilder().build(
             new CacheLoader<Method, Optional<WestCacheOption>>() {
                 @Override
-                public Optional<WestCacheOption> load(Method m) throws Exception {
-                    val attrs = Anns.parseWestCacheable(m, WestCacheable.class);
-                    val opt = attrs == null ? null : buildOption(attrs, m);
-                    return Optional.fromNullable(opt);
+                public Optional<WestCacheOption> load(Method method) throws Exception {
+                    val attrs = Anns.parseWestCacheable(method, WestCacheable.class);
+
+                    if (attrs == null) return Optional.absent();
+
+                    val opt = buildOption(attrs.getAnnotationAttributes(), attrs.getMethod());
+                    return Optional.of(opt);
                 }
             });
 
     public static WestCacheOption parseWestCacheable(Method m) {
         return Guavas.cacheGet(optionCache, m).orNull();
-    }
-
-    public static boolean isFastWestCacheable(Method m) {
-        val attrs = Anns.parseWestCacheable(m, WestCacheable.class);
-        return attrs != null;
     }
 
     private static WestCacheOption buildOption(Map<String, String> attrs, Method m) {

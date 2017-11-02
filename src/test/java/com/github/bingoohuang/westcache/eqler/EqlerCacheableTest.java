@@ -1,12 +1,10 @@
 package com.github.bingoohuang.westcache.eqler;
 
 import com.github.bingoohuang.westcache.MySqlDictTest.CacheDictBean;
-import com.github.bingoohuang.westcache.WestCacheFactory;
 import com.github.bingoohuang.westcache.springann.SpringAnnDao;
 import com.github.bingoohuang.westcache.utils.WestCacheConnector;
 import com.google.common.collect.Lists;
 import lombok.experimental.var;
-import lombok.val;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.n3r.eql.eqler.EqlerFactory;
@@ -18,10 +16,13 @@ public class EqlerCacheableTest {
 
     @BeforeClass
     public static void beforeClass() {
-        val dao = EqlerFactory.getEqler(SpringAnnDao.class);
-        dao.setup();
-
-        someDao = WestCacheFactory.create(dao);
+        someDao = EqlerFactory.getEqler(SpringAnnDao.class);
+        someDao.setup();
+        WestCacheConnector.clearCache(new Runnable() {
+            @Override public void run() {
+                someDao.selectAll();
+            }
+        });
     }
 
     @Test

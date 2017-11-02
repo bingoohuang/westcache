@@ -24,6 +24,8 @@ public class WestCacheableAdvisor extends AbstractPointcutAdvisor {
                 public ClassFilter getClassFilter() {
                     return new ClassFilter() {
                         @Override public boolean matches(Class<?> targetClass) {
+                            if (targetClass.isInterface()) return false;
+
                             val targetClassName = targetClass.getName();
                             if (targetClassName.startsWith("com.sun.proxy.$Proxy")) return false;
                             if (targetClassName.startsWith("java.lang.")) return false;

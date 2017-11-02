@@ -30,7 +30,7 @@ public class AnnsTest {
     @Test @SneakyThrows
     public void testM1() {
         Method m1 = Interface1.class.getMethod("m1");
-        Map<String, String> attrs = Anns.parseWestCacheable(m1, WestCacheable.class);
+        Map<String, String> attrs = Anns.parseWestCacheable(m1, WestCacheable.class).getAnnotationAttributes();
         assertThat(attrs).isEqualTo(ImmutableMap.of(
                 "config", "default",
                 "manager", "guava",
@@ -40,7 +40,7 @@ public class AnnsTest {
     @Test @SneakyThrows
     public void testM2() {
         Method m2 = Interface1.class.getMethod("m2");
-        Map<String, String> attrs2 = Anns.parseWestCacheable(m2, WestCacheable.class);
+        Map<String, String> attrs2 = Anns.parseWestCacheable(m2, WestCacheable.class).getAnnotationAttributes();
         assertThat(attrs2).isEqualTo(ImmutableMap.of(
                 "config", "default",
                 "manager", "default",
@@ -67,7 +67,7 @@ public class AnnsTest {
     @Test @SneakyThrows
     public void testAnnComM1() {
         Method m = Interface2.class.getMethod("m1");
-        Map<String, String> attrs = Anns.parseWestCacheable(m, WestCacheable.class);
+        Map<String, String> attrs = Anns.parseWestCacheable(m, WestCacheable.class).getAnnotationAttributes();
 
         assertThat(attrs).isEqualTo(ImmutableMap.of(
                 "snapshot", "file",
@@ -81,7 +81,7 @@ public class AnnsTest {
     @Test @SneakyThrows
     public void testAnnComM2() {
         Method m = Interface2.class.getMethod("m2");
-        Map<String, String> attrs = Anns.parseWestCacheable(m, WestCacheable.class);
+        Map<String, String> attrs = Anns.parseWestCacheable(m, WestCacheable.class).getAnnotationAttributes();
 
         assertThat(attrs).isEqualTo(ImmutableMap.of(
                 "snapshot", "file",
@@ -121,7 +121,7 @@ public class AnnsTest {
     @Test @SneakyThrows
     public void testInterfaceSon() {
         Method m = InterfaceSon.class.getMethod("m1");
-        Map<String, String> attrs = Anns.parseWestCacheable(m, WestCacheable.class);
+        Map<String, String> attrs = Anns.parseWestCacheable(m, WestCacheable.class).getAnnotationAttributes();
         assertThat(attrs).isEqualTo(ImmutableMap.of(
                 "snapshot", "file",
                 "key", "guava"));
