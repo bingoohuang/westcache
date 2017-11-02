@@ -3,7 +3,6 @@ package com.github.bingoohuang.westcache.utils;
 import lombok.val;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -32,15 +31,23 @@ public class Methods {
     }
 
     private static void addMethod(Set<Method> allMethods, Class<?> aClass, Method method) {
-        try {
-            val interfaceMethod = aClass.getMethod(method.getName(), method.getParameterTypes());
-            if (Modifier.isStatic(interfaceMethod.getModifiers())) return;
-            if (Modifier.isPrivate(interfaceMethod.getModifiers())) return;
-
-            allMethods.add(interfaceMethod);
-        } catch (NoSuchMethodException e) {
-        } catch (Exception e) {
+        for (val declaredMethod : aClass.getDeclaredMethods()) {
+            if (!declaredMethod.getName().equals(method.getName())) continue;
+            if (sameParameterTypes(declaredMethod.getParameterTypes(), method.getParameterTypes())) {
+                allMethods.add(declaredMethod);
+            }
         }
+
+    }
+
+    private static boolean sameParameterTypes(Class<?>[] parameterTypes1, Class<?>[] parameterTypes2) {
+        if (parameterTypes1.length != parameterTypes2.length) return false;
+
+        for (int i = 0; i < parameterTypes1.length; ++i) {
+            if (parameterTypes1[i] != parameterTypes2[i]) return false;
+        }
+
+        return true;
     }
 
 }

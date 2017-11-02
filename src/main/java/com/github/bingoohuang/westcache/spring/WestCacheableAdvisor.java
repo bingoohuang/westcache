@@ -18,6 +18,7 @@ import java.lang.reflect.Modifier;
 
 @Component
 public class WestCacheableAdvisor extends AbstractPointcutAdvisor {
+    public static final boolean existsEqler = Envs.classExists("org.n3r.eql.eqler.annotations.Eqler");
     final transient StaticMethodMatcherPointcut pointcut =
             new StaticMethodMatcherPointcut() {
                 @Override
@@ -30,7 +31,7 @@ public class WestCacheableAdvisor extends AbstractPointcutAdvisor {
                             if (targetClassName.startsWith("com.sun.proxy.$Proxy")) return false;
                             if (targetClassName.startsWith("java.lang.")) return false;
 
-                            if (Envs.classExists("org.n3r.eql.eqler.annotations.Eqler")) {
+                            if (existsEqler) {
                                 if (Anns.hasAnnotationInHierarchy(Eqler.class, targetClass)) return false;
                                 if (Anns.hasAnnotationInHierarchy(EqlerConfig.class, targetClass)) return false;
                             }
