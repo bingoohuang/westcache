@@ -41,9 +41,9 @@ public class Envs {
     }
 
     @SneakyThrows
-    public static <T> T futureGet(Future<T> future, long timeout) throws TimeoutException {
+    public static <T> T futureGet(Future<T> future, long timeoutInMillis) throws TimeoutException {
         try {
-            return future.get(timeout, TimeUnit.MILLISECONDS);
+            return future.get(timeoutInMillis, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             throw e;
         } catch (ExecutionException e) {
@@ -85,12 +85,12 @@ public class Envs {
     public static <T> T trySnapshot(WestCacheOption option,
                                     Future<T> future,
                                     String cacheKey) {
-        val timeout = option.getConfig().timeoutMillisToSnapshot();
+        val timeoutMillis = option.getConfig().timeoutMillisToSnapshot();
         try {
-            return futureGet(future, timeout);
+            return futureGet(future, timeoutMillis);
         } catch (TimeoutException ex) {
             log.info("get cache {} timeout in {} millis," +
-                    " try snapshot", cacheKey, timeout);
+                    " try snapshot", cacheKey, timeoutMillis);
             val result = option.getSnapshot().readSnapshot(option, cacheKey);
             log.info("got {} snapshot {}", cacheKey,
                     result != null ? result.getObject() : " non-exist");
