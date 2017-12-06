@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache.utils;
 
+import lombok.val;
 import org.junit.Test;
-import redis.clients.jedis.JedisCommands;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -11,9 +11,9 @@ import static com.google.common.truth.Truth.assertThat;
 public class RedisTest {
     @Test
     public void waitRedisLock() {
-        JedisCommands jedis = Redis.getJedis();
+        val jedis = Redis.getJedis();
         jedis.setnx("redis.test", "lock");
-        boolean ok = Redis.waitRedisLock(jedis, "redis.test");
-        assertThat(ok).isFalse();
+        val locked = Redis.waitRedisLock(jedis, "redis.test");
+        assertThat(locked).isFalse();
     }
 }

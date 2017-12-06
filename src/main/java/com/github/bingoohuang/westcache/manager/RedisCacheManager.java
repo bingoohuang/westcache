@@ -13,6 +13,7 @@ import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import redis.clients.jedis.JedisCommands;
 
 import java.util.concurrent.Callable;
 
@@ -71,9 +72,14 @@ public class RedisCacheManager extends BaseCacheManager {
                 return;
             }
 
+            if (!"true".equals(option.getSpecs().get("redisLockFirst"))) {
+                setVersionToRedis(cacheKey, version, redis, redisKey);
+                return;
+            }
+
             val lockKey = prefix + "lock:" + cacheKey;
-            Redis.waitRedisLock(redis, lockKey);
-            log.debug("got redis lock {} for invalidate", lockKey);
+            val locked = Redis.waitRedisLock(redis, lockKey);
+            log.debug("got redis lock {}={} for invalidate", lockKey, locked);
 
             @Cleanup val i = new QuietCloseable() {
                 @Override public void close() {
@@ -82,6 +88,10 @@ public class RedisCacheManager extends BaseCacheManager {
                 }
             }; // free lock automatically
 
+            setVersionToRedis(cacheKey, version, redis, redisKey);
+        }
+
+        private void setVersionToRedis(String cacheKey, String version, JedisCommands redis, String redisKey) {
             val versionKey = prefix + "version:" + cacheKey;
             String versionRedis = redis.get(versionKey);
             if (version.equals(versionRedis)) return;

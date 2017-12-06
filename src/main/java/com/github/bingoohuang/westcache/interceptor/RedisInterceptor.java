@@ -9,6 +9,7 @@ import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import redis.clients.jedis.JedisCommands;
 
 import java.util.concurrent.Callable;
 
@@ -18,18 +19,21 @@ import java.util.concurrent.Callable;
 @Slf4j
 public class RedisInterceptor implements WestCacheInterceptor {
     @Override
-    public WestCacheItem intercept(
-            final WestCacheOption option,
-            String cacheKey,
-            Callable<WestCacheItem> callable) {
+    public WestCacheItem intercept(final WestCacheOption option,
+                                   String cacheKey,
+                                   Callable<WestCacheItem> callable) {
         val redisKey = Redis.PREFIX + cacheKey;
         val redis = Redis.getRedis(option);
-        val item1 = Redis.getWestCacheItem(option, redis, redisKey);
-        if (item1 != null) return item1;
+        val item0 = Redis.getWestCacheItem(option, redis, redisKey);
+        if (item0 != null) return item0;
+
+        if (!"true".equals(option.getSpecs().get("redisLockFirst"))) {
+            return executeAndPut(callable, redisKey, redis);
+        }
 
         val lockKey = Redis.PREFIX + "lock:" + cacheKey;
-        Redis.waitRedisLock(redis, lockKey);
-        log.debug("got redis lock {}", lockKey);
+        val locked = Redis.waitRedisLock(redis, lockKey);
+        log.debug("got redis lock {}={}", lockKey, locked);
 
         @Cleanup val i = new QuietCloseable() {
             @Override public void close() {
@@ -38,9 +42,14 @@ public class RedisInterceptor implements WestCacheInterceptor {
             }
         }; // free lock automatically
 
-        val item2 = Redis.getWestCacheItem(option, redis, redisKey);
-        if (item2 != null) return item2;
+        val item1 = Redis.getWestCacheItem(option, redis, redisKey);
+        if (item1 != null) return item1;
 
+        return executeAndPut(callable, redisKey, redis);
+    }
+
+    private WestCacheItem executeAndPut(Callable<WestCacheItem> callable,
+                                        String redisKey, JedisCommands redis) {
         val item = Envs.execute(callable);
         Redis.expirePut(redis, redisKey, item);
 
