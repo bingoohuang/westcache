@@ -26,7 +26,7 @@ public class RedisManagerExpireTest {
     // Durations are represented by an integer, followed by one of "d", "h", "m", or "s",
     // representing days, hours, minutes, or seconds respectively.
     @WestCacheable(manager = "redis", keyer = "simple", flusher = "table",
-            specs = "expireAfterWrite=1s")
+            specs = "expireAfterWrite=1s;redisLockFirst=true")
     public static class RedisExpireService {
         public long getTimestamp() {
             ++calledTimes;

@@ -72,10 +72,7 @@ public class RedisCacheManager extends BaseCacheManager {
                 return;
             }
 
-            if (!"true".equals(option.getSpecs().get("redisLockFirst"))) {
-                setVersionToRedis(cacheKey, version, redis, redisKey);
-                return;
-            }
+            if (!"true".equals(option.getSpecs().get("redisLockFirst"))) return;
 
             val lockKey = prefix + "lock:" + cacheKey;
             val locked = Redis.waitRedisLock(redis, lockKey);
@@ -93,7 +90,7 @@ public class RedisCacheManager extends BaseCacheManager {
 
         private void setVersionToRedis(String cacheKey, String version, JedisCommands redis, String redisKey) {
             val versionKey = prefix + "version:" + cacheKey;
-            String versionRedis = redis.get(versionKey);
+            val versionRedis = redis.get(versionKey);
             if (version.equals(versionRedis)) return;
 
             redis.del(redisKey);
