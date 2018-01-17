@@ -11,6 +11,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +56,23 @@ public class FastJsonsTest {
         List<FastBean> beans();
 
         Map<String, FastBean> maps();
+
+        Map<String, String> stringMaps();
+    }
+
+
+    @SneakyThrows @Test
+    public void testMapSeq() {
+        Method mapsMethod = FastInterface.class.getMethod("stringMaps");
+
+        Map<String, String> map = Maps.newLinkedHashMap();
+        map.put("bbb", "222");
+        map.put("aaa", "111");
+
+        String json = FastJsons.json(map);
+        Map<String, String> map2 = FastJsons.parse(json, mapsMethod, true);
+        Collection<String> values = map2.values();
+        assertThat(values).containsExactly("222", "111").inOrder();
     }
 
 

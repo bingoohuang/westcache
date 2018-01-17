@@ -10,6 +10,7 @@ import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.n3r.eql.eqler.EqlerFactory;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -52,7 +53,7 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
                 return FastJsons.parse(directJson, option.getMethod(), true);
             case SUB:
             default:
-                val typeReference = new TypeReference<Map<String, String>>() {
+                val typeReference = new TypeReference<LinkedHashMap<String, String>>() {
                 };
                 return FastJsons.parse(directJson, typeReference);
         }

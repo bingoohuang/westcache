@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.util.ParameterizedTypeImpl;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,10 @@ import lombok.val;
 import org.joda.time.DateTime;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/29.
@@ -38,8 +43,7 @@ public class FastJsons {
 
     @SneakyThrows @SuppressWarnings("unchecked")
     public static <T> T parse(String json, Method method, boolean silent) {
-        val genericType = method.getGenericReturnType();
-
+        val genericType = parseMethodGenericReturnType(method);
         try {
             return (T) JSON.parseObject(json, genericType);
         } catch (Exception ex) {
@@ -49,6 +53,17 @@ public class FastJsons {
 
             return genericType == String.class ? (T) json : null;
         }
+    }
+
+    private static Type parseMethodGenericReturnType(Method method) {
+        val genericType = method.getGenericReturnType();
+        if (!(genericType instanceof ParameterizedType)) return genericType;
+
+        val pt = (ParameterizedType) genericType;
+        if (pt.getRawType() != Map.class) return genericType;
+
+        val actualTypeArgs = pt.getActualTypeArguments();
+        return new ParameterizedTypeImpl(actualTypeArgs, pt.getOwnerType(), LinkedHashMap.class);
     }
 
     @SuppressWarnings("unchecked")
