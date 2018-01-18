@@ -61,7 +61,8 @@ public @interface WestCacheable {
 
     /**
      * some specification for customized process.
-     *
+     * The string syntax is a series of comma-separated keys or key=value pairs
+     * like: initialCapacity=10,maximumSize=20,refreshInterval=20000s
      * @return custom specification.
      */
     String specs() default "";
