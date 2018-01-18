@@ -180,7 +180,7 @@ public class TableCacheFlusherTest {
     public void specs() {
         val prefix = "TableCacheFlusherTest.TitaService.specs";
         val bean = new WestCacheFlusherBean(prefix, "full", 0,
-                "direct", "readBy=loader;loaderClass=com.github.bingoohuang.westcache.TableCacheFlusherTest$MyLoader");
+                "direct", "readBy=loader,loaderClass=com.github.bingoohuang.westcache.TableCacheFlusherTest$MyLoader");
 
         Helper.addConfigBean(flusher, bean);
 

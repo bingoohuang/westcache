@@ -4,8 +4,10 @@ import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.keyer.DefaultKeyer;
 import com.github.bingoohuang.westcache.utils.Envs;
+import com.github.bingoohuang.westcache.utils.Specs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 
 import static com.github.bingoohuang.westcache.WestCacheRegistry.*;
 import static com.google.common.truth.Truth.assertThat;
@@ -108,5 +111,12 @@ public class SpecsTest {
 
         cachedProvinces = myService.getProvincesCache();
         assertThat(cachedProvinces).isEqualTo(otherProvinces);
+    }
+
+
+    @Test
+    public void testParse() {
+        Map<String, String> map = Specs.parseSpecs("a=1,b=2");
+        assertThat(map).isEqualTo(ImmutableMap.of("a", "1", "b", "2"));
     }
 }

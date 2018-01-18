@@ -19,7 +19,7 @@ import static com.google.common.truth.Truth.assertThat;
  */
 public class AnnsTest {
     @WestCacheable(config = "default", manager = "default",
-            specs = "s2=v2;s1=v0") public interface Interface1 {
+            specs = "s2=v2,s1=v0") public interface Interface1 {
         @WestCacheable(manager = "guava")
         String m1();
 
@@ -34,7 +34,7 @@ public class AnnsTest {
         assertThat(attrs).isEqualTo(ImmutableMap.of(
                 "config", "default",
                 "manager", "guava",
-                "specs", "s1=v0;s2=v2"));
+                "specs", "s1=v0,s2=v2"));
     }
 
     @Test @SneakyThrows
@@ -44,7 +44,7 @@ public class AnnsTest {
         assertThat(attrs2).isEqualTo(ImmutableMap.of(
                 "config", "default",
                 "manager", "default",
-                "specs", "s1=v1;s2=v2"));
+                "specs", "s1=v1,s2=v2"));
     }
 
     @Target({ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE})

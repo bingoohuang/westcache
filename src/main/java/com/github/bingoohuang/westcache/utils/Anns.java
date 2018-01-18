@@ -155,7 +155,7 @@ public class Anns {
         return null;
     }
 
-    static Joiner.MapJoiner mapJoiner = Joiner.on(';').withKeyValueSeparator('=');
+    static Joiner.MapJoiner mapJoiner = Joiner.on(',').withKeyValueSeparator('=');
 
     private static Map<String, String> merge(Map<String, String> firstMap,
                                              Map<String, String> otherMap) {
