@@ -20,7 +20,7 @@ public class FileCacheManagerTest {
 
     @Test
     public void fileManager() {
-        WestCacheOption option = WestCacheOption.newBuilder()
+        WestCacheOption option = WestCacheOption.builder()
                 .manager("file").keyer("simple").build();
         BaseCacheManager manager = (BaseCacheManager) option.getManager();
 

@@ -8,6 +8,6 @@ import org.junit.Test;
 public class WestCacheOptionTest {
     @Test(expected = RuntimeException.class)
     public void test() {
-        WestCacheOption.newBuilder().manager("fuck");
+        WestCacheOption.builder().manager("fuck");
     }
 }

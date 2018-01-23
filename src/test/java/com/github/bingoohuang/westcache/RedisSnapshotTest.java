@@ -39,7 +39,7 @@ public class RedisSnapshotTest {
         val snapshot = SNAPSHOT_REGISTRY.get("redis");
 
         val keyer = KEYER_REGISTRY.get("default");
-        val option = WestCacheOption.newBuilder()
+        val option = WestCacheOption.builder()
                 .snapshot("redis")
                 .method(XyzServie.class.getMethods()[0])
                 .build();

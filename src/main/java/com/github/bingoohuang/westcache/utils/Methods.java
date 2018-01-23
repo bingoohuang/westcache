@@ -20,7 +20,7 @@ public class Methods {
             Set<Method> allMethods, Class<?> objectClass, Method method) {
         allMethods.add(method);
 
-        val superclass = objectClass.getSuperclass();
+        Class<?> superclass = objectClass.getSuperclass();
         if (superclass != null) {
             addMethod(allMethods, superclass, method);
             getAllMethodsInHierarchy(allMethods, superclass, method);

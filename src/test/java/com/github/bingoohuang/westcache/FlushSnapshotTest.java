@@ -58,7 +58,7 @@ public class FlushSnapshotTest {
 
         val snapshot = SNAPSHOT_REGISTRY.get("file");
         val keyer = KEYER_REGISTRY.get("default");
-        val option = WestCacheOption.newBuilder()
+        val option = WestCacheOption.builder()
                 .snapshot("file").flusher("simple").config("snapshotTest")
                 .build();
         val cacheKey = keyer.getCacheKey(option, "getHomeAreaWithCache", bean);

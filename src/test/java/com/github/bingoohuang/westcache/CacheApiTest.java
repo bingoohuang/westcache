@@ -27,7 +27,7 @@ public class CacheApiTest {
     public void apiBasic() {
         setHomeArea(north);
         String cacheKey = "api.cache.key";
-        val option = WestCacheOption.newBuilder().build();
+        val option = WestCacheOption.builder().build();
         val manager = option.getManager();
         WestCacheItem cache = manager.get(option, cacheKey,
                 new Callable<WestCacheItem>() {

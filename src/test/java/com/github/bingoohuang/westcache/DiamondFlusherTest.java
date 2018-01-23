@@ -34,7 +34,7 @@ public class DiamondFlusherTest {
         assertThat(service.getCachedContent()).isSameAs("XXXyyy");
 
         val keyer = KEYER_REGISTRY.get("default");
-        val option = WestCacheOption.newBuilder()
+        val option = WestCacheOption.builder()
                 .flusher("diamond").specs("static.key=yes")
                 .build();
         val cacheKey = keyer.getCacheKey(option, "getCachedContent", service);

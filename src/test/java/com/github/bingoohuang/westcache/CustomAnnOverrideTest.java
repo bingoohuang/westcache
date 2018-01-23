@@ -44,7 +44,7 @@ public class CustomAnnOverrideTest {
 
         assertThat(m2).isSameAs(m3);
 
-        val opt = WestCacheOption.newBuilder().key("mm22").snapshot("file").build();
+        val opt = WestCacheOption.builder().key("mm22").snapshot("file").build();
         WestCacheItem item = opt.getManager().get(opt, "mm22");
         assertThat(item.orNull()).isSameAs(m3);
     }

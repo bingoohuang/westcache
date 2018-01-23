@@ -55,7 +55,7 @@ public class ExpiringCacheManagerTest {
 
     @Test
     public void put() {
-        WestCacheOption option = WestCacheOption.newBuilder().manager("expiring")
+        WestCacheOption option = WestCacheOption.builder().manager("expiring")
                 .method(getCacheThreeMethod()).build();
         val manager = (BaseCacheManager) option.getManager();
         WestCacheKeyer keyer = option.getKeyer();
