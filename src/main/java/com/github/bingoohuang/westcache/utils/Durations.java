@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.utils;
 
 import lombok.experimental.UtilityClass;
+import lombok.val;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,9 +18,9 @@ public class Durations {
                 "value of key %s omitted", key);
         try {
             char lastChar = spec.charAt(spec.length() - 1);
-            TimeUnit timeUnit = parseTimeUnit(key, spec, lastChar);
+            val timeUnit = parseTimeUnit(key, spec, lastChar);
 
-            long duration = Long.parseLong(spec.substring(0, spec.length() - 1));
+            val duration = Long.parseLong(spec.substring(0, spec.length() - 1));
             return TimeUnit.SECONDS.convert(duration, timeUnit);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException(

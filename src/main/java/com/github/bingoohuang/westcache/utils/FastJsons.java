@@ -23,8 +23,10 @@ import java.util.Map;
 @Slf4j @UtilityClass
 public class FastJsons {
     static {
-        SerializeConfig.getGlobalInstance().put(DateTime.class, new JsonJodaSerializer());
-        ParserConfig.getGlobalInstance().putDeserializer(DateTime.class, new JsonJodaDeserializer());
+        SerializeConfig.getGlobalInstance().put(DateTime.class,
+                new JsonJodaSerializer());
+        ParserConfig.getGlobalInstance().putDeserializer(DateTime.class,
+                new JsonJodaDeserializer());
     }
 
     public static String json(Object obj) {
@@ -47,7 +49,8 @@ public class FastJsons {
         try {
             return (T) JSON.parseObject(json, genericType);
         } catch (Exception ex) {
-            log.error("parse json for method cache error, method:{}, json:{}", method, json, ex);
+            log.error("parse json for method cache error, method:{}, json:{}",
+                    method, json, ex);
 
             if (!silent) throw ex;
 
@@ -62,8 +65,9 @@ public class FastJsons {
         val pt = (ParameterizedType) genericType;
         if (pt.getRawType() != Map.class) return genericType;
 
-        val actualTypeArgs = pt.getActualTypeArguments();
-        return new ParameterizedTypeImpl(actualTypeArgs, pt.getOwnerType(), LinkedHashMap.class);
+        val args = pt.getActualTypeArguments();
+        val ownerType = pt.getOwnerType();
+        return new ParameterizedTypeImpl(args, ownerType, LinkedHashMap.class);
     }
 
     @SuppressWarnings("unchecked")

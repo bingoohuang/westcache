@@ -39,7 +39,9 @@ public class RedisCacheManager extends BaseCacheManager {
         }
 
         @Override
-        public WestCacheItem get(WestCacheOption option, String cacheKey, Callable<WestCacheItem> callable) {
+        public WestCacheItem get(
+                WestCacheOption option, String cacheKey,
+                Callable<WestCacheItem> callable) {
             return new RedisInterceptor().intercept(option, cacheKey, callable);
         }
 
@@ -47,7 +49,8 @@ public class RedisCacheManager extends BaseCacheManager {
         public WestCacheItem getIfPresent(WestCacheOption option, String cacheKey) {
             val json = Redis.getRedis(option).get(prefix + cacheKey);
             if (StringUtils.isNotEmpty(json)) {
-                val object = FastJsons.parse(json, option.getMethod(), true);
+                val method = option.getMethod();
+                val object = FastJsons.parse(json, method, true);
                 val optional = Optional.fromNullable(object);
                 return new WestCacheItem(optional, option);
             }
@@ -56,14 +59,16 @@ public class RedisCacheManager extends BaseCacheManager {
         }
 
         @Override
-        public void put(WestCacheOption option, String cacheKey, WestCacheItem cacheValue) {
+        public void put(WestCacheOption option, String cacheKey,
+                        WestCacheItem cacheValue) {
             val redis = Redis.getRedis(option);
             val key = prefix + cacheKey;
             Redis.expirePut(redis, key, cacheValue);
         }
 
         @Override
-        public void invalidate(WestCacheOption option, String cacheKey, String version) {
+        public void invalidate(
+                WestCacheOption option, String cacheKey, String version) {
             val redis = Redis.getRedis(option);
 
             val redisKey = prefix + cacheKey;
@@ -88,7 +93,8 @@ public class RedisCacheManager extends BaseCacheManager {
             setVersionToRedis(cacheKey, version, redis, redisKey);
         }
 
-        private void setVersionToRedis(String cacheKey, String version, JedisCommands redis, String redisKey) {
+        private void setVersionToRedis(String cacheKey, String version,
+                                       JedisCommands redis, String redisKey) {
             val versionKey = prefix + "version:" + cacheKey;
             val versionRedis = redis.get(versionKey);
             if (version.equals(versionRedis)) return;

@@ -1,6 +1,7 @@
 package com.github.bingoohuang.westcache.utils;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
+import com.github.bingoohuang.westcache.cglib.Cglibs;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
 import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;
@@ -8,7 +9,10 @@ import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 import org.apache.commons.lang3.StringUtils;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCommands;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -57,6 +61,18 @@ public class Redis {
 
         val pool = new JedisPool(poolConfig, host, port);
         return proxyJedisCommands(pool);
+    }
+
+    public static Jedis proxyJedis(final JedisPool pool) {
+        return (Jedis) Cglibs.proxy(Jedis.class, new MethodInterceptor() {
+            @Override
+            public Object intercept(
+                    Object o, Method method, Object[] args,
+                    MethodProxy methodProxy) throws Throwable {
+                @Cleanup val jedis = pool.getResource();
+                return method.invoke(jedis, args);
+            }
+        });
     }
 
     public static JedisCommands proxyJedisCommands(JedisPool pool) {

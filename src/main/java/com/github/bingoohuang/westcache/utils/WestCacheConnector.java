@@ -15,10 +15,10 @@ public abstract class WestCacheConnector {
     public static boolean isConnectedAndGoon(
             WestCacheOption option, String cacheKey
     ) {
-        Optional<?> optional = THREAD_LOCAL.get();
+        val optional = THREAD_LOCAL.get();
         if (optional == null) return false;
 
-        Object tag = optional.orNull();
+        val tag = optional.orNull();
         if (tag == ConnectTag.OPTION) {
             THREAD_LOCAL.set(Optional.of(option));
         } else if (tag == ConnectTag.KEY) {

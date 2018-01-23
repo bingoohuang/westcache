@@ -17,30 +17,29 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 @Slf4j @UtilityClass
 public class ExpireAfterWrites {
-    public static String parseExpireAfterWrite(WestCacheOption option, Object obj) {
-        if (option == null) return null;
+    public static String parseExpireAfterWrite(WestCacheOption opt, Object o) {
+        if (opt == null) return null;
 
-        String expireWrite = option.getSpecs().get("expireAfterWrite");
+        val expireWrite = opt.getSpecs().get("expireAfterWrite");
         if (isNotBlank(expireWrite)) return expireWrite;
 
-        if (obj == null) return null;
-        if (obj instanceof ExpireAfterWritable) {
-            return ((ExpireAfterWritable) obj).expireAfterWrite();
+        if (o == null) return null;
+        if (o instanceof ExpireAfterWritable) {
+            return ((ExpireAfterWritable) o).expireAfterWrite();
         }
 
-        return getExpireAfterWrite(obj);
+        return getExpireAfterWrite(o);
     }
 
-    public static String getExpireAfterWrite(Object object) {
-        val m = findExpireAfterWriteMethod(object);
-        return m == null ? null : (String) Envs.invoke(m, object);
+    public static String getExpireAfterWrite(Object o) {
+        val m = findExpireAfterWriteMethod(o);
+        return m == null ? null : (String) Envs.invoke(m, o);
     }
 
-    public static Method findExpireAfterWriteMethod(Object object) {
+    public static Method findExpireAfterWriteMethod(Object o) {
         val annClass = ExpireAfterWrite.class;
-        for (Method m : object.getClass().getMethods()) {
+        for (val m : o.getClass().getMethods()) {
             if (!m.isAnnotationPresent(annClass)) continue;
-
             if (isNormalStringMethodWithoutArgs(m)) return m;
 
             throw new WestCacheException("method "
@@ -52,10 +51,10 @@ public class ExpireAfterWrites {
         return null;
     }
 
-    private static boolean isNormalStringMethodWithoutArgs(Method method) {
-        return !Modifier.isStatic(method.getModifiers())
-                && Modifier.isPublic(method.getModifiers())
-                && method.getParameterTypes().length == 0
-                && method.getReturnType() == String.class;
+    private static boolean isNormalStringMethodWithoutArgs(Method m) {
+        return !Modifier.isStatic(m.getModifiers())
+                && Modifier.isPublic(m.getModifiers())
+                && m.getParameterTypes().length == 0
+                && m.getReturnType() == String.class;
     }
 }

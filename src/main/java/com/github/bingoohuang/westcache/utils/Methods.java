@@ -12,15 +12,18 @@ public class Methods {
      */
     public static Set<Method> getAllMethodsInHierarchy(Method method) {
         val allMethods = new LinkedHashSet<Method>();
-        return getAllMethodsInHierarchy(allMethods, method.getDeclaringClass(), method);
+        val declaringClass = method.getDeclaringClass();
+        return getAllMethodsInHierarchy(allMethods, declaringClass, method);
     }
 
-    public static Set<Method> getAllMethodsInHierarchy(Set<Method> allMethods, Class<?> objectClass, Method method) {
+    public static Set<Method> getAllMethodsInHierarchy(
+            Set<Method> allMethods, Class<?> objectClass, Method method) {
         allMethods.add(method);
 
-        if (objectClass.getSuperclass() != null) {
-            addMethod(allMethods, objectClass.getSuperclass(), method);
-            getAllMethodsInHierarchy(allMethods, objectClass.getSuperclass(), method);
+        val superclass = objectClass.getSuperclass();
+        if (superclass != null) {
+            addMethod(allMethods, superclass, method);
+            getAllMethodsInHierarchy(allMethods, superclass, method);
         }
 
         for (val interfaceClass : objectClass.getInterfaces()) {
@@ -30,21 +33,24 @@ public class Methods {
         return allMethods;
     }
 
-    private static void addMethod(Set<Method> allMethods, Class<?> aClass, Method method) {
+    private static void addMethod(
+            Set<Method> allMethods, Class<?> aClass, Method method) {
         for (val declaredMethod : aClass.getDeclaredMethods()) {
             if (!declaredMethod.getName().equals(method.getName())) continue;
-            if (sameParameterTypes(declaredMethod.getParameterTypes(), method.getParameterTypes())) {
+            if (sameParameterTypes(declaredMethod.getParameterTypes(),
+                    method.getParameterTypes())) {
                 allMethods.add(declaredMethod);
             }
         }
 
     }
 
-    private static boolean sameParameterTypes(Class<?>[] parameterTypes1, Class<?>[] parameterTypes2) {
-        if (parameterTypes1.length != parameterTypes2.length) return false;
+    private static boolean sameParameterTypes(
+            Class<?>[] pTypes1, Class<?>[] pTypes2) {
+        if (pTypes1.length != pTypes2.length) return false;
 
-        for (int i = 0; i < parameterTypes1.length; ++i) {
-            if (parameterTypes1[i] != parameterTypes2[i]) return false;
+        for (int i = 0; i < pTypes1.length; ++i) {
+            if (pTypes1[i] != pTypes2[i]) return false;
         }
 
         return true;

@@ -48,15 +48,12 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
         val directJson = dao.getDirectValue(bean.getCacheKey());
         if (StringUtils.isBlank(directJson)) return null;
 
-        switch (type) {
-            case FULL:
-                return FastJsons.parse(directJson, option.getMethod(), true);
-            case SUB:
-            default:
-                val typeReference = new TypeReference<LinkedHashMap<String, String>>() {
-                };
-                return FastJsons.parse(directJson, typeReference);
+        if (type == DirectValueType.FULL) {
+            return FastJsons.parse(directJson, option.getMethod(), true);
         }
+
+        val typeRef = new TypeReference<LinkedHashMap<String, String>>() {};
+        return FastJsons.parse(directJson, typeRef);
     }
 
     private Object readByLoader(Map<String, String> specs, String readBy) {

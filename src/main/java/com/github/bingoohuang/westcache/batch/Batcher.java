@@ -4,7 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.SettableFuture;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
@@ -111,7 +111,7 @@ public class Batcher<T, V> {
     /**
      * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/22.
      */
-    @AllArgsConstructor @Getter private static class BatcherBean<T, V> {
+    @AllArgsConstructor @Value private static class BatcherBean<T, V> {
         private final T arg;
         private final SettableFuture<V> future;
     }

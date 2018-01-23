@@ -12,7 +12,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 import java.util.concurrent.Callable;
 
@@ -32,8 +31,7 @@ public class QuartzCacheFlusher extends ByPassCacheFlusher {
         val scheduled = getScheduled(option);
         if (StringUtils.isBlank(scheduled)) return false;
 
-        Pair<WestCacheOption, WestCache> pair;
-        pair = registry.getIfPresent(cacheKey);
+        val pair = registry.getIfPresent(cacheKey);
         if (pair != null) return false;
 
         Guavas.cacheGet(registry, cacheKey, new Callable<Pair<WestCacheOption, WestCache>>() {
@@ -43,12 +41,11 @@ public class QuartzCacheFlusher extends ByPassCacheFlusher {
                 job.getJobDataMap().put(RunnableCacheJob.KEY, new Runnable() {
                     @Override public void run() {
                         for (val entry : registry.asMap().entrySet()) {
-                            String key = entry.getKey();
-                            WestCache cac = entry.getValue().getValue();
-                            WestCacheOption opt = entry.getValue().getLeft();
-                            cac.invalidate(opt, key, null);
+                            val cac = entry.getValue().getValue();
+                            val opt = entry.getValue().getLeft();
+                            cac.invalidate(opt, entry.getKey(), null);
 
-                            log.debug("cache invalidate key {}", key);
+                            log.debug("cache invalidate key {}", entry.getKey());
                         }
                     }
                 });
@@ -63,10 +60,10 @@ public class QuartzCacheFlusher extends ByPassCacheFlusher {
     }
 
     private String getScheduled(WestCacheOption option) {
-        String scheduled = option.getSpecs().get("scheduled");
+        val scheduled = option.getSpecs().get("scheduled");
         if (StringUtils.isNotBlank(scheduled)) return scheduled;
 
-        String scheduledBean = option.getSpecs().get("scheduledBean");
+        val scheduledBean = option.getSpecs().get("scheduledBean");
         if (Envs.HAS_SPRING && StringUtils.isNotBlank(scheduledBean)) {
             return SpringAppContext.getBean(scheduledBean);
         }
@@ -78,8 +75,7 @@ public class QuartzCacheFlusher extends ByPassCacheFlusher {
         public static final String KEY = "runnable";
 
         @Override
-        public void execute(JobExecutionContext context)
-                throws JobExecutionException {
+        public void execute(JobExecutionContext context) {
             val jobDataMap = context.getJobDetail().getJobDataMap();
             val runnable = (Runnable) jobDataMap.get(KEY);
             runnable.run();

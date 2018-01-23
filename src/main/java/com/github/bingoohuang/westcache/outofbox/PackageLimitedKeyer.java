@@ -33,6 +33,7 @@ public class PackageLimitedKeyer extends SimpleKeyer {
     }
 
     private void reportInvalidPackage(String packageName) {
-        throw new WestCacheException(packageName + " is not allowed for the cache key");
+        throw new WestCacheException(packageName
+                + " is not allowed for the cache key");
     }
 }

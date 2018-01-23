@@ -17,7 +17,7 @@ import java.util.Properties;
  */
 public class Quartz {
     public Scheduler createQuartzScheduler() throws SchedulerException {
-        Properties properties = new Properties();
+        val properties = new Properties();
         properties.setProperty("org.quartz.scheduler.skipUpdateCheck", "true");
         properties.setProperty("org.quartz.threadPool.class", SimpleThreadPool.class.getName());
         properties.setProperty("org.quartz.threadPool.threadCount", "1");

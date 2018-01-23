@@ -271,8 +271,8 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
     protected WestCacheFlusherBean find(WestCacheFlusherBean old,
                                         List<WestCacheFlusherBean> beans) {
-        for (val newone : beans) {
-            if (old.getCacheKey().equals(newone.getCacheKey())) return newone;
+        for (val newOne : beans) {
+            if (old.getCacheKey().equals(newOne.getCacheKey())) return newOne;
         }
         return null;
     }

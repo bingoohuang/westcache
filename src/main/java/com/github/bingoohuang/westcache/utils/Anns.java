@@ -22,14 +22,16 @@ import java.util.Set;
 public class Anns {
     public static final String SPECS = "specs";
 
-    public static boolean hasAnnotationInHierarchy(Class<? extends Annotation> annotationClass, Class<?> clazz) {
-        if (clazz.isAnnotationPresent(annotationClass)) return true;
+    public static boolean hasAnnotationInHierarchy(
+            Class<? extends Annotation> annClass, Class<?> clazz) {
+        if (clazz.isAnnotationPresent(annClass)) return true;
 
         for (val interfaceClass : clazz.getInterfaces()) {
-            if (interfaceClass.isAnnotationPresent(annotationClass)) return true;
+            if (interfaceClass.isAnnotationPresent(annClass)) return true;
         }
 
-        return clazz.getSuperclass() != null && hasAnnotationInHierarchy(annotationClass, clazz.getSuperclass());
+        return clazz.getSuperclass() != null
+                && hasAnnotationInHierarchy(annClass, clazz.getSuperclass());
     }
 
     @Value @AllArgsConstructor
@@ -38,12 +40,13 @@ public class Anns {
         private Map<String, String> annotationAttributes;
     }
 
-    public static MethodAndAnnotationAttributes parseWestCacheable(Method methodInvoked, Class<? extends Annotation> annClass) {
+    public static MethodAndAnnotationAttributes parseWestCacheable(
+            Method methodInvoked, Class<? extends Annotation> annClz) {
         val methodsInHierarchy = Methods.getAllMethodsInHierarchy(methodInvoked);
         for (val method : methodsInHierarchy) {
-            val methodAnn = method.getAnnotation(annClass);
+            val methodAnn = method.getAnnotation(annClz);
             val declaringClz = method.getDeclaringClass();
-            val classAnn = declaringClz.getAnnotation(annClass);
+            val classAnn = declaringClz.getAnnotation(annClz);
 
             if (methodAnn != null || classAnn != null) {
                 val methodAttrs = getAllAttrs(methodAnn);
@@ -53,8 +56,8 @@ public class Anns {
             }
 
             val setAnns = Sets.<Annotation>newHashSet();
-            val annM = searchAnn(setAnns, method.getAnnotations(), annClass);
-            val annC = searchAnn(setAnns, declaringClz.getAnnotations(), annClass);
+            val annM = searchAnn(setAnns, method.getAnnotations(), annClz);
+            val annC = searchAnn(setAnns, declaringClz.getAnnotations(), annClz);
             if (annM != null || annC != null) {
                 val mergeMap = mergeMap(annC, annM);
                 return new MethodAndAnnotationAttributes(method, mergeMap);
@@ -159,8 +162,8 @@ public class Anns {
 
     private static Map<String, String> merge(Map<String, String> firstMap,
                                              Map<String, String> otherMap) {
-        String specs1 = firstMap.get(SPECS);
-        String specs2 = otherMap.get(SPECS);
+        val specs1 = firstMap.get(SPECS);
+        val specs2 = otherMap.get(SPECS);
 
         firstMap.putAll(otherMap);
         if (specs1 != null || specs2 != null) {
@@ -170,7 +173,7 @@ public class Anns {
             treeMap.putAll(specsMap1);
             treeMap.putAll(specsMap2);
 
-            String specsJoin = mapJoiner.join(treeMap);
+            val specsJoin = mapJoiner.join(treeMap);
             firstMap.put(SPECS, specsJoin);
         }
 

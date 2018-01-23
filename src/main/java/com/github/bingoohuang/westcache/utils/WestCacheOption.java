@@ -37,7 +37,7 @@ public class WestCacheOption {
     @Getter private final Map<String, String> specs;
     @Getter private final Method method;
 
-    public static Builder newBuilder() {
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -145,12 +145,12 @@ public class WestCacheOption {
             = CacheBuilder.newBuilder().build(
             new CacheLoader<Method, Optional<WestCacheOption>>() {
                 @Override
-                public Optional<WestCacheOption> load(Method method) throws Exception {
+                public Optional<WestCacheOption> load(Method method) {
                     val attrs = Anns.parseWestCacheable(method, WestCacheable.class);
-
                     if (attrs == null) return Optional.absent();
 
-                    val opt = buildOption(attrs.getAnnotationAttributes(), attrs.getMethod());
+                    val annAttributes = attrs.getAnnotationAttributes();
+                    val opt = buildOption(annAttributes, attrs.getMethod());
                     return Optional.of(opt);
                 }
             });
@@ -160,7 +160,7 @@ public class WestCacheOption {
     }
 
     private static WestCacheOption buildOption(Map<String, String> attrs, Method m) {
-        return WestCacheOption.newBuilder()
+        return WestCacheOption.builder()
                 .flusher(getAttr(attrs, FLUSHER_NAME))
                 .manager(getAttr(attrs, MANAGER_NAME))
                 .snapshot(getAttr(attrs, "snapshot"))
@@ -174,11 +174,12 @@ public class WestCacheOption {
     }
 
     private static Map<String, String> parseSpecs(Map<String, String> attrs) {
-        String specsStr = attrs.get("specs");
+        val specsStr = attrs.get("specs");
         val specs = Specs.parseSpecs(specsStr);
 
         Anns.removeAttrs(attrs, FLUSHER_NAME, MANAGER_NAME,
-                "snapshot", CONFIG_NAME, INTERCEPTOR_NAME, KEYER_NAME, "key", "specs");
+                "snapshot", CONFIG_NAME, INTERCEPTOR_NAME, KEYER_NAME,
+                "key", "specs");
         specs.putAll(attrs);
         return specs;
     }

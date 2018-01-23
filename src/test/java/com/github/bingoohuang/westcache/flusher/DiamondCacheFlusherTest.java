@@ -3,7 +3,6 @@ package com.github.bingoohuang.westcache.flusher;
 import com.github.bingoohuang.westcache.WestCacheFactory;
 import com.github.bingoohuang.westcache.WestCacheable;
 import com.github.bingoohuang.westcache.utils.WestCacheConnector;
-import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.val;
 import mockit.Deencapsulation;
 import org.junit.Test;
@@ -25,11 +24,6 @@ public class DiamondCacheFlusherTest {
     }
 
     static DiamondFlusherService service = WestCacheFactory.create(DiamondFlusherService.class);
-    static WestCacheOption option = WestCacheConnector.connectOption(new Runnable() {
-        @Override public void run() {
-            service.getBigData();
-        }
-    });
     static String cacheKey = WestCacheConnector.connectKey(new Runnable() {
         @Override public void run() {
             service.getBigData();
@@ -45,7 +39,7 @@ public class DiamondCacheFlusherTest {
         val diamondSubscriber = DiamondSubscriber.getInstance();
         val diamondRemoteChecker = Deencapsulation.getField(diamondSubscriber, "diamondRemoteChecker");
         val diamondAllListener = Deencapsulation.getField(diamondRemoteChecker, "diamondAllListener");
-        final DiamondStone diamondStone = new DiamondStone();
+        val diamondStone = new DiamondStone();
         diamondStone.setDiamondAxis(new DiamondAxis(DiamondCacheFlusher.GROUP, cacheKey));
         diamondStone.setContent("xxxx");
         Deencapsulation.invoke(diamondAllListener, "accept", diamondStone);

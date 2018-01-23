@@ -16,9 +16,7 @@ public class Keys {
         val argsPart = new StringBuilder();
 
         for (val arg : args) {
-            argsPart.append("_");
-            if (arg == null) argsPart.append("null");
-            else argsPart.append(arg);
+            argsPart.append("_").append(arg == null ? "null" : arg);
         }
 
         return argsPart.toString();
@@ -50,11 +48,9 @@ public class Keys {
     public static String createKeyMainPart(String methodName,
                                            Object bean,
                                            boolean removePackage) {
-        val superClassName = Cglibs.getSuperClassName(bean);
-        val simpleClassName = removePackage
-                ? removePackage(superClassName)
-                : superClassName;
-        val dottedClassName = simpleClassName.replace('$', '.');
+        val superClass = Cglibs.getSuperClassName(bean);
+        val simpleName = removePackage ? removePackage(superClass) : superClass;
+        val dottedClassName = simpleName.replace('$', '.');
         return dottedClassName + "." + methodName;
     }
 

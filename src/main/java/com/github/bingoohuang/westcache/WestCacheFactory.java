@@ -13,7 +13,11 @@ import lombok.val;
  */
 @UtilityClass
 public class WestCacheFactory {
-    private static final CglibCacheMethodInterceptor INTERCEPTOR = new CglibCacheMethodInterceptor();
+    private static final CglibCacheMethodInterceptor INTERCEPTOR;
+
+    static {
+        INTERCEPTOR = new CglibCacheMethodInterceptor();
+    }
 
     /**
      * Create a proxied object of target class.
@@ -29,12 +33,13 @@ public class WestCacheFactory {
      */
     @SneakyThrows @SuppressWarnings("unchecked")
     public static <T> T create(Class<T> targetClass) {
-        if (WestCacheCglib.class.isAssignableFrom(targetClass))
+        val wcClass = WestCacheCglib.class;
+        if (wcClass.isAssignableFrom(targetClass))
             return targetClass.newInstance();
 
         return (T) (targetClass.isInterface()
-                ? Cglibs.proxy(Object.class, INTERCEPTOR, targetClass, WestCacheCglib.class)
-                : Cglibs.proxy(targetClass, INTERCEPTOR, WestCacheCglib.class));
+                ? Cglibs.proxy(Object.class, INTERCEPTOR, targetClass, wcClass)
+                : Cglibs.proxy(targetClass, INTERCEPTOR, wcClass));
 
     }
 
@@ -47,10 +52,9 @@ public class WestCacheFactory {
      */
     @SuppressWarnings("unchecked")
     public static <T> T create(T target) {
-        if (target instanceof WestCacheCglib)
-            return target;
+        if (target instanceof WestCacheCglib) return target;
 
-        val interceptor = new CglibCacheMethodInterceptor(target);
-        return (T) Cglibs.proxy(target.getClass(), interceptor, WestCacheCglib.class);
+        val in = new CglibCacheMethodInterceptor(target);
+        return (T) Cglibs.proxy(target.getClass(), in, WestCacheCglib.class);
     }
 }

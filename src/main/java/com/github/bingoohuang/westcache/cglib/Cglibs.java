@@ -17,7 +17,7 @@ public class Cglibs {
      * @param obj cglib enhanced object.
      * @return underlined super class's name
      */
-    public static String getSuperClassName(Object obj) {
+    public String getSuperClassName(Object obj) {
         String name = obj.getClass().getName();
         int posCglib = name.indexOf("$$EnhancerByCGLIB$$");
         if (posCglib > 0) return name.substring(0, posCglib);
@@ -36,7 +36,7 @@ public class Cglibs {
      * @param interfaces  interfaces.
      * @return proxied object.
      */
-    public static Object proxy(Class<?> superClass,
+    public Object proxy(Class<?> superClass,
                                MethodInterceptor interceptor,
                                Class<?>... interfaces) {
         return Enhancer.create(superClass, interfaces, interceptor);
