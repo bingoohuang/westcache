@@ -1,8 +1,11 @@
 package com.github.bingoohuang.westcache.cglib;
 
 import lombok.experimental.UtilityClass;
+import lombok.val;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
+
+import java.lang.reflect.Proxy;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/22.
@@ -37,8 +40,18 @@ public class Cglibs {
      * @return proxied object.
      */
     public Object proxy(Class<?> superClass,
-                               MethodInterceptor interceptor,
-                               Class<?>... interfaces) {
+                        MethodInterceptor interceptor,
+                        Class<?>... interfaces) {
         return Enhancer.create(superClass, interfaces, interceptor);
+    }
+
+    // proxy class like redis.clients.jedis.Jedis$$EnhancerByCGLIB$$e3d540fd/ com.sun.proxy.$Proxy4
+    public boolean isProxyClass(Class<?> targetClass) {
+        val targetClassName = targetClass.getName();
+
+        if (targetClassName.contains("CGLIB$$")) return true;
+        if (Proxy.isProxyClass(targetClass)) return true;
+
+        return false;
     }
 }
