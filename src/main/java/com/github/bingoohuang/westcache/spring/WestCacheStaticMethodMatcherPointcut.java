@@ -1,6 +1,5 @@
 package com.github.bingoohuang.westcache.spring;
 
-import com.github.bingoohuang.westcache.cglib.Cglibs;
 import com.github.bingoohuang.westcache.utils.Anns;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.support.StaticMethodMatcherPointcut;
@@ -20,8 +19,8 @@ public class WestCacheStaticMethodMatcherPointcut extends StaticMethodMatcherPoi
         if (method.isBridge()) return false;
         if (method.getDeclaringClass() == Object.class) return false;
         if (Modifier.isStatic(method.getModifiers())) return false;
-        if (Cglibs.isProxyClass(targetClass)) return false;
 
-        return Anns.isFastWestCacheAnnotated(targetClass);
+
+        return Anns.isFastWestCacheAnnotated(method);
     }
 }

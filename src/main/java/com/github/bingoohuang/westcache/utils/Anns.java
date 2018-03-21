@@ -182,10 +182,14 @@ public class Anns {
 
     public static boolean isFastWestCacheAnnotated(Class clazz) {
         for (val method : clazz.getMethods()) {
-            val attrs = parseWestCacheable(method, WestCacheable.class);
-            if (attrs != null) return true;
+            if (isFastWestCacheAnnotated(method)) return true;
         }
 
         return false;
+    }
+
+    public static boolean isFastWestCacheAnnotated(Method method) {
+        val attrs = parseWestCacheable(method, WestCacheable.class);
+        return attrs != null;
     }
 }

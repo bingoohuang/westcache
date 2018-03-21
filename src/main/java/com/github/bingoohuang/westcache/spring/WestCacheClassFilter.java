@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.spring;
 
+import com.github.bingoohuang.westcache.cglib.Cglibs;
 import com.github.bingoohuang.westcache.utils.Anns;
 import com.github.bingoohuang.westcache.utils.Envs;
 import lombok.val;
@@ -19,7 +20,8 @@ public class WestCacheClassFilter implements ClassFilter {
 
         val targetClassName = targetClass.getName();
         if (targetClassName.startsWith("com.sun.proxy.$Proxy")) return false;
-        if (targetClassName.startsWith("java.lang.")) return false;
+        if (targetClassName.startsWith("java.")) return false;
+        if (Cglibs.isProxyClass(targetClass)) return false;
 
         if (hasEqler) {
             if (Anns.hasAnnotationInHierarchy(Eqler.class, targetClass))
@@ -28,7 +30,7 @@ public class WestCacheClassFilter implements ClassFilter {
                 return false;
         }
 
-        return true;
+        return  Anns.isFastWestCacheAnnotated(targetClass);
     }
 
 }
