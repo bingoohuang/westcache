@@ -50,7 +50,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
 
         val shot = new AtomicBoolean(true);
         val flushCallable = new Callable<WestCacheItem>() {
-            @Override public WestCacheItem call() throws Exception {
+            @Override public WestCacheItem call() {
                 val raw = flusher.getDirectValue(option, cacheKey);
                 if (raw.isPresent()) return new WestCacheItem(raw, option);
 
@@ -61,7 +61,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
         };
 
         val wrapCallable = new Callable<WestCacheItem>() {
-            @Override public WestCacheItem call() throws Exception {
+            @Override public WestCacheItem call() {
                 return option.getSnapshot() == null
                         ? Envs.execute(flushCallable)
                         : trySnapshot(option, cacheKey, flushCallable);
@@ -102,7 +102,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
         val executorService = Executors.newSingleThreadScheduledExecutor();
         val future = executorService.submit(
                 new Callable<WestCacheItem>() {
-                    @Override public WestCacheItem call() throws Exception {
+                    @Override public WestCacheItem call() {
                         val item = Envs.execute(callable);
                         westCache.put(option, cacheKey, item);
                         val snapshot = option.getSnapshot();

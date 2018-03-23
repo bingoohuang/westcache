@@ -93,7 +93,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
                                      String subKey) {
         val loader = new Callable<Optional<Map<String, String>>>() {
             @Override
-            public Optional<Map<String, String>> call() throws Exception {
+            public Optional<Map<String, String>> call() {
                 val map = readDirectValue(option, bean, DirectValueType.SUB);
                 return Optional.fromNullable((Map<String, String>) map);
             }
@@ -172,7 +172,7 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     private Object futureGet(final WestCacheOption option,
                              final String cacheKey) {
         val future = executorService.submit(new Callable<Object>() {
-            @Override public Object call() throws Exception {
+            @Override public Object call() {
                 return checkBeans(option, cacheKey);
             }
         });

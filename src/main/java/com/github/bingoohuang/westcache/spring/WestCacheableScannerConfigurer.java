@@ -23,7 +23,7 @@ public class WestCacheableScannerConfigurer
     @Setter private String beanName;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         notNull(this.basePackage, "Property 'basePackage' is required");
     }
 

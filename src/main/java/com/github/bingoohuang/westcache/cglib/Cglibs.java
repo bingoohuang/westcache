@@ -50,8 +50,7 @@ public class Cglibs {
         val targetClassName = targetClass.getName();
 
         if (targetClassName.contains("CGLIB$$")) return true;
-        if (Proxy.isProxyClass(targetClass)) return true;
+        return Proxy.isProxyClass(targetClass);
 
-        return false;
     }
 }

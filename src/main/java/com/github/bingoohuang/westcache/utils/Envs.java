@@ -44,8 +44,6 @@ public class Envs {
     public static <T> T futureGet(Future<T> future, long timeoutInMillis) throws TimeoutException {
         try {
             return future.get(timeoutInMillis, TimeUnit.MILLISECONDS);
-        } catch (TimeoutException e) {
-            throw e;
         } catch (ExecutionException e) {
             log.warn("futureGet error", e);
             throw e.getCause();

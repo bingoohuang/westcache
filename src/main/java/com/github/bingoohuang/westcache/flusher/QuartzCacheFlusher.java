@@ -36,7 +36,7 @@ public class QuartzCacheFlusher extends ByPassCacheFlusher {
 
         Guavas.cacheGet(registry, cacheKey, new Callable<Pair<WestCacheOption, WestCache>>() {
             @Override
-            public Pair<WestCacheOption, WestCache> call() throws Exception {
+            public Pair<WestCacheOption, WestCache> call() {
                 val job = JobBuilder.newJob(RunnableCacheJob.class).build();
                 job.getJobDataMap().put(RunnableCacheJob.KEY, new Runnable() {
                     @Override public void run() {

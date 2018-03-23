@@ -44,7 +44,7 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
             @Override
             public boolean match(MetadataReader metadataReader,
                                  MetadataReaderFactory metadataReaderFactory
-            ) throws IOException {
+            ) {
                 val metadata = metadataReader.getClassMetadata();
                 if (!metadata.isInterface()) return false;
 
@@ -101,7 +101,7 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
         @Setter private Class<T> targetClass;
 
         @Override
-        public T getObject() throws Exception {
+        public T getObject() {
             return WestCacheFactory.create(targetClass);
         }
 
