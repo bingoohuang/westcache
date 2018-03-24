@@ -14,6 +14,10 @@
         <appender-ref ref="Console"/>
     </logger>
 
+    <logger name="com.github.bingoohuang.westcache.spring.WestCacheClassFilter" level="DEBUG" additivity="false">
+        <appender-ref ref="Console"/>
+    </logger>
+
     <logger name="com.github.bingoohuang.westcache.flusher.QuartzCacheFlusher" level="DEBUG" additivity="false">
         <appender-ref ref="Console"/>
     </logger>

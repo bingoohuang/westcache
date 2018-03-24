@@ -71,6 +71,7 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         RedisManagerCheckStartupTimeTest.class,
         EqlerCacheableTest.class,
         SpringAnnDaoTest.class,
+        BlackListClassTest.class,
 })
 public class TestSuite {
     @ClassRule

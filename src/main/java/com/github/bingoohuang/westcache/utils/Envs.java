@@ -1,12 +1,18 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
+import lombok.Cleanup;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
@@ -94,5 +100,19 @@ public class Envs {
                     result != null ? result.getObject() : " non-exist");
             return result != null ? (T) result : Envs.futureGet(future);
         }
+    }
+
+    @SneakyThrows
+    public static List<String> loadClasspathResources(String name, ClassLoader classLoader) {
+        val list = new ArrayList<String>();
+        val loader = classLoader == null ? ClassLoader.getSystemClassLoader() : classLoader;
+        val systemResources = loader.getResources(name);
+        while (systemResources.hasMoreElements()) {
+            @Cleanup val stream = systemResources.nextElement().openStream();
+            val result = CharStreams.toString(new InputStreamReader(stream, Charsets.UTF_8));
+            list.add(result);
+        }
+
+        return list;
     }
 }

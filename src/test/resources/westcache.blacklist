@@ -1,0 +1,2 @@
+# Ignore all Test classes
+com.github.bingoohuang.westcache.**.*Test
