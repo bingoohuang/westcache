@@ -68,7 +68,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
             }
         };
 
-        checkStartupTime(option, cacheKey);
+        checkStartupTimeValidate(option, cacheKey);
 
         val item = westCache.get(option, cacheKey, wrapCallable);
         log.debug("cache key {} shot result {} ", cacheKey,
@@ -77,23 +77,21 @@ public abstract class BaseCacheManager implements WestCacheManager {
         return item;
     }
 
-    private void checkStartupTime(WestCacheOption option, String cacheKey) {
+    private void checkStartupTimeValidate(WestCacheOption option, String cacheKey) {
         if (!"true".equals(option.getSpecs().get("restartInvalidate"))) return;
-
-
         if (startupTime == 0) return;
-        startupTime = 0;
 
         val cloneOption = WestCacheOption.builder().clone(option).method(longMethod).build();
         val startupTimeKey = "startupTime:" + cacheKey;
         val timeItem = westCache.getIfPresent(cloneOption, startupTimeKey);
 
-        if (timeItem.isPresent() && (Long) timeItem.orNull() >= startupTime) {
-            return;
+        val validate = timeItem.isPresent() && (Long) timeItem.orNull() >= startupTime;
+        if (!validate) {
+            westCache.invalidate(option, cacheKey, "");
+            westCache.put(option, startupTimeKey, new WestCacheItem(Optional.of(startupTime), option));
         }
 
-        westCache.invalidate(option, cacheKey, "");
-        westCache.put(option, startupTimeKey, new WestCacheItem(Optional.of(startupTime), option));
+        startupTime = 0;
     }
 
     private WestCacheItem trySnapshot(final WestCacheOption option,
