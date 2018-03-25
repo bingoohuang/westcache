@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Slf4j
 public abstract class BaseCacheManager implements WestCacheManager {
-    private volatile long startupTime = System.currentTimeMillis();
+    private final long startupTime = System.currentTimeMillis();
 
     @Getter private WestCache westCache;
     private Method longMethod = init();
@@ -79,7 +79,6 @@ public abstract class BaseCacheManager implements WestCacheManager {
 
     private void checkStartupTimeValidate(WestCacheOption option, String cacheKey) {
         if (!"true".equals(option.getSpecs().get("restartInvalidate"))) return;
-        if (startupTime == 0) return;
 
         val cloneOption = WestCacheOption.builder().clone(option).method(longMethod).build();
         val startupTimeKey = "startupTime:" + cacheKey;
@@ -90,8 +89,6 @@ public abstract class BaseCacheManager implements WestCacheManager {
             westCache.invalidate(option, cacheKey, "");
             westCache.put(option, startupTimeKey, new WestCacheItem(Optional.of(startupTime), option));
         }
-
-        startupTime = 0;
     }
 
     private WestCacheItem trySnapshot(final WestCacheOption option,
