@@ -31,7 +31,7 @@ public class CacheApiTest {
         val manager = option.getManager();
         WestCacheItem cache = manager.get(option, cacheKey,
                 new Callable<WestCacheItem>() {
-                    @Override public WestCacheItem call() throws Exception {
+                    @Override public WestCacheItem call() {
                         Object homeAreaWithCache = getHomeAreaWithCache();
                         val optional = Optional.fromNullable(homeAreaWithCache);
                         return new WestCacheItem(optional, option);

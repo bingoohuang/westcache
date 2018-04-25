@@ -38,11 +38,11 @@ public class AntPathMatcher {
 
         // Match all elements up to the first **
         while (patIdxStart <= patIdxEnd && strIdxStart <= strIdxEnd) {
-            String patDir = (String) patDirs[patIdxStart];
+            String patDir = patDirs[patIdxStart];
             if (patDir.equals("**")) {
                 break;
             }
-            if (!matchStrings(patDir, (String) strDirs[strIdxStart])) {
+            if (!matchStrings(patDir, strDirs[strIdxStart])) {
                 return false;
             }
             patIdxStart++;
@@ -66,11 +66,11 @@ public class AntPathMatcher {
 
         // up to last '**'
         while (patIdxStart <= patIdxEnd && strIdxStart <= strIdxEnd) {
-            String patDir = (String) patDirs[patIdxEnd];
+            String patDir = patDirs[patIdxEnd];
             if (patDir.equals("**")) {
                 break;
             }
-            if (!matchStrings(patDir, (String) strDirs[strIdxEnd])) {
+            if (!matchStrings(patDir, strDirs[strIdxEnd])) {
                 return false;
             }
             patIdxEnd--;
@@ -107,8 +107,8 @@ public class AntPathMatcher {
             strLoop:
             for (int i = 0; i <= strLength - patLength; i++) {
                 for (int j = 0; j < patLength; j++) {
-                    String subPat = (String) patDirs[patIdxStart + j + 1];
-                    String subStr = (String) strDirs[strIdxStart + i + j];
+                    String subPat = patDirs[patIdxStart + j + 1];
+                    String subStr = strDirs[strIdxStart + i + j];
                     if (!matchStrings(subPat, subStr)) {
                         continue strLoop;
                     }

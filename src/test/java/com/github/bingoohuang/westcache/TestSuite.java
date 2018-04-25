@@ -79,7 +79,7 @@ public class TestSuite {
         EmbeddedRedis embeddedRedis;
 
         @Override
-        protected void before() throws Throwable {
+        protected void before() {
             MockDiamondServer.setUpMockServer();
             embeddedRedis = new EmbeddedRedis();
         }

@@ -25,7 +25,7 @@ public class TableCacheFlusherTest {
     static volatile long getCitiesCalledTimes;
 
     public static class MyLoader implements Callable {
-        @Override public Object call() throws Exception {
+        @Override public Object call() {
             return "HaHa, I'm a demo only";
         }
     }

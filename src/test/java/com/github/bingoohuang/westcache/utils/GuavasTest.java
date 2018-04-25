@@ -36,7 +36,7 @@ public class GuavasTest {
         Cache<String, String> cache = CacheBuilder.newBuilder().build();
         try {
             Guavas.cacheGet(cache, "bingoo", new Callable<String>() {
-                @Override public String call() throws Exception {
+                @Override public String call() {
                     throw new RuntimeException("for test");
                 }
             });
