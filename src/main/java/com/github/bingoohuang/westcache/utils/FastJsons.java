@@ -45,21 +45,20 @@ public class FastJsons {
 
     @SneakyThrows @SuppressWarnings("unchecked")
     public static <T> T parse(String json, Method method, boolean silent) {
-        val genericType = parseMethodGenericReturnType(method);
+        val arg0GenericType = parseGenericArg0Type(method.getGenericReturnType());
         try {
-            return (T) JSON.parseObject(json, genericType);
+            return (T) JSON.parseObject(json, arg0GenericType);
         } catch (Exception ex) {
             log.error("parse json for method cache error, method:{}, json:{}",
                     method, json, ex);
 
             if (!silent) throw ex;
 
-            return genericType == String.class ? (T) json : null;
+            return arg0GenericType == String.class ? (T) json : null;
         }
     }
 
-    private static Type parseMethodGenericReturnType(Method method) {
-        val genericType = method.getGenericReturnType();
+    public static Type parseGenericArg0Type(Type genericType) {
         if (!(genericType instanceof ParameterizedType)) return genericType;
 
         val pt = (ParameterizedType) genericType;
