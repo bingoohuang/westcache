@@ -36,6 +36,11 @@ public class SpringAppContext implements ApplicationContextAware, SmartInitializ
         return appContext;
     }
 
+    public static <T> T autowireBean(T bean) {
+        appContext.getAutowireCapableBeanFactory().autowireBean(bean);
+        return bean;
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> T getBean(String beanName) {
         if (appContext == null) return null;
@@ -64,7 +69,7 @@ public class SpringAppContext implements ApplicationContextAware, SmartInitializ
         return null;
     }
 
-    public <T> void addSpringBeans(Class<T> type, RegistryTemplate<T> registry) {
+    public static <T> void addSpringBeans(Class<T> type, RegistryTemplate<T> registry) {
         val beans = appContext.getBeansOfType(type);
 
         for (val entry : beans.entrySet()) {
