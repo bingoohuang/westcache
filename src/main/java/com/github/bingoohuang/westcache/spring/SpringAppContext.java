@@ -36,7 +36,7 @@ public class SpringAppContext implements ApplicationContextAware, SmartInitializ
         return appContext;
     }
 
-    public static <T> T autowireBean(T bean) {
+    public static <T> T inject(T bean) {
         appContext.getAutowireCapableBeanFactory().autowireBean(bean);
         return bean;
     }
