@@ -29,15 +29,20 @@ public class FastJsonsTest {
     @Test
     public void testJodaTime() {
         val jodaBean = new JodaBean();
-        val timeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-        val updateTime = timeFormatter.parseDateTime("2017-07-27 15:46:00");
+        val timeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS");
+        val updateTime = timeFormatter.parseDateTime("2017-07-27 15:46:00.000");
         jodaBean.setUpdateTime(updateTime);
 
         val json = FastJsons.json(jodaBean);
-        assertThat(json).isEqualTo("{\"updateTime\":" + updateTime.getMillis() + "}");
+        System.out.println(updateTime.getMillis());
+        assertThat(json).isEqualTo("{\"updateTime\":\"2017-07-27 15:46:00.000\"}");
 
         val jodaBean2 = FastJsons.parse(json, JodaBean.class);
         assertThat(jodaBean).isEqualTo(jodaBean2);
+
+        val json3 = "{\"updateTime\":1501141560000}";
+        val jodaBean3 = FastJsons.parse(json3, JodaBean.class);
+        assertThat(jodaBean).isEqualTo(jodaBean3);
     }
 
     @Data @AllArgsConstructor @NoArgsConstructor

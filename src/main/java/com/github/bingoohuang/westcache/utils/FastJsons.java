@@ -22,32 +22,33 @@ import java.util.Map;
  */
 @Slf4j @UtilityClass
 public class FastJsons {
+    private static ParserConfig parseConfig = new ParserConfig();
+    private static SerializeConfig serializeConfig = new SerializeConfig();
+
     static {
-        SerializeConfig.getGlobalInstance().put(DateTime.class,
-                new JsonJodaSerializer());
-        ParserConfig.getGlobalInstance().putDeserializer(DateTime.class,
-                new JsonJodaDeserializer());
+        parseConfig.putDeserializer(DateTime.class, new JsonJodaDeserializer());
+        serializeConfig.put(DateTime.class, new JsonJodaSerializer());
     }
 
     public static String json(Object obj) {
-        return JSON.toJSONString(obj);
+        return JSON.toJSONString(obj, serializeConfig);
     }
 
     @SuppressWarnings("unchecked")
     public static <T> T parse(String json) {
-        return (T) JSON.parse(json);
+        return (T) JSON.parse(json, parseConfig);
     }
 
     @SuppressWarnings("unchecked")
     public static <T> T parse(String json, Class<?> returnType) {
-        return (T) JSON.parseObject(json, returnType);
+        return (T) JSON.parseObject(json, returnType, parseConfig);
     }
 
     @SneakyThrows @SuppressWarnings("unchecked")
     public static <T> T parse(String json, Method method, boolean silent) {
         val arg0GenericType = parseGenericArg0Type(method.getGenericReturnType());
         try {
-            return (T) JSON.parseObject(json, arg0GenericType);
+            return (T) JSON.parseObject(json, arg0GenericType, parseConfig);
         } catch (Exception ex) {
             log.error("parse json for method cache error, method:{}, json:{}",
                     method, json, ex);
@@ -71,6 +72,6 @@ public class FastJsons {
 
     @SuppressWarnings("unchecked")
     public static <T> T parse(String json, TypeReference typeReference) {
-        return (T) JSON.parseObject(json, typeReference);
+        return (T) JSON.parseObject(json, typeReference.getType(), parseConfig);
     }
 }
