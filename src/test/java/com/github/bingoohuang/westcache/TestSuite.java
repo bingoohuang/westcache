@@ -72,6 +72,7 @@ import org.n3r.diamond.client.impl.MockDiamondServer;
         EqlerCacheableTest.class,
         SpringAnnDaoTest.class,
         BlackListClassTest.class,
+        GenericTest.class,
 })
 public class TestSuite {
     @ClassRule

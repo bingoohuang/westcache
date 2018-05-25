@@ -28,7 +28,7 @@ public class RedisInterceptor implements WestCacheInterceptor {
         if (item0 != null) return item0;
 
         if (!"true".equals(option.getSpecs().get("redisLockFirst"))) {
-            return executeAndPut(callable, redisKey, redis);
+            return executeAndPut(option, callable, redisKey, redis);
         }
 
         val lockKey = Redis.PREFIX + "lock:" + cacheKey;
@@ -45,13 +45,14 @@ public class RedisInterceptor implements WestCacheInterceptor {
         val item1 = Redis.getWestCacheItem(option, redis, redisKey);
         if (item1 != null) return item1;
 
-        return executeAndPut(callable, redisKey, redis);
+        return executeAndPut(option, callable, redisKey, redis);
     }
 
-    private WestCacheItem executeAndPut(Callable<WestCacheItem> callable,
+    private WestCacheItem executeAndPut(WestCacheOption option,
+                                        Callable<WestCacheItem> callable,
                                         String redisKey, JedisCommands redis) {
         val item = Envs.execute(callable);
-        Redis.expirePut(redis, redisKey, item);
+        Redis.expirePut(option, redis, redisKey, item);
 
         return item;
     }

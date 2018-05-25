@@ -4,6 +4,7 @@ import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.deserializer.ObjectDeserializer;
 import lombok.experimental.var;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
@@ -22,6 +23,8 @@ public class JsonJodaDeserializer implements ObjectDeserializer {
         if (obj == null) return null;
 
         if (obj instanceof String) {
+            if (StringUtils.isBlank((String) obj)) return null;
+            
             return parseStringDateTime((String) obj);
         } else if (obj instanceof Number) {
             return new DateTime(((Number) obj).longValue());

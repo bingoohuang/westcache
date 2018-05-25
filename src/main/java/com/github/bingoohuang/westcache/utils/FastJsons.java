@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.util.ParameterizedTypeImpl;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -15,6 +16,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +30,22 @@ public class FastJsons {
     static {
         parseConfig.putDeserializer(DateTime.class, new JsonJodaDeserializer());
         serializeConfig.put(DateTime.class, new JsonJodaSerializer());
+    }
+
+    public static String json(Object obj, Method method) {
+        val arg0GenericType = parseGenericArg0Type(method.getGenericReturnType());
+        if (arg0GenericType instanceof Class) {
+            return JSON.toJSONString(obj, serializeConfig);
+        }
+
+        if (arg0GenericType instanceof ParameterizedType) {
+            val pt = (ParameterizedType) arg0GenericType;
+            if (pt.getRawType() == List.class && pt.getActualTypeArguments()[0] instanceof Class) {
+                return JSON.toJSONString(obj, serializeConfig);
+            }
+        }
+
+        return JSON.toJSONString(obj, serializeConfig, SerializerFeature.WriteClassName);
     }
 
     public static String json(Object obj) {

@@ -106,12 +106,13 @@ public class Redis {
         return new WestCacheItem(optional, option);
     }
 
-    public static String expirePut(JedisCommands redis,
+    public static String expirePut(WestCacheOption option,
+                                   JedisCommands redis,
                                    String redisKey,
                                    WestCacheItem item) {
         val duration = item.getDurationSeconds();
 
-        val json = FastJsons.json(item.orNull());
+        val json = FastJsons.json(item.orNull(), option.getMethod());
         val result = redis.set(redisKey, json);
         if (duration > 0) {
             log.info("redis set {}={} in ttl {} seconds", redisKey, json, duration);

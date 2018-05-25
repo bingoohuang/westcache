@@ -12,20 +12,24 @@ import java.lang.reflect.Type;
 public class JsonJodaSerializer implements ObjectSerializer {
     private final String pattern;
     private final boolean useLong;
+    private final boolean nullToEmpty;
 
     public JsonJodaSerializer() {
-        this("yyyy-MM-dd HH:mm:ss.SSS");
+        this("yyyy-MM-dd HH:mm:ss.SSS", false, false);
     }
 
-    public JsonJodaSerializer(String pattern) {
-        this(pattern, false);
+    public JsonJodaSerializer(String pattern, boolean nullToEmpty) {
+        this(pattern, false, nullToEmpty);
     }
 
     @Override
     public void write(JSONSerializer serializer, Object object,
                       Object fieldName, Type fieldType, int features) {
         val value = (DateTime) object;
-        if (value == null) serializer.out.writeNull();
+        if (value == null) {
+            if (nullToEmpty) serializer.out.writeString("");
+            else serializer.out.writeNull();
+        }
 
         if (useLong) {
             serializer.out.writeLong(value.getMillis());
