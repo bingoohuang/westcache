@@ -29,6 +29,7 @@ public class FastJsons {
 
     static {
         parseConfig.putDeserializer(DateTime.class, new JsonJodaDeserializer());
+        parseConfig.setAutoTypeSupport(true);
         serializeConfig.put(DateTime.class, new JsonJodaSerializer());
     }
 
