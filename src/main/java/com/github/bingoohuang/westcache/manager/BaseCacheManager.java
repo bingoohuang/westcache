@@ -15,6 +15,7 @@ import lombok.val;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -89,7 +90,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
                                       final String cacheKey,
                                       final Callable<WestCacheItem> callable) {
         val executorService = Executors.newSingleThreadScheduledExecutor();
-        val future = executorService.submit(() -> {
+        Future<WestCacheItem> future = executorService.submit(() -> {
             val item = Envs.execute(callable);
             westCache.put(option, cacheKey, item);
             val snapshot = option.getSnapshot();
