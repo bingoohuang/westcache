@@ -2,15 +2,13 @@ package com.github.bingoohuang.westcache.snapshot;
 
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.google.common.base.Optional;
-import com.google.common.io.Files;
+import com.google.common.io.CharSource;
 import mockit.Mock;
 import mockit.MockUp;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -24,9 +22,9 @@ public class FileCacheSnapshotTest {
         snapshot.saveSnapshot(null, "abc",
                 new WestCacheItem(Optional.of("testIoException"), null));
 
-        new MockUp<Files>() {
+        new MockUp<CharSource>() {
             @Mock
-            String toString(File file, Charset charset) throws IOException {
+            String read() throws IOException {
                 throw new IOException("haha its bingoo mock it");
             }
         };
