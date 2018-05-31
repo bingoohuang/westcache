@@ -97,8 +97,7 @@ public class WestCacheOption {
             if (object != null) return;
 
             val newName = name.isEmpty() ? "default" : name;
-            throw new WestCacheException(
-                    attr + " " + newName + " is not registered, " +
+            throw new WestCacheException(attr + " " + newName + " is not registered, " +
                             "please check your config or dependencies");
         }
 

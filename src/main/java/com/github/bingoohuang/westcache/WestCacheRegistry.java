@@ -26,8 +26,7 @@ import lombok.val;
  */
 @UtilityClass
 public class WestCacheRegistry {
-    public static final RegistryTemplate<WestCacheConfig> REGISTRY_TEMPLATE
-            = new RegistryTemplate<WestCacheConfig>();
+    public static final RegistryTemplate<WestCacheConfig> REGISTRY_TEMPLATE = new RegistryTemplate<>();
 
     public static final String DEFAULT = "default";
     public static final String REDIS = "redis";
@@ -36,8 +35,7 @@ public class WestCacheRegistry {
         REGISTRY_TEMPLATE.register(DEFAULT, new DefaultWestCacheConfig());
     }
 
-    public static final RegistryTemplate<WestCacheFlusher> FLUSHER_REGISTRY
-            = new RegistryTemplate<WestCacheFlusher>();
+    public static final RegistryTemplate<WestCacheFlusher> FLUSHER_REGISTRY = new RegistryTemplate<>();
 
     static {
         FLUSHER_REGISTRY.register(DEFAULT, new ByPassCacheFlusher());
@@ -57,8 +55,7 @@ public class WestCacheRegistry {
         option.getFlusher().flush(option, cacheKey, "");
     }
 
-    public static final RegistryTemplate<WestCacheManager> MANAGER_REGISTRY
-            = new RegistryTemplate<WestCacheManager>();
+    public static final RegistryTemplate<WestCacheManager> MANAGER_REGISTRY = new RegistryTemplate<>();
 
     static {
         MANAGER_REGISTRY.register(DEFAULT, new GuavaCacheManager());
@@ -68,16 +65,14 @@ public class WestCacheRegistry {
         if (Envs.HAS_JEDIS) MANAGER_REGISTRY.register(REDIS, new RedisCacheManager());
     }
 
-    public static final RegistryTemplate<WestCacheSnapshot> SNAPSHOT_REGISTRY
-            = new RegistryTemplate<WestCacheSnapshot>();
+    public static final RegistryTemplate<WestCacheSnapshot> SNAPSHOT_REGISTRY = new RegistryTemplate<>();
 
     static {
         SNAPSHOT_REGISTRY.register("file", new FileCacheSnapshot());
         if (Envs.HAS_JEDIS) SNAPSHOT_REGISTRY.register(REDIS, new RedisCacheSnapshot());
     }
 
-    public static final RegistryTemplate<WestCacheKeyer> KEYER_REGISTRY
-            = new RegistryTemplate<WestCacheKeyer>();
+    public static final RegistryTemplate<WestCacheKeyer> KEYER_REGISTRY = new RegistryTemplate<>();
 
     static {
         KEYER_REGISTRY.register(DEFAULT, new DefaultKeyer());
@@ -85,10 +80,7 @@ public class WestCacheRegistry {
         if (Envs.HAS_DIAMOND) KEYER_REGISTRY.register("packagelimit", new PackageLimitedKeyer());
     }
 
-    public static final RegistryTemplate<WestCacheInterceptor> INTERCEPTOR_REGISTRY
-            = new RegistryTemplate<WestCacheInterceptor>();
-
-
+    public static final RegistryTemplate<WestCacheInterceptor> INTERCEPTOR_REGISTRY = new RegistryTemplate<>();
 
     static {
         INTERCEPTOR_REGISTRY.register(DEFAULT, new ByPassInterceptor());

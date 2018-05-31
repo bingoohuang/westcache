@@ -33,10 +33,8 @@ public class WestCacheClassFilter implements ClassFilter {
         }
 
         if (hasEqler) {
-            if (Anns.hasAnnotationInHierarchy(Eqler.class, targetClass))
-                return false;
-            if (Anns.hasAnnotationInHierarchy(EqlerConfig.class, targetClass))
-                return false;
+            if (Anns.hasAnnotationInHierarchy(Eqler.class, targetClass)) return false;
+            if (Anns.hasAnnotationInHierarchy(EqlerConfig.class, targetClass)) return false;
         }
 
         val matched = Anns.isFastWestCacheAnnotated(targetClass);

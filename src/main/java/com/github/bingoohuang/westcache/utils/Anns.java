@@ -55,7 +55,7 @@ public class Anns {
                 return new MethodAndAnnotationAttributes(method, mergeMap);
             }
 
-            val setAnns = Sets.<Annotation>newHashSet();
+            Set<Annotation> setAnns = Sets.newHashSet();
             val annM = searchAnn(setAnns, method.getAnnotations(), annClz);
             val annC = searchAnn(setAnns, declaringClz.getAnnotations(), annClz);
             if (annM != null || annC != null) {
@@ -77,9 +77,7 @@ public class Anns {
         return attrs;
     }
 
-    private static Map<String, String> searchAnn(
-            Set<Annotation> setAnns,
-            Annotation[] anns,
+    private static Map<String, String> searchAnn(Set<Annotation> setAnns, Annotation[] anns,
             Class<? extends Annotation> annClass) {
         for (val ann : anns) {
             val optionAnn = parseRecursiveAnn(setAnns, ann, annClass);

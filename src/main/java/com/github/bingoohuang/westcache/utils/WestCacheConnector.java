@@ -9,12 +9,9 @@ import lombok.val;
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/19.
  */
 public abstract class WestCacheConnector {
-    private static final ThreadLocal<Optional<?>> THREAD_LOCAL
-            = new InheritableThreadLocal<Optional<?>>();
+    private static final ThreadLocal<Optional<?>> THREAD_LOCAL = new InheritableThreadLocal<>();
 
-    public static boolean isConnectedAndGoon(
-            WestCacheOption option, String cacheKey
-    ) {
+    public static boolean isConnectedAndGoon(WestCacheOption option, String cacheKey) {
         val optional = THREAD_LOCAL.get();
         if (optional == null) return false;
 
@@ -79,11 +76,7 @@ public abstract class WestCacheConnector {
      */
     public static <T> T connectCache(Runnable runnable, Object cachedValue) {
         THREAD_LOCAL.set(Optional.fromNullable(cachedValue));
-        @Cleanup val i = new QuietCloseable() {
-            @Override public void close() {
-                THREAD_LOCAL.remove();
-            }
-        };
+        @Cleanup QuietCloseable i = () -> THREAD_LOCAL.remove();
 
         runnable.run();
         return (T) THREAD_LOCAL.get().orNull();

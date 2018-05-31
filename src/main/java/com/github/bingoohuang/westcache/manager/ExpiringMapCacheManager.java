@@ -42,11 +42,7 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
 
             val lockKey = cacheKey + ":lock";
             while (!lockCacheKey(lockKey)) Envs.sleepMillis(100L);
-            @Cleanup val i = new QuietCloseable() {
-                @Override public void close() {
-                    cache.remove(lockKey);
-                }
-            };
+            @Cleanup QuietCloseable i = () -> cache.remove(lockKey);
             val cacheItem2 = cache.get(cacheKey);
             if (cacheItem2 != null) return cacheItem2;
 

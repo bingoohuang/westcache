@@ -83,11 +83,9 @@ public class RedisCacheManager extends BaseCacheManager {
             val locked = Redis.waitRedisLock(redis, lockKey);
             log.debug("got redis lock {}={} for invalidate", lockKey, locked);
 
-            @Cleanup val i = new QuietCloseable() {
-                @Override public void close() {
-                    redis.del(lockKey);
-                    log.debug("del redis lock {} for invalidate", lockKey);
-                }
+            @Cleanup QuietCloseable i = () -> {
+                redis.del(lockKey);
+                log.debug("del redis lock {} for invalidate", lockKey);
             }; // free lock automatically
 
             setVersionToRedis(cacheKey, version, redis, redisKey);

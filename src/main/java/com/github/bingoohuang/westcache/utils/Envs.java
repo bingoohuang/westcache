@@ -104,7 +104,7 @@ public class Envs {
 
     @SneakyThrows
     public static List<String> loadClasspathResources(String name, ClassLoader classLoader) {
-        val list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList();
         val loader = classLoader == null ? ClassLoader.getSystemClassLoader() : classLoader;
         val systemResources = loader.getResources(name);
         while (systemResources.hasMoreElements()) {

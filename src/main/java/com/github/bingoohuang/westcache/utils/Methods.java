@@ -11,13 +11,12 @@ public class Methods {
      * Gets an array of all methods in a class hierarchy walking up to parent classes
      */
     public static Set<Method> getAllMethodsInHierarchy(Method method) {
-        val allMethods = new LinkedHashSet<Method>();
+        LinkedHashSet<Method> allMethods = new LinkedHashSet<>();
         val declaringClass = method.getDeclaringClass();
         return getAllMethodsInHierarchy(allMethods, declaringClass, method);
     }
 
-    public static Set<Method> getAllMethodsInHierarchy(
-            Set<Method> allMethods, Class<?> objectClass, Method method) {
+    public static Set<Method> getAllMethodsInHierarchy(Set<Method> allMethods, Class<?> objectClass, Method method) {
         allMethods.add(method);
 
         Class<?> superclass = objectClass.getSuperclass();
@@ -33,8 +32,7 @@ public class Methods {
         return allMethods;
     }
 
-    private static void addMethod(
-            Set<Method> allMethods, Class<?> aClass, Method method) {
+    private static void addMethod(Set<Method> allMethods, Class<?> aClass, Method method) {
         for (val declaredMethod : aClass.getDeclaredMethods()) {
             if (!declaredMethod.getName().equals(method.getName())) continue;
             if (sameParameterTypes(declaredMethod.getParameterTypes(),
@@ -45,8 +43,7 @@ public class Methods {
 
     }
 
-    private static boolean sameParameterTypes(
-            Class<?>[] pTypes1, Class<?>[] pTypes2) {
+    private static boolean sameParameterTypes(Class<?>[] pTypes1, Class<?>[] pTypes2) {
         if (pTypes1.length != pTypes2.length) return false;
 
         for (int i = 0; i < pTypes1.length; ++i) {

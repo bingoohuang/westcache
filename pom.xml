@@ -11,7 +11,7 @@
     <description>java cache with unified administration</description>
     <url>http://github.com/bingoohuang/westcache</url>
     <properties>
-        <java.version>1.6</java.version>
+        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -71,7 +71,7 @@
         <dependency>
             <groupId>com.github.bingoohuang</groupId>
             <artifactId>diamond-client</artifactId>
-            <version>0.0.20</version>
+            <version>0.0.21</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -94,7 +94,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>20.0</version>
+            <version>25.1-jre</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

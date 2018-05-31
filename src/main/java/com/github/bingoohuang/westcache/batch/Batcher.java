@@ -1,6 +1,5 @@
 package com.github.bingoohuang.westcache.batch;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.SettableFuture;
 import lombok.AllArgsConstructor;
@@ -32,26 +31,24 @@ public class Batcher<T, V> {
                    final long maxWaitMillis,
                    final int maxWaitItems,
                    final int maxBatchNum) {
-        this.queue = new ConcurrentLinkedQueue<BatcherBean<T, V>>();
+        this.queue = new ConcurrentLinkedQueue<>();
         this.service = service;
         this.batcherJob = batcherJob;
         this.maxWaitItems = maxWaitItems;
-        this.runner = new Runnable() {
-            @Override public void run() {
-                if (queue.isEmpty()) return;
+        this.runner = () -> {
+            if (queue.isEmpty()) return;
 
-                val tasks = new ArrayList<BatcherBean<T, V>>(queue.size());
-                do {
-                    val task = queue.poll();
-                    if (task == null) break;
+            val tasks = new ArrayList<BatcherBean<T, V>>(queue.size());
+            do {
+                val task = queue.poll();
+                if (task == null) break;
 
-                    tasks.add(task);
-                } while (tasks.size() != maxBatchNum);
+                tasks.add(task);
+            } while (tasks.size() != maxBatchNum);
 
-                if (tasks.isEmpty()) return;
+            if (tasks.isEmpty()) return;
 
-                doBatchWork(tasks);
-            }
+            doBatchWork(tasks);
         };
         service.scheduleWithFixedDelay(
                 runner, maxWaitMillis, maxWaitMillis, TimeUnit.MILLISECONDS);
@@ -74,11 +71,7 @@ public class Batcher<T, V> {
     }
 
     private void doBatchWork(List<BatcherBean<T, V>> tasks) {
-        val batchArgs = Lists.transform(tasks, new Function<BatcherBean<T, V>, T>() {
-            @Override public T apply(BatcherBean<T, V> task) {
-                return task.getArg();
-            }
-        });
+        List<T> batchArgs = Lists.transform(tasks, task -> task.getArg());
 
         List<V> results = null;
         Exception ex = null;

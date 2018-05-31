@@ -14,12 +14,8 @@ import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.core.type.filter.TypeFilter;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -40,18 +36,13 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
             addExcludeFilter(new AnnotationTypeFilter(EqlerConfig.class));
         }
 
-        addIncludeFilter(new TypeFilter() {
-            @Override
-            public boolean match(MetadataReader metadataReader,
-                                 MetadataReaderFactory metadataReaderFactory
-            ) {
-                val metadata = metadataReader.getClassMetadata();
-                if (!metadata.isInterface()) return false;
+        addIncludeFilter((metadataReader, metadataReaderFactory) -> {
+            val metadata = metadataReader.getClassMetadata();
+            if (!metadata.isInterface()) return false;
 
-                val className = metadata.getClassName();
-                val clazz = Envs.forName(className);
-                return Anns.isFastWestCacheAnnotated(clazz);
-            }
+            val className = metadata.getClassName();
+            val clazz = Envs.forName(className);
+            return Anns.isFastWestCacheAnnotated(clazz);
         });
 
     }

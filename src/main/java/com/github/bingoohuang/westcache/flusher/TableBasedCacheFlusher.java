@@ -91,14 +91,10 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
     private <T> T readSubDirectValue(final WestCacheOption option,
                                      final WestCacheFlusherBean bean,
                                      String subKey) {
-        val loader = new Callable<Optional<Map<String, String>>>() {
-            @Override
-            public Optional<Map<String, String>> call() {
-                val map = readDirectValue(option, bean, DirectValueType.SUB);
-                return Optional.fromNullable((Map<String, String>) map);
-            }
-        };
-        val optional = Guavas.cacheGet(prefixDirectCache, bean.getCacheKey(), loader);
+        val optional = Guavas.cacheGet(prefixDirectCache, bean.getCacheKey(), () -> {
+            val map = readDirectValue(option, bean, DirectValueType.SUB);
+            return Optional.fromNullable((Map<String, String>) map);
+        });
         if (!optional.isPresent()) return null;
 
         val json = optional.get().get(subKey);
@@ -154,11 +150,8 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         firstCheckBeans(option, cacheKey);
 
         val intervalMillis = option.getConfig().rotateIntervalMillis();
-        scheduledFuture = executorService.scheduleAtFixedRate(new Runnable() {
-            @Override public void run() {
-                checkBeans(option, cacheKey);
-            }
-        }, intervalMillis, intervalMillis, TimeUnit.MILLISECONDS);
+        scheduledFuture = executorService.scheduleAtFixedRate(
+                () -> checkBeans(option, cacheKey), intervalMillis, intervalMillis, TimeUnit.MILLISECONDS);
     }
 
     protected Object firstCheckBeans(final WestCacheOption option,
@@ -171,14 +164,9 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
 
     private Object futureGet(final WestCacheOption option,
                              final String cacheKey) {
-        val future = executorService.submit(new Callable<Object>() {
-            @Override public Object call() {
-                return checkBeans(option, cacheKey);
-            }
-        });
 
         String tableFlusherKey = cacheKey + ".tableflushers";
-        return Envs.trySnapshot(option, future, tableFlusherKey);
+        return Envs.trySnapshot(option, executorService.submit((Callable<Object>) () -> checkBeans(option, cacheKey)), tableFlusherKey);
     }
 
     protected int checkBeans(WestCacheOption option, String cacheKey) {
@@ -202,10 +190,9 @@ public abstract class TableBasedCacheFlusher extends SimpleCacheFlusher {
         val snapshot = option.getSnapshot();
         if (snapshot == null) return;
 
-        val optional = Optional.<Object>fromNullable(tableRows);
         option.getSnapshot().saveSnapshot(option,
                 cacheKey + ".tableflushers",
-                new WestCacheItem(optional, option));
+                new WestCacheItem(Optional.fromNullable(tableRows), option));
     }
 
     protected void diff(List<WestCacheFlusherBean> table,

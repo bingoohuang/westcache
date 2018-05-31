@@ -9,8 +9,6 @@ import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
 import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCommands;
@@ -27,8 +25,7 @@ import java.lang.reflect.Proxy;
 @Slf4j @UtilityClass
 public class Redis {
     public static final String PREFIX = "westcache:";
-    private static JedisCommands jedis = createJedisCommands(
-            "127.0.0.1", 6379, 10);
+    private static JedisCommands jedis = createJedisCommands("127.0.0.1", 6379, 10);
 
     public static void setJedis(JedisCommands settedJedis) {
         jedis = settedJedis;
@@ -64,14 +61,9 @@ public class Redis {
     }
 
     public static Jedis proxyJedis(final JedisPool pool) {
-        return (Jedis) Cglibs.proxy(Jedis.class, new MethodInterceptor() {
-            @Override
-            public Object intercept(
-                    Object o, Method method, Object[] args,
-                    MethodProxy methodProxy) throws Throwable {
-                @Cleanup val jedis = pool.getResource();
-                return method.invoke(jedis, args);
-            }
+        return (Jedis) Cglibs.proxy(Jedis.class, (o, method, args, methodProxy) -> {
+            @Cleanup val jedis = pool.getResource();
+            return method.invoke(jedis, args);
         });
     }
 
@@ -131,11 +123,7 @@ public class Redis {
                              Method method,
                              Object[] args) throws Throwable {
             val jedis = pool.getResource();
-            @Cleanup val i = new QuietCloseable() {
-                @Override public void close() {
-                    jedis.close();
-                }
-            };
+            @Cleanup QuietCloseable i = () -> jedis.close();
 
             return method.invoke(jedis, args);
         }

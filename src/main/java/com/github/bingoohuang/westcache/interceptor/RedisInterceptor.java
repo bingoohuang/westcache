@@ -35,11 +35,9 @@ public class RedisInterceptor implements WestCacheInterceptor {
         val locked = Redis.waitRedisLock(redis, lockKey);
         log.debug("got redis lock {}={}", lockKey, locked);
 
-        @Cleanup val i = new QuietCloseable() {
-            @Override public void close() {
-                redis.del(lockKey);
-                log.debug("del redis lock {}", lockKey);
-            }
+        @Cleanup QuietCloseable i = () -> {
+            redis.del(lockKey);
+            log.debug("del redis lock {}", lockKey);
         }; // free lock automatically
 
         val item1 = Redis.getWestCacheItem(option, redis, redisKey);

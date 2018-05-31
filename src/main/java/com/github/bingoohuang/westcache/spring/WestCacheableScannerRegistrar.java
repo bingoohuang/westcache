@@ -39,7 +39,7 @@ public class WestCacheableScannerRegistrar
 
     private String[] addBasePakcages(AnnotationMetadata metadata,
                                      AnnotationAttributes attrs) {
-        List<String> basePkgs = new ArrayList<String>();
+        List<String> basePkgs = new ArrayList<>();
         addBasePackages(attrs, basePkgs, "value");
         addBasePackages(attrs, basePkgs, "basePackages");
         for (val clz : attrs.getClassArray("basePackageClasses")) {

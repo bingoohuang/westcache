@@ -13,7 +13,6 @@ import lombok.val;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.concurrent.Callable;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/25.
@@ -48,21 +47,17 @@ public abstract class CacheMethodInterceptor<T> {
             return null;
 
         val start = System.currentTimeMillis();
-        @Cleanup val i = new QuietCloseable() {
-            @Override public void close() {
-                val end = System.currentTimeMillis();
-                log.debug("cost {} millis to get cache {} ", end - start, cacheKey);
-            }
+        @Cleanup QuietCloseable i = () -> {
+            val end = System.currentTimeMillis();
+            log.debug("cost {} millis to get cache {} ", end - start, cacheKey);
         };
 
         val item = option.getManager().get(option, cacheKey,
-                new Callable<WestCacheItem>() {
-                    @Override public WestCacheItem call() {
-                        checkNoneAbstractMethod(cacheKey, method);
-                        val raw = invokeRaw(obj, args, proxy);
-                        val optional = Optional.fromNullable(raw);
-                        return new WestCacheItem(optional, option);
-                    }
+                () -> {
+                    checkNoneAbstractMethod(cacheKey, method);
+                    val raw = invokeRaw(obj, args, proxy);
+                    val optional = Optional.fromNullable(raw);
+                    return new WestCacheItem(optional, option);
                 });
         return item.getObject().orNull();
     }

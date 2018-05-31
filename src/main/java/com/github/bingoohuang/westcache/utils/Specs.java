@@ -12,8 +12,7 @@ import java.util.Map;
  */
 @UtilityClass
 public class Specs {
-    private static final Splitter.MapSplitter SPECS_SPLITTER
-            = Splitter.on(',').withKeyValueSeparator('=');
+    private static final Splitter.MapSplitter SPECS_SPLITTER = Splitter.on(',').withKeyValueSeparator('=');
 
     public static Map<String, String> parseSpecs(String specs) {
         if (StringUtils.isEmpty(specs)) return Maps.newHashMap();

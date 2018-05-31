@@ -4,9 +4,7 @@ import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.n3r.diamond.client.DiamondListenerAdapter;
 import org.n3r.diamond.client.DiamondManager;
-import org.n3r.diamond.client.DiamondStone;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/25.
@@ -23,12 +21,7 @@ public class DiamondCacheFlusher extends SimpleCacheFlusher {
         if (!firstRegistered) return false;
 
         val diamondManager = new DiamondManager(GROUP, cacheKey);
-        val listener = new DiamondListenerAdapter() {
-            @Override public void accept(DiamondStone diamondStone) {
-                flush(option, cacheKey, "");
-            }
-        };
-        diamondManager.addDiamondListener(listener);
+        diamondManager.addDiamondListener(diamondStone -> flush(option, cacheKey, ""));
 
         log.debug("add diamond listener for group={}, dataid={}", GROUP, cacheKey);
 

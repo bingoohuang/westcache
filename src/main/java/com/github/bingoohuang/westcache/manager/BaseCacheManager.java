@@ -49,24 +49,18 @@ public abstract class BaseCacheManager implements WestCacheManager {
         flusher.register(option, cacheKey, westCache);
 
         val shot = new AtomicBoolean(true);
-        val flushCallable = new Callable<WestCacheItem>() {
-            @Override public WestCacheItem call() {
-                val raw = flusher.getDirectValue(option, cacheKey);
-                if (raw.isPresent()) return new WestCacheItem(raw, option);
+        Callable<WestCacheItem> flushCallable = () -> {
+            val raw = flusher.getDirectValue(option, cacheKey);
+            if (raw.isPresent()) return new WestCacheItem(raw, option);
 
-                shot.set(false);
-                val interceptor = option.getInterceptor();
-                return interceptor.intercept(option, cacheKey, callable);
-            }
+            shot.set(false);
+            val interceptor = option.getInterceptor();
+            return interceptor.intercept(option, cacheKey, callable);
         };
 
-        val wrapCallable = new Callable<WestCacheItem>() {
-            @Override public WestCacheItem call() {
-                return option.getSnapshot() == null
-                        ? Envs.execute(flushCallable)
-                        : trySnapshot(option, cacheKey, flushCallable);
-            }
-        };
+        Callable<WestCacheItem> wrapCallable = () -> option.getSnapshot() == null
+                ? Envs.execute(flushCallable)
+                : trySnapshot(option, cacheKey, flushCallable);
 
         checkStartupTimeValidate(option, cacheKey);
 
@@ -95,16 +89,13 @@ public abstract class BaseCacheManager implements WestCacheManager {
                                       final String cacheKey,
                                       final Callable<WestCacheItem> callable) {
         val executorService = Executors.newSingleThreadScheduledExecutor();
-        val future = executorService.submit(
-                new Callable<WestCacheItem>() {
-                    @Override public WestCacheItem call() {
-                        val item = Envs.execute(callable);
-                        westCache.put(option, cacheKey, item);
-                        val snapshot = option.getSnapshot();
-                        snapshot.saveSnapshot(option, cacheKey, item);
-                        return item;
-                    }
-                });
+        val future = executorService.submit(() -> {
+            val item = Envs.execute(callable);
+            westCache.put(option, cacheKey, item);
+            val snapshot = option.getSnapshot();
+            snapshot.saveSnapshot(option, cacheKey, item);
+            return item;
+        });
 
         return Envs.trySnapshot(option, future, cacheKey);
     }

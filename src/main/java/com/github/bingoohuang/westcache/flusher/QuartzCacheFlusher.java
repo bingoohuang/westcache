@@ -13,8 +13,6 @@ import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobExecutionContext;
 
-import java.util.concurrent.Callable;
-
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/16.
  */
@@ -34,26 +32,21 @@ public class QuartzCacheFlusher extends ByPassCacheFlusher {
         val pair = registry.getIfPresent(cacheKey);
         if (pair != null) return false;
 
-        Guavas.cacheGet(registry, cacheKey, new Callable<Pair<WestCacheOption, WestCache>>() {
-            @Override
-            public Pair<WestCacheOption, WestCache> call() {
-                val job = JobBuilder.newJob(RunnableCacheJob.class).build();
-                job.getJobDataMap().put(RunnableCacheJob.KEY, new Runnable() {
-                    @Override public void run() {
-                        for (val entry : registry.asMap().entrySet()) {
-                            val cac = entry.getValue().getValue();
-                            val opt = entry.getValue().getLeft();
-                            cac.invalidate(opt, entry.getKey(), null);
+        Guavas.cacheGet(registry, cacheKey, () -> {
+            val job = JobBuilder.newJob(RunnableCacheJob.class).build();
+            job.getJobDataMap().put(RunnableCacheJob.KEY, (Runnable) () -> {
+                for (val entry : registry.asMap().entrySet()) {
+                    val cac = entry.getValue().getValue();
+                    val opt = entry.getValue().getLeft();
+                    cac.invalidate(opt, entry.getKey(), null);
 
-                            log.debug("cache invalidate key {}", entry.getKey());
-                        }
-                    }
-                });
+                    log.debug("cache invalidate key {}", entry.getKey());
+                }
+            });
 
-                val trigger = new ScheduledParser(scheduled).parse();
-                quartz.scheduleJob(job, trigger);
-                return Pair.of(option, cache);
-            }
+            val trigger = new ScheduledParser(scheduled).parse();
+            quartz.scheduleJob(job, trigger);
+            return Pair.of(option, cache);
         });
 
         return true;
