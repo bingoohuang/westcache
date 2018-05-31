@@ -28,7 +28,7 @@ public class FileCacheSnapshot implements WestCacheSnapshot {
         val json = FastJsons.json(cacheValue.getObject().orNull());
 
         val snapshotFile = Snapshots.getSnapshotFile(cacheKey);
-        Files.write(json, snapshotFile, Charsets.UTF_8);
+        Files.asCharSink(snapshotFile, Charsets.UTF_8).write(json);
     }
 
     @Override @SneakyThrows
