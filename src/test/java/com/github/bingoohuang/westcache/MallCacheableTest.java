@@ -6,6 +6,7 @@ import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import com.github.bingoohuang.westcache.utils.FastJsons;
 import com.github.bingoohuang.westcache.utils.Helper;
 import com.github.bingoohuang.westcache.utils.Redis;
+import com.google.common.util.concurrent.ExecutionError;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -73,10 +74,9 @@ public class MallCacheableTest {
             MockDiamondServer.setConfigInfo(GROUP, DATAID,
                     "com.github.bingoohuang.westcache");
             mallCache.getMallBean2();
-        } catch (RuntimeException ex) {
+        } catch (Throwable ex) {
             assertThat(ex.getMessage()).isEqualTo(
-                    "cache key MallCacheableTest.MallCache.getMallBean2 missed executable body " +
-                            "in abstract method com.github.bingoohuang.westcache.MallCacheableTest$MallCache.getMallBean2");
+                    "com.github.bingoohuang.westcache.MallCacheableTest$MallCache.getMallBean2()Lcom/github/bingoohuang/westcache/MallCacheableTest$MallBean;");
             return;
         }
         Assert.fail();

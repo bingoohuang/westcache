@@ -20,10 +20,10 @@ public class Guavas {
         try {
             return cache.get(k, callable);
         } catch (ExecutionException e) {
-            log.warn("cache get ExecutionException", e);
+            log.warn("cache get ExecutionException", e.getCause());
             throw e.getCause();
         } catch (UncheckedExecutionException e) {
-            log.warn("cache get UncheckedExecutionException", e);
+            log.warn("cache get UncheckedExecutionException", e.getCause());
             throw e.getCause();
         }
     }
@@ -33,7 +33,7 @@ public class Guavas {
         try {
             return cache.getUnchecked(k);
         } catch (UncheckedExecutionException e) {
-            log.warn("cache get UncheckedExecutionException", e);
+            log.warn("cache get UncheckedExecutionException", e.getCause());
             throw e.getCause();
         }
     }

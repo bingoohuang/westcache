@@ -35,7 +35,7 @@ public class SpecsTest {
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     @WestCacheable(snapshot = "file", config = "specsTestConfig",
-            keyer = "prefix", specs = "key.prefix=demo.")
+            keyer = "Prefix", specs = "key.prefix=demo.")
     public @interface DemoCacheMe {
     }
 

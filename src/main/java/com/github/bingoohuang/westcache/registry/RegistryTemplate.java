@@ -28,7 +28,7 @@ public class RegistryTemplate<T> {
         T present = registry.getIfPresent(key);
         if (present != null) return present;
 
-        key = StringUtils.capitalize(key);
+        key = StringUtils.uncapitalize(key);
         return registry.getIfPresent(key);
     }
 }

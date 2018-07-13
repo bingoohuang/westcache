@@ -1,6 +1,5 @@
 package com.github.bingoohuang.westcache.cglib;
 
-import com.github.bingoohuang.westcache.base.WestCacheException;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.WestCacheConnector;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/25.
@@ -54,20 +52,10 @@ public abstract class CacheMethodInterceptor<T> {
 
         val item = option.getManager().get(option, cacheKey,
                 () -> {
-                    checkNoneAbstractMethod(cacheKey, method);
                     val raw = invokeRaw(obj, args, proxy);
                     val optional = Optional.fromNullable(raw);
                     return new WestCacheItem(optional, option);
                 });
         return item.getObject().orNull();
-    }
-
-    private void checkNoneAbstractMethod(String cacheKey, Method method) {
-        if (!Modifier.isAbstract(method.getModifiers())) return;
-
-        val msg = "cache key " + cacheKey + " missed executable body "
-                + "in abstract method " + method.getDeclaringClass().getName()
-                + "." + method.getName();
-        throw new WestCacheException(msg);
     }
 }

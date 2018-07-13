@@ -207,9 +207,7 @@ public class TableCacheFlusherTest {
 
         } catch (Throwable ex) {
             assertThat(ex.getMessage()).isEqualTo(
-                    "cache key TableCacheFlusherTest.TitaService.specsRedis " +
-                            "missed executable body in abstract method " +
-                            "com.github.bingoohuang.westcache.TableCacheFlusherTest$TitaService.specsRedis");
+                    "com.github.bingoohuang.westcache.TableCacheFlusherTest$TitaService.specsRedis()Ljava/lang/String;");
             return;
         }
         Assert.fail();

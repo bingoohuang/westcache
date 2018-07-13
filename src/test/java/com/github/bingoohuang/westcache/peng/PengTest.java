@@ -1,11 +1,11 @@
 package com.github.bingoohuang.westcache.peng;
 
 import com.github.bingoohuang.westcache.WestCacheFactory;
-import com.github.bingoohuang.westcache.base.WestCacheException;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
 import com.github.bingoohuang.westcache.utils.Helper;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.ExecutionError;
 import lombok.val;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -81,13 +81,12 @@ public class PengTest {
     private void getCitiesNoDirectValue() {
         try {
             service.getCities("33");
-        } catch (WestCacheException ex) {
-            assertThat(ex.toString()).contains(
-                    "cache key PengService.getCities_33 missed executable body " +
-                            "in abstract method com.github.bingoohuang.westcache.peng.PengService.getCities");
+            Assert.fail();
+        } catch (ExecutionError ex) {
+            assertThat(ex.getMessage()).contains(
+                    "java.lang.AbstractMethodError: com.github.bingoohuang.westcache.peng.PengService.getCities(Ljava/lang/String;)Ljava/util/List;");
             return;
         }
-        Assert.fail();
     }
 
     @Test
