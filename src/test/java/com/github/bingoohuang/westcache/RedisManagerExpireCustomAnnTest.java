@@ -37,7 +37,7 @@ public class RedisManagerExpireCustomAnnTest {
     public void test() {
         service.getTimestamp();
         service.getTimestamp();
-        Envs.sleepMillis(1000L);
+        Envs.sleepMillis(1100L);
         service.getTimestamp();
         assertThat(calledTimes).isEqualTo(2);
     }
