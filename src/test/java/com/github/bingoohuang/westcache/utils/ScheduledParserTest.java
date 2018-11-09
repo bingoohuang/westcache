@@ -123,7 +123,7 @@ public class ScheduledParserTest {
         new ScheduledParser(null);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void badFromTo() {
         new ScheduledParser("Every 20 minutes from 2018-10-10 to 2217-10-12").parse();
     }

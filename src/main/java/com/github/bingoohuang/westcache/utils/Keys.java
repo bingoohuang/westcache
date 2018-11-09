@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache.utils;
 
-import com.github.bingoohuang.westcache.cglib.Cglibs;
+import com.github.bingoohuang.utils.proxy.Cglibs;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;

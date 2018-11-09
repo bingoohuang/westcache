@@ -5,7 +5,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.util.ParameterizedTypeImpl;
+import com.github.bingoohuang.utils.type.Generic;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -14,10 +14,7 @@ import org.joda.time.DateTime;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2016/12/29.
@@ -34,7 +31,7 @@ public class FastJsons {
     }
 
     public static String json(Object obj, Method method) {
-        val arg0GenericType = parseGenericArg0Type(method.getGenericReturnType());
+        val arg0GenericType = Generic.getMapParameterizedType(method.getGenericReturnType());
         if (arg0GenericType instanceof Class) {
             return JSON.toJSONString(obj, serializeConfig);
         }
@@ -65,7 +62,7 @@ public class FastJsons {
 
     @SneakyThrows @SuppressWarnings("unchecked")
     public static <T> T parse(String json, Method method, boolean silent) {
-        val arg0GenericType = parseGenericArg0Type(method.getGenericReturnType());
+        val arg0GenericType = Generic.getMapParameterizedType(method.getGenericReturnType());
         try {
             return (T) JSON.parseObject(json, arg0GenericType, parseConfig);
         } catch (Exception ex) {
@@ -79,16 +76,6 @@ public class FastJsons {
         }
     }
 
-    public static Type parseGenericArg0Type(Type genericType) {
-        if (!(genericType instanceof ParameterizedType)) return genericType;
-
-        val pt = (ParameterizedType) genericType;
-        if (pt.getRawType() != Map.class) return genericType;
-
-        val args = pt.getActualTypeArguments();
-        val ownerType = pt.getOwnerType();
-        return new ParameterizedTypeImpl(args, ownerType, LinkedHashMap.class);
-    }
 
     @SuppressWarnings("unchecked")
     public static <T> T parse(String json, TypeReference typeReference) {

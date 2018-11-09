@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.github.bingoohuang.utils.proxy.Cglibs;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
-import com.github.bingoohuang.westcache.cglib.Cglibs;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
 import com.google.common.base.Optional;
 import lombok.AllArgsConstructor;

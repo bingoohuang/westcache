@@ -4,7 +4,7 @@
 
     <groupId>com.github.bingoohuang</groupId>
     <artifactId>westcache</artifactId>
-    <version>0.0.33-SNAPSHOT</version>
+    <version>0.0.34-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>westcache</name>
@@ -40,6 +40,11 @@
     </developers>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.bingoohuang</groupId>
+            <artifactId>java-utils</artifactId>
+            <version>0.0.13</version>
+        </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
@@ -87,7 +92,7 @@
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
-            <version>3.2.4</version>
+            <version>3.2.9</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

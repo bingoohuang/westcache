@@ -94,7 +94,7 @@ public class SnapshotTest {
 
         val snapshot = SNAPSHOT_REGISTRY.get("file");
         val cacheKey = serviceClass.getName().replace('$', '.') + ".getBigDataCache";
-        Optional<Object> optional = Optional.<Object>fromNullable(bigDataXXX);
+        Optional<Object> optional = Optional.fromNullable(bigDataXXX);
         snapshot.saveSnapshot(null, cacheKey, new WestCacheItem(optional, null));
 
         val service = WestCacheFactory.create(serviceClass);
