@@ -5,7 +5,7 @@ import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.val;
 
-import static com.github.bingoohuang.westcache.utils.Durations.parse;
+import static com.github.bingoohuang.utils.time.Durations.parse;
 import static com.github.bingoohuang.westcache.utils.ExpireAfterWrites.parseExpireAfterWrite;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 

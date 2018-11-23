@@ -55,13 +55,13 @@ public class DemoServiceTest {
         String s2 = service.doSth();
         assertThat(s1).isEqualTo(s2);
 
-        ApplicationContext context = SpringAppContext.getAppContext();
+        val context = SpringAppContext.getAppContext();
         assertThat(context).isNotNull();
 
-        Object xxxx = SpringAppContext.getBean("xxxx");
+        Object xxxx = SpringAppContext.getBeanOrNull("xxxx");
         assertThat(xxxx).isNull();
 
-        Object bean = SpringAppContext.getBean(JSON.class);
+        Object bean = SpringAppContext.getBeanOrNull(JSON.class);
         assertThat(bean).isNull();
     }
 

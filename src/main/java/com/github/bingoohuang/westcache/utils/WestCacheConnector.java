@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.github.bingoohuang.utils.lang.QuietCloseable;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.google.common.base.Optional;
 import lombok.Cleanup;

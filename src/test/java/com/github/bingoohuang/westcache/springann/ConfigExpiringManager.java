@@ -4,7 +4,7 @@ import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.manager.BaseCacheManager;
 import com.github.bingoohuang.westcache.manager.ExpiringMapCacheManager.ExpiringCache;
 import com.github.bingoohuang.westcache.utils.Config;
-import com.github.bingoohuang.westcache.utils.Durations;
+import com.github.bingoohuang.utils.time.Durations;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.val;
 import org.springframework.stereotype.Component;

@@ -1,10 +1,10 @@
 package com.github.bingoohuang.westcache.manager;
 
+import com.github.bingoohuang.utils.lang.QuietCloseable;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.interceptor.RedisInterceptor;
 import com.github.bingoohuang.westcache.utils.FastJsons;
-import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.Redis;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;

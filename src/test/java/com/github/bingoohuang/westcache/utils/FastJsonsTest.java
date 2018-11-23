@@ -39,7 +39,7 @@ public class FastJsonsTest {
         val jodaBean2 = FastJsons.parse(json, JodaBean.class);
         assertThat(jodaBean).isEqualTo(jodaBean2);
 
-        val json3 = "{\"updateTime\":" +  updateTime.getMillis() + "}";
+        val json3 = "{\"updateTime\":" + updateTime.getMillis() + "}";
         val jodaBean3 = FastJsons.parse(json3, JodaBean.class);
         assertThat(jodaBean).isEqualTo(jodaBean3);
     }

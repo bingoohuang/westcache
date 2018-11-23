@@ -58,7 +58,7 @@ public class QuartzCacheFlusher extends ByPassCacheFlusher {
 
         val scheduledBean = option.getSpecs().get("scheduledBean");
         if (Envs.HAS_SPRING && StringUtils.isNotBlank(scheduledBean)) {
-            return SpringAppContext.getBean(scheduledBean);
+            return SpringAppContext.getBeanOrNull(scheduledBean);
         }
 
         return null;

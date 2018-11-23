@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache.cglib;
 
+import com.github.bingoohuang.utils.lang.QuietCloseable;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
-import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.WestCacheConnector;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;

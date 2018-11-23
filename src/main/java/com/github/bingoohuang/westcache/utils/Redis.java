@@ -1,23 +1,16 @@
 package com.github.bingoohuang.westcache.utils;
 
-import com.github.bingoohuang.utils.proxy.Cglibs;
+import com.github.bingoohuang.utils.redis.JedisProxy;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
 import com.google.common.base.Optional;
-import lombok.AllArgsConstructor;
-import lombok.Cleanup;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCommands;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/3.
@@ -39,12 +32,12 @@ public class Redis {
         String redisBean = option.getSpecs().get("redisBean");
 
         if (Envs.HAS_SPRING && StringUtils.isNotEmpty(redisBean)) {
-            JedisCommands bean = SpringAppContext.getBean(redisBean);
+            JedisCommands bean = SpringAppContext.getBeanOrNull(redisBean);
             if (bean != null) return bean;
         }
 
         if (Envs.HAS_SPRING) {
-            val bean = SpringAppContext.getBean(JedisCommands.class);
+            val bean = SpringAppContext.getBeanOrNull(JedisCommands.class);
             if (bean != null) return bean;
         }
 
@@ -57,22 +50,9 @@ public class Redis {
         poolConfig.setMaxTotal(maxTotal);
 
         val pool = new JedisPool(poolConfig, host, port);
-        return proxyJedisCommands(pool);
+        return JedisProxy.createJedisProxy(pool);
     }
 
-    public static Jedis proxyJedis(final JedisPool pool) {
-        return (Jedis) Cglibs.proxy(Jedis.class, (o, method, args, methodProxy) -> {
-            @Cleanup val jedis = pool.getResource();
-            return method.invoke(jedis, args);
-        });
-    }
-
-    public static JedisCommands proxyJedisCommands(JedisPool pool) {
-        return (JedisCommands) Proxy.newProxyInstance(
-                JedisInvocationHandler.class.getClassLoader(),
-                new Class[]{JedisCommands.class},
-                new JedisInvocationHandler(pool));
-    }
 
     public static boolean waitRedisLock(JedisCommands redis, String lockKey) {
         int maxWaitTimes = 10;
@@ -112,20 +92,5 @@ public class Redis {
         }
 
         return result;
-    }
-
-    @AllArgsConstructor
-    public static class JedisInvocationHandler implements InvocationHandler {
-        final JedisPool pool;
-
-        @Override
-        public Object invoke(Object proxy,
-                             Method method,
-                             Object[] args) throws Throwable {
-            val jedis = pool.getResource();
-            @Cleanup QuietCloseable i = () -> jedis.close();
-
-            return method.invoke(jedis, args);
-        }
     }
 }

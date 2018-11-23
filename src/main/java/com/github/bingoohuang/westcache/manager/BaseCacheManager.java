@@ -4,7 +4,6 @@ import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheManager;
 import com.github.bingoohuang.westcache.utils.Envs;
-import com.github.bingoohuang.westcache.utils.MethodProvider;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -31,6 +30,10 @@ public abstract class BaseCacheManager implements WestCacheManager {
     @SneakyThrows
     private Method init() {
         return MethodProvider.class.getMethod("longMethod");
+    }
+
+    public interface MethodProvider {
+        long longMethod();
     }
 
     public BaseCacheManager(WestCache westCache) {

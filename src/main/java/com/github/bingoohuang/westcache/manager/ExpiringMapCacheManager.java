@@ -1,9 +1,9 @@
 package com.github.bingoohuang.westcache.manager;
 
+import com.github.bingoohuang.utils.lang.QuietCloseable;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.utils.Envs;
-import com.github.bingoohuang.westcache.utils.QuietCloseable;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import lombok.Cleanup;
@@ -12,7 +12,7 @@ import net.jodah.expiringmap.ExpiringMap;
 
 import java.util.concurrent.Callable;
 
-import static com.github.bingoohuang.westcache.utils.Durations.parse;
+import static com.github.bingoohuang.utils.time.Durations.parse;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static net.jodah.expiringmap.ExpirationPolicy.ACCESSED;
 import static net.jodah.expiringmap.ExpirationPolicy.CREATED;
