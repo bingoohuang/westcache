@@ -1,9 +1,10 @@
 package com.github.bingoohuang.westcache.manager;
 
+import com.github.bingoohuang.utils.lang.Executes;
 import com.github.bingoohuang.utils.lang.QuietCloseable;
+import com.github.bingoohuang.utils.lang.Threadx;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
-import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import lombok.Cleanup;
@@ -41,12 +42,12 @@ public class ExpiringMapCacheManager extends BaseCacheManager {
             if (cacheItem1 != null) return cacheItem1;
 
             val lockKey = cacheKey + ":lock";
-            while (!lockCacheKey(lockKey)) Envs.sleepMillis(100L);
+            while (!lockCacheKey(lockKey)) Threadx.sleepMillis(100L);
             @Cleanup QuietCloseable i = () -> cache.remove(lockKey);
             val cacheItem2 = cache.get(cacheKey);
             if (cacheItem2 != null) return cacheItem2;
 
-            val cacheItem3 = Envs.execute(callable);
+            val cacheItem3 = Executes.execute(callable);
             putItem(option, cacheKey, cacheItem3);
 
             return cacheItem3;

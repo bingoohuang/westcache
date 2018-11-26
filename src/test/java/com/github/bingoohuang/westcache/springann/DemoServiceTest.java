@@ -1,10 +1,10 @@
 package com.github.bingoohuang.westcache.springann;
 
 import com.alibaba.fastjson.JSON;
+import com.github.bingoohuang.utils.lang.Threadx;
 import com.github.bingoohuang.westcache.flusher.QuartzCacheFlusher;
 import com.github.bingoohuang.westcache.manager.GuavaCacheManager;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
-import com.github.bingoohuang.westcache.utils.Envs;
 import lombok.val;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -12,7 +12,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -70,7 +69,7 @@ public class DemoServiceTest {
         long l1 = service.doWhat();
         long l2 = service.doWhat();
         assertThat(l1).isEqualTo(l2);
-        Envs.sleepMillis(1000);
+        Threadx.sleepMillis(1000);
 
         long l3 = service.doWhat();
         assertThat(l3).isGreaterThan(l1);
@@ -82,7 +81,7 @@ public class DemoServiceTest {
         long l2 = service.doTtl();
         assertThat(l1).isEqualTo(l2);
 
-        Envs.sleepMillis(1100);
+        Threadx.sleepMillis(1100);
         long l3 = service.doTtl();
         assertThat(l3).isGreaterThan(l1);
     }

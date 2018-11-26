@@ -78,7 +78,7 @@ public class Anns {
     }
 
     private static Map<String, String> searchAnn(Set<Annotation> setAnns, Annotation[] anns,
-            Class<? extends Annotation> annClass) {
+                                                 Class<? extends Annotation> annClass) {
         for (val ann : anns) {
             val optionAnn = parseRecursiveAnn(setAnns, ann, annClass);
             if (optionAnn != null) return optionAnn;
@@ -101,7 +101,7 @@ public class Anns {
         if (ann == null) return attrs;
 
         for (val method : ann.annotationType().getDeclaredMethods()) {
-            Object attr = Envs.invoke(method, ann);
+            Object attr = Methods.invoke(method, ann);
             String value = String.valueOf(attr);
             if (StringUtils.isNotEmpty(value)) {
                 attrs.put(method.getName(), value);

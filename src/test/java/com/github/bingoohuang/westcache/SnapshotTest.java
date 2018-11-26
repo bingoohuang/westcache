@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.utils.lang.Threadx;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
-import com.github.bingoohuang.westcache.utils.Envs;
 import com.google.common.base.Optional;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +35,7 @@ public class SnapshotTest {
         @SneakyThrows
         public String getBigDataSlow() {
             // some milliseconds to simulate slow of reading big data
-            Envs.sleepMillis(sleepMillis);
+            Threadx.sleepMillis(sleepMillis);
             setCacheMethodExecuted(true);
             return bigData;
         }
@@ -105,7 +105,7 @@ public class SnapshotTest {
         assertThat(dataCache1).isEqualTo(bigDataXXX);
 
         do {
-            Envs.sleepMillis(50L);
+            Threadx.sleepMillis(50L);
         } while (!service.isCacheMethodExecuted());
 
         val dataCache2 = service.getBigDataCache();

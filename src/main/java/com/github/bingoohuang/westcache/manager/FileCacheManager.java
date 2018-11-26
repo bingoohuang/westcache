@@ -1,9 +1,9 @@
 package com.github.bingoohuang.westcache.manager;
 
+import com.github.bingoohuang.utils.lang.Executes;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.snapshot.FileCacheSnapshot;
-import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.val;
 
@@ -27,7 +27,7 @@ public class FileCacheManager extends BaseCacheManager {
             val item = getIfPresent(option, cacheKey);
             if (item != null) return item;
 
-            val result = Envs.execute(callable);
+            val result = Executes.execute(callable);
             put(option, cacheKey, result);
 
             return result;

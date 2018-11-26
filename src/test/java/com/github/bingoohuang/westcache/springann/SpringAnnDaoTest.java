@@ -2,8 +2,8 @@ package com.github.bingoohuang.westcache.springann;
 
 import com.github.bingoohuang.westcache.MySqlDictTest.CacheDictBean;
 import com.github.bingoohuang.westcache.utils.WestCacheConnector;
-import lombok.experimental.var;
 import lombok.val;
+import lombok.var;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,11 +25,7 @@ public class SpringAnnDaoTest {
 
     @Test
     public void test() {
-        WestCacheConnector.clearCache(new Runnable() {
-            @Override public void run() {
-                someDao.selectAll();
-            }
-        });
+        WestCacheConnector.clearCache(() -> someDao.selectAll());
 
         var beans = someDao.selectAll();
         var bean1 = new CacheDictBean(1, "bingoo", "南京");
@@ -41,11 +37,7 @@ public class SpringAnnDaoTest {
         beans = someDao.selectAll();
         assertThat(beans).containsExactly(bean1);
 
-        WestCacheConnector.clearCache(new Runnable() {
-            @Override public void run() {
-                someDao.selectAll();
-            }
-        });
+        WestCacheConnector.clearCache(() -> someDao.selectAll());
 
         beans = someDao.selectAll();
         assertThat(beans).containsExactly(bean2);

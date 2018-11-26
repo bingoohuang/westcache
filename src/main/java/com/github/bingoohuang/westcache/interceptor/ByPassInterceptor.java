@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache.interceptor;
 
+import com.github.bingoohuang.utils.lang.Executes;
 import com.github.bingoohuang.westcache.base.WestCacheInterceptor;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
-import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 
 import java.util.concurrent.Callable;
@@ -16,6 +16,6 @@ public class ByPassInterceptor implements WestCacheInterceptor {
             WestCacheOption option,
             String cacheKey,
             Callable<WestCacheItem> callable) {
-        return Envs.execute(callable);
+        return Executes.execute(callable);
     }
 }

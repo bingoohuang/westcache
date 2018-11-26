@@ -1,5 +1,7 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.github.bingoohuang.utils.lang.Clz;
+import com.github.bingoohuang.utils.lang.Futures;
 import com.google.common.util.concurrent.SettableFuture;
 import org.junit.Test;
 
@@ -13,29 +15,29 @@ import static com.google.common.truth.Truth.assertThat;
 public class EnvsTest {
     @Test
     public void classExists() {
-        assertThat(Envs.classExists("a.b.C")).isFalse();
+        assertThat(Clz.classExists("a.b.C")).isFalse();
     }
 
     @Test(expected = ClassNotFoundException.class)
     public void classNotFound() {
-        Envs.forName("a.b.C");
+        Clz.forName("a.b.C");
     }
 
 
     @Test(expected = InstantiationException.class)
     public void bad() {
-        Envs.newInstance(Closeable.class.getName());
+        Clz.newInstance(Closeable.class.getName());
     }
 
     @Test(expected = RuntimeException.class)
     public void futureGetException() {
         SettableFuture<Object> future = SettableFuture.create();
         future.setException(new RuntimeException());
-        Envs.futureGet(future);
+        Futures.futureGet(future);
 
         SettableFuture<Object> future2 = SettableFuture.create();
         future2.set(new Object());
-        Envs.futureGet(future2);
+        Futures.futureGet(future2);
 
     }
 
@@ -43,6 +45,6 @@ public class EnvsTest {
     public void futureGet() {
         SettableFuture<Object> future = SettableFuture.create();
         future.set(new Object());
-        Envs.futureGet(future);
+        Futures.futureGet(future);
     }
 }

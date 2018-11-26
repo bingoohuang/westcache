@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.utils.lang.Threadx;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
-import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.Helper;
 import com.github.bingoohuang.westcache.utils.Redis;
 import lombok.SneakyThrows;
@@ -71,7 +71,7 @@ public class RedisManagerExpireTest {
         runThreads(1);
         assertThat(calledTimes).isEqualTo(1);
 
-        Envs.sleepMillis(1000L);
+        Threadx.sleepMillis(1000L);
         runThreads(1);
         assertThat(calledTimes).isEqualTo(2);
     }

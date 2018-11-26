@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.utils.lang.Threadx;
 import com.github.bingoohuang.westcache.base.ExpireAfterWritable;
 import com.github.bingoohuang.westcache.base.ExpireAfterWrite;
-import com.github.bingoohuang.westcache.utils.Envs;
 import lombok.*;
 import org.junit.Test;
 
@@ -65,7 +65,7 @@ public class DynamicExpireAfterWriteTest {
 
         int seconds = token.getExpireAfterWriteSeconds();
         service.setTimestamp(2);
-        Envs.sleepMillis(seconds * 1000);
+        Threadx.sleepMillis(seconds * 1000);
         ServiceResult token3 = service.getToken();
         assertThat(token3.getTimestamp()).isEqualTo(2L);
     }
@@ -82,7 +82,7 @@ public class DynamicExpireAfterWriteTest {
 
         int seconds = token2.getExpireAfterWriteSeconds();
         service.setTimestamp2(2);
-        Envs.sleepMillis(seconds * 1000);
+        Threadx.sleepMillis(seconds * 1000);
         ServiceResult2 token3 = service.getToken2();
         assertThat(token3.getTimestamp()).isEqualTo(2L);
     }

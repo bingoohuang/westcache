@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.utils.Envs;
+import com.github.bingoohuang.utils.lang.Threadx;
 import org.junit.Test;
 
 import java.lang.annotation.ElementType;
@@ -37,7 +37,7 @@ public class RedisManagerExpireCustomAnnTest {
     public void test() {
         service.getTimestamp();
         service.getTimestamp();
-        Envs.sleepMillis(1100L);
+        Threadx.sleepMillis(1100L);
         service.getTimestamp();
         assertThat(calledTimes).isEqualTo(2);
     }

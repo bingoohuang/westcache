@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.utils.lang.Threadx;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
-import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import com.google.common.base.Optional;
 import lombok.Getter;
@@ -27,7 +27,7 @@ public class FlushSnapshotTest {
         @WestCacheable(snapshot = "file", flusher = "simple", config = "snapshotTest")
         public String getHomeAreaWithCache() {
             // 700 milliseconds to simulate slow of reading big data
-            Envs.sleepMillis(sleepMillis);
+            Threadx.sleepMillis(sleepMillis);
             setCacheMethodExecuted(true);
             return homeArea;
         }
@@ -71,7 +71,7 @@ public class FlushSnapshotTest {
         assertThat(cached).isEqualTo(bigDataXXX);
 
         do {
-            Envs.sleepMillis(50L);
+            Threadx.sleepMillis(50L);
         } while (!bean.isCacheMethodExecuted());
 
         cached = bean.getHomeAreaWithCache();

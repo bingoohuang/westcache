@@ -5,6 +5,8 @@ import com.alibaba.fastjson.TypeReference;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.github.bingoohuang.utils.joda.JodaDateTimeDeserializer;
+import com.github.bingoohuang.utils.joda.JodaDateTimeSerializer;
 import com.github.bingoohuang.utils.type.Generic;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -25,13 +27,13 @@ public class FastJsons {
     private static SerializeConfig serializeConfig = new SerializeConfig();
 
     static {
-        parseConfig.putDeserializer(DateTime.class, new JsonJodaDeserializer());
+        parseConfig.putDeserializer(DateTime.class, new JodaDateTimeDeserializer());
         parseConfig.setAutoTypeSupport(true);
-        serializeConfig.put(DateTime.class, new JsonJodaSerializer());
+        serializeConfig.put(DateTime.class, new JodaDateTimeSerializer());
     }
 
     public static String json(Object obj, Method method) {
-        val arg0GenericType = Generic.getMapParameterizedType(method.getGenericReturnType());
+        val arg0GenericType = Generic.fixMapToLinkedHashMap(method.getGenericReturnType());
         if (arg0GenericType instanceof Class) {
             return JSON.toJSONString(obj, serializeConfig);
         }
@@ -62,7 +64,7 @@ public class FastJsons {
 
     @SneakyThrows @SuppressWarnings("unchecked")
     public static <T> T parse(String json, Method method, boolean silent) {
-        val arg0GenericType = Generic.getMapParameterizedType(method.getGenericReturnType());
+        val arg0GenericType = Generic.fixMapToLinkedHashMap(method.getGenericReturnType());
         try {
             return (T) JSON.parseObject(json, arg0GenericType, parseConfig);
         } catch (Exception ex) {

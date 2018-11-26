@@ -75,6 +75,7 @@ public abstract class WestCacheConnector {
      * @param <T>         cached value type
      * @return cached value.
      */
+    @SuppressWarnings("unchecked")
     public static <T> T connectCache(Runnable runnable, Object cachedValue) {
         THREAD_LOCAL.set(Optional.fromNullable(cachedValue));
         @Cleanup QuietCloseable i = () -> THREAD_LOCAL.remove();

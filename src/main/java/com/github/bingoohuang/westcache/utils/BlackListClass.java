@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.github.bingoohuang.utils.lang.Classpath;
 import com.github.bingoohuang.utils.str.AntPathMatcher;
 import com.google.common.collect.Lists;
 import lombok.val;
@@ -12,8 +13,7 @@ public class BlackListClass {
 
 
     private static List<String> parseBlackLists(String configClassPathFile) {
-        List<String> configFiles = Envs.loadClasspathResources(configClassPathFile,
-                BlackListClass.class.getClassLoader());
+        List<String> configFiles = Classpath.loadResources(configClassPathFile, BlackListClass.class.getClassLoader());
         List<String> result = Lists.newArrayList();
         for (String configFile : configFiles) {
             String[] lines = configFile.split("\\r?\\n");

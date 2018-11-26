@@ -31,13 +31,13 @@ public class WestCacheableScannerRegistrar
         val scanner = new WestCacheableClassPathScanner(registry);
         // this check is needed in Spring 3.1
         if (resourceLoader != null) scanner.setResourceLoader(resourceLoader);
-        String[] basePackages = addBasePakcages(metadata, annoAttrs);
+        String[] basePackages = addBasePackages(metadata, annoAttrs);
 
         scanner.registerFilters();
         scanner.doScan(basePackages);
     }
 
-    private String[] addBasePakcages(AnnotationMetadata metadata,
+    private String[] addBasePackages(AnnotationMetadata metadata,
                                      AnnotationAttributes attrs) {
         List<String> basePkgs = new ArrayList<>();
         addBasePackages(attrs, basePkgs, "value");

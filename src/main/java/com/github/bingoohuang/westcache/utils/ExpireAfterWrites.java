@@ -33,7 +33,7 @@ public class ExpireAfterWrites {
 
     public static String getExpireAfterWrite(Object o) {
         val m = findExpireAfterWriteMethod(o);
-        return m == null ? null : (String) Envs.invoke(m, o);
+        return m == null ? null : (String) Methods.invoke(m, o);
     }
 
     public static Method findExpireAfterWriteMethod(Object o) {

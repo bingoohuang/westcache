@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.utils.lang.Threadx;
 import com.github.bingoohuang.westcache.flusher.QuartzCacheFlusher;
 import com.github.bingoohuang.westcache.manager.GuavaCacheManager;
-import com.github.bingoohuang.westcache.utils.Envs;
 import lombok.val;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -54,14 +54,14 @@ public class QuartzFlusherTest {
         long l1 = service.doWhat();
         long l2 = service.doWhat();
         assertThat(l1).isEqualTo(l2);
-        Envs.sleepMillis(1000);
+        Threadx.sleepMillis(1000);
 
         long l3 = service.doWhat();
         assertThat(l3).isGreaterThan(l1);
 
 
         long t1 = service.doThat();
-        Envs.sleepMillis(1000);
+        Threadx.sleepMillis(1000);
         long t2 = service.doThat();
         assertThat(t1).isEqualTo(t2);
     }

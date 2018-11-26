@@ -1,14 +1,13 @@
 package com.github.bingoohuang.westcache.spring;
 
+import com.github.bingoohuang.utils.lang.Clz;
+import com.github.bingoohuang.utils.spring.XyzFactoryBean;
 import com.github.bingoohuang.westcache.WestCacheFactory;
 import com.github.bingoohuang.westcache.utils.Anns;
-import com.github.bingoohuang.westcache.utils.Envs;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.n3r.eql.eqler.annotations.Eqler;
 import org.n3r.eql.eqler.annotations.EqlerConfig;
-import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -31,7 +30,7 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
      * those annotated with the annotationClass
      */
     public void registerFilters() {
-        if (Envs.classExists("org.n3r.eql.eqler.annotations.Eqler")) {
+        if (Clz.classExists("org.n3r.eql.eqler.annotations.Eqler")) {
             addExcludeFilter(new AnnotationTypeFilter(Eqler.class));
             addExcludeFilter(new AnnotationTypeFilter(EqlerConfig.class));
         }
@@ -41,7 +40,7 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
             if (!metadata.isInterface()) return false;
 
             val className = metadata.getClassName();
-            val clazz = Envs.forName(className);
+            val clazz = Clz.forName(className);
             return Anns.isFastWestCacheAnnotated(clazz);
         });
 
@@ -70,7 +69,7 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
 
             // the mapper interface is the original class of the bean
             // but, the actual class of the bean is MapperFactoryBean
-            definition.getPropertyValues().add("targetClass", definition.getBeanClassName());
+            definition.getPropertyValues().add("xyzInterface", definition.getBeanClassName());
             definition.setBeanClass(WestCacheableFactoryBean.class);
         }
 
@@ -87,23 +86,9 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
                 && beanDefinition.getMetadata().isIndependent();
     }
 
-
-    public static class WestCacheableFactoryBean<T> implements FactoryBean<T> {
-        @Setter private Class<T> targetClass;
-
-        @Override
-        public T getObject() {
-            return WestCacheFactory.create(targetClass);
-        }
-
-        @Override
-        public Class<?> getObjectType() {
-            return this.targetClass;
-        }
-
-        @Override
-        public boolean isSingleton() {
-            return true;
+    public static class WestCacheableFactoryBean extends XyzFactoryBean {
+        public WestCacheableFactoryBean() {
+            super(WestCacheFactory::create);
         }
     }
 

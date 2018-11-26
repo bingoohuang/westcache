@@ -1,6 +1,8 @@
 package com.github.bingoohuang.westcache.outofbox;
 
 import com.alibaba.fastjson.TypeReference;
+import com.github.bingoohuang.utils.lang.Clz;
+import com.github.bingoohuang.utils.lang.Executes;
 import com.github.bingoohuang.westcache.flusher.DirectValueType;
 import com.github.bingoohuang.westcache.flusher.TableBasedCacheFlusher;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
@@ -62,8 +64,8 @@ public class TableCacheFlusher extends TableBasedCacheFlusher {
         val loaderClass = specs.get("loaderClass");
         if (StringUtils.isBlank(loaderClass)) return null;
 
-        Callable loader = Envs.newInstance(loaderClass);
-        return Envs.execute(loader);
+        Callable loader = Clz.newInstance(loaderClass);
+        return Executes.execute(loader);
     }
 
     private Object readByRedis(WestCacheOption option,

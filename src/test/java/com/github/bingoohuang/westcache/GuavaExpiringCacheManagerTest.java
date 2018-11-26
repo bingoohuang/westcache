@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.utils.lang.Threadx;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.manager.BaseCacheManager;
-import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheConnector;
 import com.google.common.base.Optional;
 import lombok.Setter;
@@ -34,11 +34,7 @@ public class GuavaExpiringCacheManagerTest {
 
     @Test
     public void put() {
-        Runnable runnable = new Runnable() {
-            @Override public void run() {
-                service.cacheThree();
-            }
-        };
+        Runnable runnable = () -> service.cacheThree();
 
         val option = WestCacheConnector.connectOption(runnable);
         val manager = (BaseCacheManager) option.getManager();
@@ -60,17 +56,13 @@ public class GuavaExpiringCacheManagerTest {
         service.setTimestamp(10L);
         val cacheValue1 = service.cacheWrite();
         assertThat(cacheValue1).isEqualTo("Write@10");
-        Envs.sleepMillis(500L);
+        Threadx.sleepMillis(500L);
         service.setTimestamp(3L);
         val cacheValue2 = service.cacheWrite();
         assertThat(cacheValue1).isSameAs(cacheValue2);
 
-        Envs.sleepMillis(600L);
-        Runnable runnable = new Runnable() {
-            @Override public void run() {
-                service.cacheWrite();
-            }
-        };
+        Threadx.sleepMillis(600L);
+        Runnable runnable = () -> service.cacheWrite();
         val option = WestCacheConnector.connectOption(runnable);
         val manager = (BaseCacheManager) option.getManager();
         val cacheKey = WestCacheConnector.connectKey(runnable);
@@ -82,7 +74,7 @@ public class GuavaExpiringCacheManagerTest {
         val cacheValue4 = service.cacheWrite();
         assertThat(cacheValue3).isSameAs(cacheValue4);
 
-        Envs.sleepMillis(1100L);
+        Threadx.sleepMillis(1100L);
         service.setTimestamp(5L);
         val cacheValue5 = service.cacheWrite();
         assertThat(cacheValue5).isEqualTo("Write@5");

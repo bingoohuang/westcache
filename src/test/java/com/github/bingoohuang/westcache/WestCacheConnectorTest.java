@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.utils.lang.Threadx;
 import com.github.bingoohuang.westcache.keyer.SimpleKeyer;
-import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.WestCacheConnector;
 import lombok.val;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class WestCacheConnectorTest {
             }
         });
 
-        Envs.sleepMillis(10);
+        Threadx.sleepMillis(10);
 
         long l3 = service.cacheMethod();
         long l4 = service.cacheMethod();
@@ -44,7 +44,7 @@ public class WestCacheConnectorTest {
     @Test
     public void option() {
         long l1 = service.cacheMethod();
-        Envs.sleepMillis(10);
+        Threadx.sleepMillis(10);
         val cacheOption = WestCacheConnector.connectOption(new Runnable() {
             @Override public void run() {
                 service.cacheMethod();
@@ -66,7 +66,7 @@ public class WestCacheConnectorTest {
             }
         }, l1 + 100);
 
-        Envs.sleepMillis(10);
+        Threadx.sleepMillis(10);
         long l2 = service.cacheMethod();
         assertThat(l1 + 100).isEqualTo(l2);
 
@@ -76,7 +76,7 @@ public class WestCacheConnectorTest {
             }
         }, l1 + 300);
 
-        Envs.sleepMillis(10);
+        Threadx.sleepMillis(10);
         long l3 = service.cacheMethod();
         assertThat(l1 + 300).isEqualTo(l3);
     }

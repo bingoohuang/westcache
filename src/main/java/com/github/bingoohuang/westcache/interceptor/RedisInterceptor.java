@@ -1,9 +1,9 @@
 package com.github.bingoohuang.westcache.interceptor;
 
+import com.github.bingoohuang.utils.lang.Executes;
 import com.github.bingoohuang.utils.lang.QuietCloseable;
 import com.github.bingoohuang.westcache.base.WestCacheInterceptor;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
-import com.github.bingoohuang.westcache.utils.Envs;
 import com.github.bingoohuang.westcache.utils.Redis;
 import com.github.bingoohuang.westcache.utils.WestCacheOption;
 import lombok.Cleanup;
@@ -49,7 +49,7 @@ public class RedisInterceptor implements WestCacheInterceptor {
     private WestCacheItem executeAndPut(WestCacheOption option,
                                         Callable<WestCacheItem> callable,
                                         String redisKey, JedisCommands redis) {
-        val item = Envs.execute(callable);
+        val item = Executes.execute(callable);
         Redis.expirePut(option, redis, redisKey, item);
 
         return item;

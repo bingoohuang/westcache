@@ -5,7 +5,6 @@ import lombok.val;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Future;
 
 import static java.util.concurrent.Executors.newScheduledThreadPool;
@@ -15,18 +14,15 @@ import static java.util.concurrent.Executors.newScheduledThreadPool;
  */
 public class BatchService {
     private Batcher<String, String> batcher = BatcherBuilder.newBuilder(
-            new BatcherJob<String, String>() {
-                @Override
-                public List<String> doBatchJob(List<String> batchArgs) {
-                    val results = new ArrayList<String>(batchArgs.size());
-                    for (String arg : batchArgs) {
-                        val result = RandomStringUtils.randomAlphanumeric(20);
-                        System.out.println(result);
-                        results.add(result);
-                    }
-
-                    return results;
+            (BatcherJob<String, String>) batchArgs -> {
+                val results = new ArrayList<String>(batchArgs.size());
+                for (String arg : batchArgs) {
+                    val result = RandomStringUtils.randomAlphanumeric(20);
+                    System.out.println(result);
+                    results.add(result);
                 }
+
+                return results;
             })
             .executor(newScheduledThreadPool(10))
             .maxWaitItems(3) // 达到3个就开工
@@ -41,22 +37,19 @@ public class BatchService {
 
 
     private Batcher<String, String> batcher2 = BatcherBuilder.newBuilder(
-            new BatcherJob<String, String>() {
-                @Override
-                public List<String> doBatchJob(List<String> batchArgs) {
-                    val results = new ArrayList<String>(batchArgs.size());
-                    for (String arg : batchArgs) {
-                        val result = RandomStringUtils.randomAlphanumeric(20);
-                        System.out.println(result);
-                        results.add(result);
-                    }
-
-                    if (batchArgs.get(0).equals("bad")) {
-                        results.remove(0);
-                    }
-
-                    return results;
+            (BatcherJob<String, String>) batchArgs -> {
+                val results = new ArrayList<String>(batchArgs.size());
+                for (String arg : batchArgs) {
+                    val result = RandomStringUtils.randomAlphanumeric(20);
+                    System.out.println(result);
+                    results.add(result);
                 }
+
+                if (batchArgs.get(0).equals("bad")) {
+                    results.remove(0);
+                }
+
+                return results;
             })
             .maxWaitItems(3) // 达到3个就开工
             .maxWaitMillis(1000) // 或者累计满1秒钟也开工
@@ -70,20 +63,17 @@ public class BatchService {
 
 
     private Batcher<String, String> batcher3 = BatcherBuilder.newBuilder(
-            new BatcherJob<String, String>() {
-                @Override
-                public List<String> doBatchJob(List<String> batchArgs) {
-                    val results = new ArrayList<String>(batchArgs.size());
-                    for (String arg : batchArgs) {
-                        val result = RandomStringUtils.randomAlphanumeric(20);
-                        System.out.println(result);
-                        results.add(result);
-                    }
-
-                    results.remove(0);
-
-                    return results;
+            (BatcherJob<String, String>) batchArgs -> {
+                val results = new ArrayList<String>(batchArgs.size());
+                for (String arg : batchArgs) {
+                    val result = RandomStringUtils.randomAlphanumeric(20);
+                    System.out.println(result);
+                    results.add(result);
                 }
+
+                results.remove(0);
+
+                return results;
             })
             .maxWaitItems(3) // 达到3个就开工
             .maxWaitMillis(1000) // 或者累计满1秒钟也开工
@@ -96,11 +86,8 @@ public class BatchService {
     }
 
     private Batcher<String, String> batcher4 = BatcherBuilder.newBuilder(
-            new BatcherJob<String, String>() {
-                @Override
-                public List<String> doBatchJob(List<String> batchArgs) {
-                    throw new RuntimeException("dingoo here");
-                }
+            (BatcherJob<String, String>) batchArgs -> {
+                throw new RuntimeException("dingoo here");
             })
             .maxWaitItems(3) // 达到3个就开工
             .maxWaitMillis(1000) // 或者累计满1秒钟也开工

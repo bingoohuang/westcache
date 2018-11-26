@@ -1,9 +1,9 @@
 package com.github.bingoohuang.westcache.spring;
 
+import com.github.bingoohuang.utils.lang.Clz;
 import com.github.bingoohuang.utils.proxy.Cglibs;
 import com.github.bingoohuang.westcache.utils.Anns;
 import com.github.bingoohuang.westcache.utils.BlackListClass;
-import com.github.bingoohuang.westcache.utils.Envs;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.n3r.eql.eqler.annotations.Eqler;
@@ -16,7 +16,7 @@ public class WestCacheClassFilter implements ClassFilter {
 
 
     static {
-        hasEqler = Envs.classExists("org.n3r.eql.eqler.annotations.Eqler");
+        hasEqler = Clz.classExists("org.n3r.eql.eqler.annotations.Eqler");
     }
 
     @Override public boolean matches(Class<?> targetClass) {

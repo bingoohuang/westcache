@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.github.bingoohuang.utils.lang.Threadx;
 import com.github.bingoohuang.westcache.config.DefaultWestCacheConfig;
 import com.github.bingoohuang.westcache.flusher.WestCacheFlusherBean;
 import com.github.bingoohuang.westcache.outofbox.TableCacheFlusher;
@@ -30,7 +31,7 @@ public class Helper {
 
     public void waitFlushRun(TableCacheFlusher flusher, long lastExecuted) {
         do {
-            Envs.sleepMillis(100L);
+            Threadx.sleepMillis(100L);
         } while (flusher.getLastExecuted() == lastExecuted);
     }
 

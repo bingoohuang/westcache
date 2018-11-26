@@ -1,7 +1,7 @@
 package com.github.bingoohuang.westcache;
 
+import com.github.bingoohuang.utils.lang.Threadx;
 import com.github.bingoohuang.westcache.base.WestCacheFlusher;
-import com.github.bingoohuang.westcache.utils.Envs;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -141,7 +141,7 @@ public class MySqlDictTest {
         }};
 
         do {
-            Envs.sleepMillis(50L);
+            Threadx.sleepMillis(50L);
         } while (updateCheckTime == lastUpdateCheckTime);
 
         val cacheDicts = service.getCacheDicts();
@@ -164,7 +164,7 @@ public class MySqlDictTest {
         }};
 
         do {
-            Envs.sleepMillis(50L);
+            Threadx.sleepMillis(50L);
         } while (updateCheckTime == lastUpdateCheckTime);
 
         val cacheDicts3 = service.getCacheDicts();

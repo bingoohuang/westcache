@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.manager;
 
+import com.github.bingoohuang.utils.lang.Executes;
 import com.github.bingoohuang.westcache.base.WestCache;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.base.WestCacheManager;
@@ -47,7 +48,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
         val flusher = option.getFlusher();
         if (!flusher.isKeyEnabled(option, cacheKey)) {
             log.warn("cache key {} is not enabled", cacheKey);
-            return Envs.execute(callable);
+            return Executes.execute(callable);
         }
 
         flusher.register(option, cacheKey, westCache);
@@ -63,7 +64,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
         };
 
         Callable<WestCacheItem> wrapCallable = () -> option.getSnapshot() == null
-                ? Envs.execute(flushCallable)
+                ? Executes.execute(flushCallable)
                 : trySnapshot(option, cacheKey, flushCallable);
 
         checkStartupTimeValidate(option, cacheKey);
@@ -94,7 +95,7 @@ public abstract class BaseCacheManager implements WestCacheManager {
                                       final Callable<WestCacheItem> callable) {
         val executorService = Executors.newSingleThreadScheduledExecutor();
         Future<WestCacheItem> future = executorService.submit(() -> {
-            val item = Envs.execute(callable);
+            val item = Executes.execute(callable);
             westCache.put(option, cacheKey, item);
             val snapshot = option.getSnapshot();
             snapshot.saveSnapshot(option, cacheKey, item);

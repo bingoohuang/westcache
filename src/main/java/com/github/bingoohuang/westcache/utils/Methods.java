@@ -1,12 +1,27 @@
 package com.github.bingoohuang.westcache.utils;
 
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@Slf4j
 public class Methods {
+
+    @SneakyThrows @SuppressWarnings("unchecked")
+    public static <T> T invoke(Method m, Object object) {
+        try {
+            return (T) m.invoke(object);
+        } catch (InvocationTargetException e) {
+            log.warn("invoke method {} error", m, e);
+            throw e.getCause();
+        }
+    }
+
     /*
      * Gets an array of all methods in a class hierarchy walking up to parent classes
      */

@@ -1,6 +1,6 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.westcache.utils.Envs;
+import com.github.bingoohuang.utils.lang.Threadx;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -42,7 +42,7 @@ public class RedisInterceptorTest {
             threads[i].join();
         }
 
-        Envs.sleepMillis(1010L);
+        Threadx.sleepMillis(1010L);
 
         for (int i = 0; i < 10; ++i) {
             threads[i] = new Thread(runnable);

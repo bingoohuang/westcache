@@ -1,5 +1,6 @@
 package com.github.bingoohuang.westcache.utils;
 
+import com.github.bingoohuang.utils.lang.Threadx;
 import com.github.bingoohuang.utils.redis.JedisProxy;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
@@ -60,7 +61,7 @@ public class Redis {
             Long lock = redis.setnx(lockKey, "lock");
             if (lock == 1L) return true;
 
-            Envs.sleepMillis(50L);
+            Threadx.sleepMillis(50L);
         }
         return false;
     }
