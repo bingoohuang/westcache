@@ -3,11 +3,10 @@ package com.github.bingoohuang.westcache.spring;
 import com.github.bingoohuang.utils.lang.Clz;
 import com.github.bingoohuang.utils.spring.XyzFactoryBean;
 import com.github.bingoohuang.westcache.WestCacheFactory;
+import com.github.bingoohuang.westcache.spring.exclude.WestCacheExcludes;
 import com.github.bingoohuang.westcache.utils.Anns;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.n3r.eql.eqler.annotations.Eqler;
-import org.n3r.eql.eqler.annotations.EqlerConfig;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -30,9 +29,8 @@ public class WestCacheableClassPathScanner extends ClassPathBeanDefinitionScanne
      * those annotated with the annotationClass
      */
     public void registerFilters() {
-        if (Clz.classExists("org.n3r.eql.eqler.annotations.Eqler")) {
-            addExcludeFilter(new AnnotationTypeFilter(Eqler.class));
-            addExcludeFilter(new AnnotationTypeFilter(EqlerConfig.class));
+        for (val anno : WestCacheExcludes.excludeAnnoTypes()) {
+            addExcludeFilter(new AnnotationTypeFilter(anno));
         }
 
         addIncludeFilter((metadataReader, metadataReaderFactory) -> {
