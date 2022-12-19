@@ -1,7 +1,6 @@
 package com.github.bingoohuang.westcache.utils;
 
 import com.github.bingoohuang.utils.lang.Threadx;
-import com.github.bingoohuang.utils.redis.JedisProxy;
 import com.github.bingoohuang.westcache.base.WestCacheItem;
 import com.github.bingoohuang.westcache.spring.SpringAppContext;
 import com.google.common.base.Optional;
@@ -9,9 +8,11 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
+import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCommands;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.Transaction;
 
 /**
  * @author bingoohuang [bingoohuang@gmail.com] Created on 2017/1/3.
@@ -51,7 +52,24 @@ public class Redis {
         poolConfig.setMaxTotal(maxTotal);
 
         val pool = new JedisPool(poolConfig, host, port);
-        return JedisProxy.createJedisProxy(pool);
+        return (Jedis) Cglibs.proxy(Jedis.class, (o1, m1, args1, p1) -> {
+            val pooled = pool.getResource();
+            val result = m1.invoke(pooled, args1);
+            switch (m1.getName()) {
+                case "multi":
+                    return Cglibs.proxy(Transaction.class, (o2, m2, args2, p2) -> {
+                        Object o = m2.invoke(result, args2);
+                        if (m2.getName().equals("exec")) pooled.close();
+                        return o;
+                    });
+                case "close":
+                    pool.destroy();
+                    break;
+                default:
+                    pooled.close();
+            }
+            return result;
+        });
     }
 
 

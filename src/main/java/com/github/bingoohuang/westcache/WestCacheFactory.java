@@ -1,8 +1,8 @@
 package com.github.bingoohuang.westcache;
 
-import com.github.bingoohuang.utils.proxy.Cglibs;
 import com.github.bingoohuang.westcache.cglib.CglibCacheMethodInterceptor;
 import com.github.bingoohuang.westcache.cglib.WestCacheCglib;
+import com.github.bingoohuang.westcache.utils.Cglibs;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.val;

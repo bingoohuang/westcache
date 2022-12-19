@@ -1,9 +1,9 @@
 package com.github.bingoohuang.westcache.spring;
 
-import com.github.bingoohuang.utils.proxy.Cglibs;
 import com.github.bingoohuang.westcache.spring.exclude.WestCacheExcludes;
 import com.github.bingoohuang.westcache.utils.Anns;
 import com.github.bingoohuang.westcache.utils.BlackListClass;
+import com.github.bingoohuang.westcache.utils.Cglibs;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.aop.ClassFilter;
